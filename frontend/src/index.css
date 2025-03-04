@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .scroll-container::-webkit-scrollbar {
+    display: none;
+    /* Hide the scrollbar in Webkit browsers */
+  }
+
+  .scroll-container {
+    scrollbar-width: none;
+    /* Hide the scrollbar*/
+  }
+}
+
+/* Hide number input arrows in Chrome, Safari, Edge, and Opera */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  @apply appearance-none;
+}
+
+/* Hide number input arrows in Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
