@@ -58,11 +58,7 @@ const SignUp = () => {
   return (
     <div className="mx-auto my-16 flex h-max w-[90%] flex-col justify-center gap-3 rounded-lg bg-gray-100 px-3 md:px-5 py-3 shadow-md md:w-[40%]">
       <h1 className="text-[5vw] md:text-2xl font-semibold">Sign Up</h1>
-      <form
-        method="post"
-        onSubmit={handleSubmit}
-        className="flex flex-col gap-4"
-      >
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <input
           type="text"
           name="username"

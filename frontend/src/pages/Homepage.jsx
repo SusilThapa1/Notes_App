@@ -1,5 +1,6 @@
 // App.js
 import React from "react";
+import ProgrammeDetails from "../components/ProgrammeDetails";
 
 const Homepage = () => {
   return (
@@ -52,7 +53,9 @@ const Homepage = () => {
       <hr className="w-full   border-gray-500 border-[2px]" />
 
       <hr className="w-full   border-gray-500 border-[2px]" />
-
+      <section id="courses" className="py-10  ">
+        <ProgrammeDetails />
+      </section>
       <section id="contact" className="py-10">
         <div className="max-w-7xl mx-auto text-center">
           <h2 className="text-[6vw] md:text-3xl font-bold mb-6">Contact Us</h2>

@@ -2,8 +2,9 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Homepage from "./pages/Homepage";
-import Login from "./components/Login.Jsx";
+import Login from "./components/Login";
 import SignUp from "./components/SignUp";
+import Programme from "./components/Programme";
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
         <Navbar />
         <Routes>
           <Route path="/" element={<Homepage />} />
+          <Route path="/:category" element={<Programme />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
         </Routes>

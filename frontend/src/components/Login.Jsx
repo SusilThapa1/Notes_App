@@ -26,11 +26,7 @@ const Login = () => {
   return (
     <div className="mx-auto my-20 flex h-max w-[90%] flex-col justify-center gap-5 rounded-lg bg-gray-100 px-5 py-8 shadow-md md:w-[40%]">
       <h1 className="text-2xl font-semibold">Login</h1>
-      <form
-        method="POST"
-        onSubmit={handleSubmit}
-        className="flex flex-col gap-7"
-      >
+      <form onSubmit={handleSubmit} className="flex flex-col gap-7">
         <input
           type="email"
           name="email"
