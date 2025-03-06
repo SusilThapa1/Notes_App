@@ -5,6 +5,7 @@ import Homepage from "./pages/Homepage";
 import Login from "./components/Login";
 import SignUp from "./components/SignUp";
 import Programme from "./components/Programme";
+import Category from "./components/Category";
 
 function App() {
   return (
@@ -16,6 +17,10 @@ function App() {
           <Route path="/:category" element={<Programme />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
+          <Route
+            path="/:category/:programme"
+            element={<Category category="syllabus" />}
+          />
         </Routes>
         <Footer />
       </BrowserRouter>
