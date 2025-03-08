@@ -21,6 +21,10 @@ function App() {
             path="/:category/:programme"
             element={<Category category="syllabus" />}
           />
+          <Route
+            path="/:category/:programme"
+            element={<Category category="notes" />}
+          />
         </Routes>
         <Footer />
       </BrowserRouter>
