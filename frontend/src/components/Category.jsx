@@ -2,6 +2,8 @@ import React from "react";
 import { useParams } from "react-router-dom";
 
 import Syllabus from "./Syllabus";
+import Questions from "./Questions";
+import Notes from "./Notes";
 
 const Category = () => {
   const { programme, category } = useParams();
@@ -19,8 +21,8 @@ const Category = () => {
           <Syllabus />
         </div>
       )}
-      {/* {category === "notes" && <Notes programme={programme} />}
-      {category === "questions" && <Questions />} */}
+      {category === "notes" && <Notes programme={programme} />}
+      {category === "questions" && <Questions />}
     </div>
   );
 };
