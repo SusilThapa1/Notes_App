@@ -159,16 +159,21 @@ const AdminProfile = () => {
           phone: userData.phone,
         }));
         toast.success(res.message);
+
         localStorage.setItem(
           "user",
           JSON.stringify({ id: userData._id, username: userData.username })
         );
+
         setIsEditDetails(false);
       } else {
-        toast.error("Failed to update details !");
+        toast.error("Failed to update details!");
       }
     } catch (error) {
-      console.log(error);
+      toast.error(
+        error?.response?.data?.message || "Something went wrong while updating."
+      );
+      console.error(error);
     }
   };
 
@@ -191,12 +196,13 @@ const AdminProfile = () => {
     );
   }
   return (
-    <div className="flex flex-col justify-center items-center gap-5  scroll-container overflow-scroll mt-24 px-5 md:px-10 lg:px-20 mb-20 ">
+    <div className="flex flex-col justify-center items-center gap-5 mt-20 px-5 md:px-10 lg:px-20   ">
+      <h1 className="  text-xl font-semibold leading-loose">Your Profile </h1>
       <div className="flex flex-col justify-center items-center">
         <form className="flex flex-col justify-center items-center gap-5 font-semibold">
           <div
             onClick={() => setShowImageModal(true)}
-            className="cursor-pointer hover:opacity-80 border-2 rounded-full border-green-600 shadow-md"
+            className="cursor-pointer md:hover:shadow-[0px_2px_20px_12px_rgba(8,_150,_124,_0.5),0px_2px_20px_12px_rgba(0,_0,_0,_0.7)] border-[4px] rounded-full border-gray-400 transition-all duration-500"
           >
             <img
               src={
@@ -205,6 +211,7 @@ const AdminProfile = () => {
                   : userDetails?.profilepath || "/prof.webp"
               }
               alt="Profile"
+              title="view profile image"
               className="rounded-full w-32 h-32 object-cover"
             />
           </div>
@@ -262,9 +269,9 @@ const AdminProfile = () => {
       {userDetails && isEditDetails ? (
         <form
           onSubmit={handleSubmit}
-          className="flex  items-start  flex-col gap-5 font-semibold"
+          className="flex  items-start flex-col gap-5 font-semibold"
         >
-          <div className="flex gap-2">
+          <div className="flex items-center gap-2">
             <label htmlFor="username" className="text-green-600">
               Username:
             </label>
@@ -277,7 +284,7 @@ const AdminProfile = () => {
               className="rounded-md border-2 border-green-700 p-2  bg-transparent"
             />
           </div>
-          <div className="flex gap-2">
+          <div className="flex items-center gap-2">
             <label htmlFor="email" className="text-green-600">
               Email:
             </label>
@@ -290,7 +297,7 @@ const AdminProfile = () => {
               className="rounded-md border-2 border-green-700 p-2  bg-transparent"
             />
           </div>
-          <div className="flex gap-5 py-2 md:gap-10">
+          <div className="flex items-center gap-5 py-2 md:gap-10">
             <h1 className="text-green-600">Gender :</h1>
             <div>
               <input
@@ -338,20 +345,27 @@ const AdminProfile = () => {
               </label>
             </div>
           </div>
-          <div className="flex gap-2">
+          <div className="flex items-center gap-2">
             <label htmlFor="phone" className="text-green-600">
               Phone number:
             </label>
-            <input
-              type="tel"
-              name="phone"
-              id="phone"
-              placeholder="Your phone number"
-              className="appearance-none rounded-md border-2 border-green-700 p-2  bg-transparent"
-              aria-label="Phone"
-              value={userData.phone} // Bind input to userData, not userDetails
-              onChange={handleChange}
-            />
+            <div className="flex items-center gap-2 rounded-md border-2 border-green-700 p-2  bg-transparent">
+              <div className="flex justify-center items-center">
+                <img src="/Nepal-Flag-icon.png" alt="+977" className="w-6" />
+
+                <span>+977 </span>
+              </div>
+              <input
+                type="number"
+                name="phone"
+                id="phone"
+                placeholder="Your phone number"
+                className="appearance-none bg-transparent outline-none"
+                aria-label="Phone"
+                value={userData.phone} // Bind input to userData, not userDetails
+                onChange={handleChange}
+              />
+            </div>
           </div>
           <div className="mx-auto flex justify-between items-center w-full text-white">
             <button
@@ -400,9 +414,9 @@ const AdminProfile = () => {
       {showImageModal && (
         <div
           onClick={() => setShowImageModal(false)}
-          className="fixed inset-0 bg-black bg-opacity-70 backdrop-blur-sm flex justify-center items-center z-50  "
+          className="fixed inset-0 bg-black bg-opacity-70 backdrop-blur-md  flex justify-center items-center z-50  "
         >
-          <div className="relative   rounded-lg p-1 flex justify-center items-center  ">
+          <div className="relative rounded-lg p-1 flex justify-center items-center  ">
             <img
               src={
                 profileImage
@@ -410,7 +424,7 @@ const AdminProfile = () => {
                   : userDetails?.profilepath || "/prof.webp"
               }
               alt="Full Profile"
-              className=" object-cover rounded-lg "
+              className=" object-cover w-[100%] rounded-lg "
             />
           </div>
         </div>

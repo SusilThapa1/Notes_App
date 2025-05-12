@@ -5,7 +5,7 @@ import { deleteUpload } from "../../../Services/uploadService";
 import { FaTrashAlt, FaFilter } from "react-icons/fa";
 // import { FiEdit } from "react-icons/fi";
 import Swal from "sweetalert2";
-import { ProgrammesContext } from "../context/ProgrammeContext";
+import { ProgrammesContext } from "../Context/ProgrammeContext";
 import { FiEdit } from "react-icons/fi";
 
 const ManageResources = () => {
@@ -70,7 +70,7 @@ const ManageResources = () => {
   );
 
   return (
-    <div className="flex flex-col items-center w-full mt-4 overflow-y-scroll scroll-container bg-transparent shadow-sm mx-auto h-[calc(100vh-200px)] md:h-[calc(100vh-145px)] pb-20 md:p-2">
+    <div className="flex flex-col items-center w-full mt-4 overflow-y-scroll scroll-container bg-transparent shadow-sm mx-auto h-[calc(100vh-200px)] md:h-[calc(100vh-65px)]  p-2">
       <h1 className="text-3xl font-medium text-center ">Resources List</h1>
 
       {/* Program selection and resource type selection */}

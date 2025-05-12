@@ -135,7 +135,7 @@ const SemesterManager = () => {
   return (
     <div
       ref={scrollRef}
-      className="flex flex-col items-center  w-full mt-4 overflow-y-scroll scroll-container bg-transparent shadow-sm mx-auto h-[calc(100vh-200px)] md:h-[calc(100vh-145px)]"
+      className="flex flex-col items-center  w-full mt-4 overflow-y-scroll scroll-container bg-transparent shadow-sm mx-auto h-[calc(100vh-200px)] md:h-[calc(100vh-60px)]"
     >
       <div className="w-full flex flex-col gap-3  justify-center items-center h-fit pt-5 rounded-lg">
         <h1 className="text-2xl font-bold text-center">
@@ -188,7 +188,7 @@ const SemesterManager = () => {
 
       <div className="py-4 w-full ">
         <div className="max-h-[300px] scroll-container">
-          <h1 className="text-xl font-semibold mb-4 text-center">
+          <h1 className="text-xl font-bold mb-4 text-center">
             Available Semesters/Years List
           </h1>
 
@@ -202,7 +202,7 @@ const SemesterManager = () => {
 
               return programmeSemesters.length > 0 ? (
                 <div key={index} className="  w-full  py-4 rounded-lg">
-                  <h2 className="text-xl font-bold text-center mb-3">
+                  <h2 className="text-xl font-semibold text-center mb-3">
                     {programme.programmeshortname} Semesters/Years
                   </h2>
                   <table

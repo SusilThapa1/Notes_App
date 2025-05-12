@@ -47,8 +47,12 @@ const ProgrammesProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    fetchAllData();
-  }, [fetchAllData]);
+    const timer = setTimeout(() => {
+      fetchAllData();
+    }, 200); // 200ms delay
+
+    return () => clearTimeout(timer); // Cleanup
+  }, []);
 
   return (
     <ProgrammesContext.Provider

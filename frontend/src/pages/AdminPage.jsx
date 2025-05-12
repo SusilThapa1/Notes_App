@@ -9,7 +9,7 @@ import UploadResources from "../components/Admin/UploadResources";
 
 const AdminPage = () => {
   return (
-    <div className="md:grid md:grid-cols-[20%,80%] gap-2  lg:grid-col-[5%,90%] mt-14 overflow-hidden  bg-[url(/images/Admin_bg.jpg)] bg-no-repeat bg-center bg-cover scroll-smooth  px-5 md:pl-0 mb-20 md:mb-1 ">
+    <div className="md:grid md:grid-cols-[20%,80%] gap-2  lg:grid-col-[5%,90%] mt-14 overflow-hidden  bg-[url(/images/Admin_bg.jpg)] bg-no-repeat bg-center bg-cover scroll-smooth  px-5 md:pl-0  mb-1 ">
       <Sidebar />
       <Routes>
         <Route index element={<WelcomeAdmin />} />

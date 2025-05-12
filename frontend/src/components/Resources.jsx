@@ -1,6 +1,6 @@
 import React, { useEffect, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ProgrammesContext } from "./context/ProgrammeContext";
+import { ProgrammesContext } from "./Context/ProgrammeContext";
 import Syllabus from "./Syllabus";
 import Notes from "./Notes";
 import Questions from "./Questions";
@@ -27,8 +27,8 @@ const Resources = ({ resource }) => {
   }
 
   return (
-    <div className="mt-24 flex flex-col gap-5 px-5 my-10 md:px-10 lg:px-20">
-      <h1 className="md:text-3xl text-center underline font-bold">
+    <div className="mt-24 flex flex-col gap-5 px-5 my-10 md:px-10 lg:px-20 mb-24 md:mb-1">
+      <h1 className="md:text-3xl text-2xl text-center underline font-bold">
         <span className="uppercase">{programme} </span>
         <span className="capitalize">{resource}</span>
       </h1>

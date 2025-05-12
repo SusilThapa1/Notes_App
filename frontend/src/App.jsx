@@ -5,7 +5,6 @@ import Programme from "./components/Programme";
 import Homepage from "./pages/Homepage";
 import SignUp from "./components/SignUp";
 import Resources from "./components/Resources";
-import Footer from "./components/Footer";
 import AdminPage from "./pages/AdminPage";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -15,7 +14,7 @@ import AdminProfile from "./components/Admin/AdminProfile";
 
 function App() {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="flex flex-col">
       <BrowserRouter>
         <Navbar />
         <Routes>
@@ -54,7 +53,6 @@ function App() {
           <Route path="/not-found" element={<PageNotFound />} />
           <Route path="*" element={<PageNotFound />} />
         </Routes>
-        <Footer />
       </BrowserRouter>
       <ToastContainer
         stacked

@@ -20,7 +20,7 @@ const Sidebar = () => {
   };
 
   return (
-    <div className=" gap-5 md:flex md:flex-col justify-center md:justify-start grid grid-cols-2 w-full text-center md:gap-5 border-r-gray-400 border-b-gray-400 md:border-2 md:h-screen-minus-64 md:mt-0 pt-10 md:pb-20 md:px-2">
+    <div className=" gap-5 md:flex md:flex-col justify-center md:justify-start grid grid-cols-2 w-full text-center md:gap-5 border-r-gray-400 border-b-gray-400 md:border-2 md:h-[calc(100vh - 60px)] md:mt-0 pt-10 md:pb-20 md:px-2">
       {menus.map((menu) => (
         <Link
           to={menu.link}

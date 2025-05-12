@@ -1,55 +1,79 @@
-import React from "react";
-import BIT from "./assets/BIT.png";
-import BCA from "./assets/BCA.png";
-import BCE from "./assets/BCE.png";
-import BBA from "./assets/BBA.png";
-import { Link, useParams } from "react-router-dom";
+import React, { useContext, useState } from "react";
+import { IoMdCloseCircle } from "react-icons/io";
+import { Link, useLocation } from "react-router-dom";
+import { ProgrammesContext } from "./Context/ProgrammeContext";
 
 const Programme = () => {
-  const { category } = useParams();
-  const programs = [
-    {
-      programme: "Bachelor of Information Technology (BIT)",
-      link: `/${category}/bit`,
-      image: BIT,
-    },
-    {
-      programme: "Bachelor of Computer Application (BCA)",
-      link: `/${category}/bca`,
-      image: BCA,
-    },
-    {
-      programme: "Bachelor of Civil Engineering (BCE)",
-      link: `/${category}/be-civil`,
-      image: BCE,
-    },
-    {
-      programme: "Bachelor of Business Administration (BBA)",
-      link: `/${category}/bba `,
-      image: BBA,
-    },
-  ];
+  const location = useLocation();
+  const resources = decodeURIComponent(location.pathname.split("/")[1] || "");
+
+  const [selectedImage, setSelectedImage] = useState(null);
+  const { programmeLists, loading } = useContext(ProgrammesContext);
+  // console.log(programmeLists);
+  if (loading) {
+    return (
+      <div className="text-center text-2xl font-bold mt-20">Loading...</div>
+    );
+  }
 
   return (
-    <div className="mt-24 py-3 mb-10  px-5   flex flex-col justify-center items-center gap-10  md:px-10 lg:px-20">
-      <h1 className="text-xl md:text-[2.5vw] text-center font-bold">
-        Purbanchal University (BIT, BCA, BE Civil, BBA){" "}
-        <span className="capitalize">{category}</span>
+    <div className="mt-20 py-3 px-5 flex flex-col justify-center items-center gap-5 md:px-10 lg:px-20">
+      <h1 className="text-xl md:text-[2vw] text-center font-bold">
+        Purbanchal University (BIT, BCA, BE Civil and others ){" "}
+        <span className="capitalize">{resources}</span>
       </h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 justify-center py-5">
-        {programs.map((program, key) => (
+        {programmeLists.map((program, key) => (
           <div
             key={key}
-            className="border border-gray-500 shadow-xl rounded-lg flex flex-col justify-start items-center gap-3 pb-3"
+            className="flex flex-col justify-start items-center gap-3 pb-3 transition-transform"
           >
-            <img src={program.image} className="object-cover rounded-t-lg" />
-
-            <Link to={program.link} className="text-xl font-bold text-center">
-              {program.programme}
+            <img
+              src={program.imagepath}
+              alt={program.programmefullname}
+              className="object-cover cursor-pointer border border-gray-500 rounded-lg hover:scale-95 duration-500 "
+              onClick={() => setSelectedImage(program.imagepath)}
+              loading="lazy"
+              width="300"
+              height="200"
+            />
+            <Link
+              to={`/${resources}/${program.programmeshortname}`}
+              className="font-medium text-center lg:text-[1.1vw] p-2 shadow-lg hover:scale-95 duration-500  rounded-lg w-full bg-gray-300"
+            >
+              {program.programmefullname} <br />({program.programmeshortname})
             </Link>
           </div>
         ))}
       </div>
+
+      {/* Modal for Image Preview */}
+      {selectedImage && (
+        <div
+          onClick={() => setSelectedImage(null)}
+          className="fixed inset-0 bg-black bg-opacity-90 flex justify-center items-center  backdrop-blur-md"
+        >
+          <div className="relative bg-transparent p-4 rounded-lg shadow-lg mt-20">
+            <button
+              className="absolute top-1 right-0 px-2 py-1 rounded"
+              onClick={() => setSelectedImage(null)}
+            >
+              <IoMdCloseCircle
+                title="close"
+                className="text-4xl font-bold text-red-500"
+              />
+            </button>
+            <img
+              src={selectedImage}
+              alt="Preview"
+              className="  rounded-md"
+              loading="lazy"
+              width="500"
+              height="300"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

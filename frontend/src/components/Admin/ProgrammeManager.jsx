@@ -9,7 +9,7 @@ import {
   updateProgramme,
   addProgramme,
 } from "../../../Services/programmeService";
-import { ProgrammesContext } from "../context/ProgrammeContext";
+import { ProgrammesContext } from "../Context/ProgrammeContext";
 
 const ProgrammeManager = () => {
   const scrollRef = useRef(null);
@@ -149,7 +149,7 @@ const ProgrammeManager = () => {
   return (
     <div
       ref={scrollRef}
-      className="flex flex-col items-center  w-full max-w-6xl  mt-4 pb-20  overflow-y-scroll scroll-container bg-transparent shadow-sm mx-auto h-[calc(100vh-200px)] md:h-[calc(100vh-75px)]"
+      className="flex flex-col items-center  w-full max-w-6xl  mt-4   overflow-y-scroll scroll-container bg-transparent shadow-sm mx-auto h-[calc(100vh-200px)] md:h-[calc(100vh-75px)]"
     >
       <h1 className="text-2xl font-semibold mb-4 text-center">
         {programmeData._id ? "Edit Programme" : "Add New Programme"}
