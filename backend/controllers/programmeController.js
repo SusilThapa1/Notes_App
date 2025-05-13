@@ -1,4 +1,5 @@
 const Programmes = require("../models/programmeModel");
+const { deleteFile } = require("../Utils/fileHelper");
 const programmeInsert = async (req, res) => {
   try {
     if (!req.file) {
@@ -33,7 +34,7 @@ const programmeInsert = async (req, res) => {
     const imagepath = `${process.env.SERVER_BASE_URL}/uploads/images/${req.file.filename}`;
 
     const programme = new Programmes({
-      image: req.file.path,
+      // image: req.file.path,
       imagename: req.file.originalname,
       imagepath: imagepath,
       programmefullname,
@@ -73,12 +74,31 @@ const programmeList = async (req, res) => {
 
 const programmeDelete = async (req, res) => {
   const programmeid = req.params.id;
+
   try {
-    const programme = await Programmes.deleteOne({ _id: programmeid });
+    // First fetch the programme to get the image path
+    const existingProgramme = await Programmes.findById(programmeid);
+    if (!existingProgramme) {
+      return res.status(404).json({
+        success: 0,
+        message: "Programme not found.",
+      });
+    }
+
+    // Delete the image using imagepath
+    if (existingProgramme.imagepath) {
+      const relativePath = `uploads/images/${existingProgramme.imagepath
+        .split("/")
+        .pop()}`;
+      deleteFile(relativePath);
+    }
+
+    // Now delete the DB record
+    await Programmes.deleteOne({ _id: programmeid });
+
     res.status(200).json({
       success: 1,
       message: "Programme deleted successfully.",
-      data: programme,
     });
   } catch (err) {
     res.status(500).json({
@@ -92,10 +112,18 @@ const programmeDelete = async (req, res) => {
 const programmeSingle = async (req, res) => {
   try {
     const programmeid = req.params.id;
-    const programme = await Programmes.find({ _id: programmeid });
-    res
-      .status(200)
-      .json({ success: 1, message: "programme fetched.", data: programme });
+    const programme = await Programmes.findById({ _id: programmeid });
+    if (!programme) {
+      return res.status(404).json({
+        success: 0,
+        message: "Programme not found.",
+      });
+    }
+    res.status(200).json({
+      success: 1,
+      message: "Programme fetched.",
+      data: programme,
+    });
   } catch (err) {
     res.status(500).json({
       success: 0,
@@ -107,9 +135,17 @@ const programmeSingle = async (req, res) => {
 
 const programmeUpdate = async (req, res) => {
   const programmeid = req.params.id;
+
   try {
     const { programmefullname, programmeshortname, academicstructure } =
       req.body;
+
+    const existingProgramme = await Programmes.findById(programmeid);
+    if (!existingProgramme) {
+      return res
+        .status(404)
+        .json({ success: 0, message: "Programme not found" });
+    }
 
     const update = {
       programmefullname,
@@ -117,20 +153,34 @@ const programmeUpdate = async (req, res) => {
       academicstructure,
     };
 
-    // Check if a new image file was uploaded
     if (req.file) {
-      update.image = req.file.path;
+      // Delete old image using imagepath
+      if (existingProgramme.imagepath) {
+        const oldFilename = existingProgramme.imagepath.split("/").pop();
+        const relativePath = `uploads/images/${oldFilename}`;
+        deleteFile(relativePath);
+      }
+
       update.imagename = req.file.originalname;
       update.imagepath = `${process.env.SERVER_BASE_URL}/uploads/images/${req.file.filename}`;
     }
 
-    const programme = await Programmes.updateOne({ _id: programmeid }, update);
+    const updatedProgramme = await Programmes.updateOne(
+      { _id: programmeid },
+      update
+    );
+
     res.status(200).json({
       success: 1,
       message: "Updated successfully",
-      data: programme,
+      data: updatedProgramme,
     });
   } catch (err) {
+    // Clean up uploaded image if DB update fails
+    if (req.file && req.file.path) {
+      deleteFile(req.file.path);
+    }
+
     res.status(500).json({
       success: 0,
       message: "Failed to update programme.",

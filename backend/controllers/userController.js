@@ -1,61 +1,53 @@
 const bcrypt = require("bcrypt");
 const Users = require("../models/userModel");
+const { deleteFile } = require("../Utils/fileHelper");
+const {
+  emailRegex,
+  passwordRegex,
+  phoneRegex,
+} = require("../Utils/validators");
 
-const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
-const phoneRegex = /^[0-9]{10}$/; // Matches a 10-digit phone number
-const passwordRegex =
-  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$!%*?&])[A-Za-z\d@#$!%*?&]{8,}$/; // At least 8 characters, 1 letter uppercase, 1 letter lowercase, 1 number, 1 special character
-
-let userSignUp = async (req, res) => {
+// Register
+const userSignUp = async (req, res) => {
   try {
     const { username, email, password, gender, phone } = req.body;
 
-    // Validation for missing fields
     if (!username || !email || !password || !gender || !phone) {
-      return res.status(400).json({
-        success: 0,
-        message: "Please provide all required fields",
-      });
+      return res
+        .status(400)
+        .json({ success: 0, message: "All fields are required." });
     }
 
-    // Email validation
     if (!emailRegex.test(email)) {
-      return res.status(400).json({
-        success: 0,
-        message: "Invalid email format.",
-      });
+      return res
+        .status(400)
+        .json({ success: 0, message: "Invalid email format." });
     }
 
-    // Password validation
     if (!passwordRegex.test(password)) {
       return res.status(400).json({
         success: 0,
         message:
-          "Password must be at least 8 characters long, contain at least one letter, one number, and one special character.",
+          "Password must be atleast 8+ chars, 1 uppercase, 1 lowercase, 1 digit, 1 symbol.",
       });
     }
 
-    // Phone number validation
     if (!phoneRegex.test(phone)) {
-      return res.status(400).json({
-        success: 0,
-        message: "Phone number must be 10 digits long.",
-      });
+      return res
+        .status(400)
+        .json({ success: 0, message: "Phone number must be 10 digits." });
     }
 
-    // Check if the user already exists
-    let user = await Users.findOne({ email });
-    if (user) {
+    const userExists = await Users.findOne({ email });
+    if (userExists) {
       return res
         .status(400)
         .json({ success: 0, message: "User already exists." });
     }
 
-    // Hash the password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Create a new user
     const newUser = new Users({
       username,
       email,
@@ -66,126 +58,164 @@ let userSignUp = async (req, res) => {
 
     await newUser.save();
 
-    // Generate JWT token
     const token = newUser.generateJWT();
+
     res.cookie("token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: process.env.NODE_ENV === "production" ? true : false,
       sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    res
-      .status(200)
-      .json({ success: 1, message: "Registered Successfully", token: token });
+    res.status(200).json({
+      success: 1,
+      message: "Registered Successfully",
+      token,
+      user: {
+        id: newUser._id,
+        username: newUser.username,
+      },
+    });
   } catch (err) {
-    console.error("Error in userSignUp:", err);
+    console.error("SignUp Error:", err.message);
     res
       .status(500)
       .json({ success: 0, message: "Registration failed", error: err.message });
   }
 };
 
-let userLogin = async (req, res) => {
-  const { email, password } = req.body;
+// Update user profile (with profile image upload)
+const userUploadProfile = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const file = req.file;
 
-  // Email validation
-  if (!emailRegex.test(email)) {
-    return res.status(400).json({
-      success: 0,
-      message: "Invalid email format.",
+    if (!file) {
+      return res.status(400).json({ success: 0, message: "No file uploaded." });
+    }
+
+    //  Get the user first to check old image
+    const user = await Users.findById(userId);
+    if (!user) {
+      return res.status(404).json({ success: 0, message: "User not found." });
+    }
+
+    //  If previous profile image exists, delete it
+    if (user.profilepath) {
+      const oldFilename = user.profilepath.split("/").pop(); // get filename only
+      const relativePath = `profiles/images/${oldFilename}`;
+      deleteFile(relativePath); // delete from server
+    }
+
+    //  Update DB with new profile image info
+    user.profilename = file.filename;
+    user.profilepath = `${process.env.SERVER_BASE_URL}/profiles/images/${file.filename}`;
+    await user.save();
+
+    return res.status(200).json({
+      success: 1,
+      message: "Profile image updated successfully",
+      data: {
+        profilepath: user.profilepath,
+        profilename: user.profilename,
+      },
     });
+  } catch (error) {
+    if (req.file && req.file.path) {
+      deleteFile(req.file.path); // delete newly uploaded if error
+    }
+    console.error("Profile upload failed:", error.message);
+    return res.status(500).json({ success: 0, message: "Server error." });
   }
+};
 
-  // Password validation
-  if (!password) {
-    return res.status(400).json({
-      success: 0,
-      message: "Password is required.",
-    });
-  }
+//deleteProfile
+const deleteProfileImage = async (req, res) => {
+  const userId = req.params.id;
 
-  let user = await Users.findOne({ email });
-  if (user) {
-    // Compare password with the hashed password in the database
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (isMatch) {
-      const token = user.generateJWT();
-      res.cookie("token", token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
-        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-      });
+  try {
+    const user = await Users.findById(userId);
+    if (!user)
       return res
-        .status(200)
-        .json({ success: 1, message: "User login success", token: token });
-    } else {
+        .status(404)
+        .json({ success: false, message: "User not found" });
+
+    if (user.profilepath) {
+      const oldFilename = user.profilepath.split("/").pop();
+      const relativePath = `profiles/images/${oldFilename}`;
+      deleteFile(relativePath);
+    }
+
+    user.profilename = null;
+    user.profilepath = null;
+    await user.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Profile image deleted",
+      data: {
+        profilename: null,
+        profilepath: null,
+      },
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+// Login
+const userLogin = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!emailRegex.test(email)) {
+      return res
+        .status(400)
+        .json({ success: 0, message: "Invalid email format." });
+    }
+
+    if (!password) {
+      return res
+        .status(400)
+        .json({ success: 0, message: "Password is required." });
+    }
+
+    const user = await Users.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ success: 0, message: "User not found" });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
       return res
         .status(400)
         .json({ success: 0, message: "Invalid credentials" });
     }
-  } else {
-    return res.status(400).json({ success: 0, message: "User not found" });
-  }
-};
 
-let userList = async (req, res) => {
-  try {
-    let allUsers = await Users.find();
-    res.status(200).json({ success: 1, message: "User List", data: allUsers });
-  } catch (err) {
-    res.status(500).json({
-      success: 0,
-      message: "Failed to fetch users",
-      error: err.message,
+    const token = user.generateJWT();
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production" ? true : false,
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
-  }
-};
 
-let userDelete = async (req, res) => {
-  try {
-    let userid = req.params.id;
-    let user = await Users.deleteOne({ _id: userid });
-    res.status(201).json({ success: 1, message: "Deleted Successfully" });
+    res.status(200).json({
+      success: 1,
+      message: "Login successful",
+      token,
+      user: {
+        id: user._id,
+        username: user.username,
+      },
+    });
   } catch (err) {
+    console.error("Login Error:", err.message);
     res
       .status(500)
-      .json({ success: 0, message: "Failed to delete", error: err.message });
-  }
-};
-
-let userSingle = async (req, res) => {
-  try {
-    let userid = req.params.id;
-    let user = await Users.findOne({ _id: userid });
-    res
-      .status(200)
-      .json({ success: 1, message: "User fetched successfully.", data: user });
-  } catch (err) {
-    res.status(500).json({
-      success: 0,
-      message: "Failed to fetch user",
-      error: err.message,
-    });
-  }
-};
-
-let userUpdate = async (req, res) => {
-  try {
-    let userid = req.params.id;
-    let { username, email, gender, phone } = req.body;
-    let update = { username, email, gender, phone };
-    let user = await Users.updateOne({ _id: userid }, update);
-    res
-      .status(200)
-      .json({ success: 1, message: "Data updated successfully", data: user });
-  } catch (err) {
-    res.status(500).json({
-      ssuccess: 0,
-      message: "Failed yo update data",
-      error: err.message,
-    });
+      .json({ success: 0, message: "Login failed", error: err.message });
   }
 };
 
@@ -196,15 +226,106 @@ const logout = (req, res) => {
     secure: process.env.NODE_ENV === "production",
     sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
   });
-  res.status(200).json({ success: 1, message: "Successfully logged out" });
+  res.status(200).json({ success: 1, message: "Logged out successfully" });
+};
+
+// View users list
+const userList = async (req, res) => {
+  try {
+    const users = await Users.find();
+    res.status(200).json({ success: 1, message: "User List", data: users });
+  } catch (err) {
+    res.status(500).json({
+      success: 0,
+      message: "Failed to fetch users",
+      error: err.message,
+    });
+  }
+};
+
+//fetch single user details
+const userProfile = async (req, res) => {
+  try {
+    const user = await Users.findById(req.userid);
+    res.status(200).json({ success: 1, message: "User fetched", data: user });
+  } catch (err) {
+    res.status(500).json({
+      success: 0,
+      message: "Failed to fetch user",
+      error: err.message,
+    });
+  }
+};
+
+// update userdetails
+const userUpdate = async (req, res) => {
+  const userid = req.params.id;
+  try {
+    const { username, email, gender, phone } = req.body;
+    const existingUser = await Users.findById(userid);
+    if (!existingUser) {
+      return res.status(404).json({ success: 0, message: "User not found" });
+    }
+    const update = {
+      username,
+      email,
+      gender,
+      phone,
+    };
+
+    if (!username || !email || !gender || !phone) {
+      return res
+        .status(400)
+        .json({ success: 0, message: "All fields are required." });
+    }
+
+    if (!emailRegex.test(email)) {
+      return res
+        .status(400)
+        .json({ success: 0, message: "Invalid email format." });
+    }
+    if (!phoneRegex.test(phone)) {
+      return res
+        .status(400)
+        .json({ success: 0, message: "Phone number must be 10 digits." });
+    }
+
+    const updatedUser = await Users.updateOne({ _id: userid }, update);
+
+    res.status(200).json({
+      success: 1,
+      message: "User details updated successfuly",
+      data: updatedUser,
+    });
+  } catch (err) {
+    if (req.file && req.file.path) {
+      deleteFile(req.file.path);
+      res
+        .status(500)
+        .json({ success: 0, message: "Update failed", error: err.message });
+    }
+  }
+};
+
+const userDelete = async (req, res) => {
+  try {
+    await Users.findByIdAndDelete(req.params.id);
+    res.status(200).json({ success: 1, message: "User deleted" });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ success: 0, message: "Deletion failed", error: err.message });
+  }
 };
 
 module.exports = {
   userSignUp,
+  userUploadProfile,
+  deleteProfileImage,
   userLogin,
+  logout,
   userList,
-  userSingle,
+  userProfile,
   userUpdate,
   userDelete,
-  logout,
 };
