@@ -12,7 +12,7 @@ const userSignUp = async (req, res) => {
   try {
     const { username, email, password, gender, phone } = req.body;
 
-    if (!username || !email || !password || !gender || !phone) {
+    if (!username || !email || !password || !gender) {
       return res
         .status(400)
         .json({ success: 0, message: "All fields are required." });
@@ -32,7 +32,7 @@ const userSignUp = async (req, res) => {
       });
     }
 
-    if (!phoneRegex.test(phone)) {
+    if (phone && !phoneRegex.test(phone)) {
       return res
         .status(400)
         .json({ success: 0, message: "Phone number must be 10 digits." });
