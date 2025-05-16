@@ -1,5 +1,5 @@
 import React, { useState, useContext, useRef } from "react";
-import { FaTrash } from "react-icons/fa";
+import { FaTrash, FaTrashAlt } from "react-icons/fa";
 import { GrEdit } from "react-icons/gr";
 import { FaGraduationCap, FaBookOpen } from "react-icons/fa";
 import {
@@ -135,7 +135,7 @@ const SemesterManager = () => {
   return (
     <div
       ref={scrollRef}
-      className="flex flex-col items-center  w-full mt-4 overflow-y-scroll scroll-container bg-transparent shadow-sm mx-auto h-[calc(100vh-200px)] md:h-[calc(100vh-60px)]"
+      className="flex flex-col items-center  w-full mt-4 overflow-y-scroll scroll-container bg-transparent shadow-sm mx-auto h-[calc(100vh-200px)] md:h-[calc(100vh-60px)] pb-20 md:pb-0"
     >
       <div className="w-full flex flex-col gap-3  justify-center items-center h-fit pt-5 rounded-lg">
         <h1 className="text-2xl font-bold text-center">
@@ -145,7 +145,7 @@ const SemesterManager = () => {
           onSubmit={handleSubmit}
           className="flex flex-col gap-4 md:w-[80%] lg:w-[50%] w-full "
         >
-          <div className="flex items-center border border-gray-400 rounded-lg p-2">
+          <div className="flex items-center border-2 border-slate-100 shadow-lg bg-transparent rounded-lg p-2 mt-1 outline-slate-200 ">
             <FaBookOpen className="text-orange-600 mr-2" />
             <input
               type="text"
@@ -153,19 +153,19 @@ const SemesterManager = () => {
               value={semesters.semestername}
               onChange={handleChange}
               placeholder="Enter multiple semesters separated by commas"
-              className="w-full outline-none bg-transparent"
+              className="w-full  outline-none bg-transparent"
               autoComplete="on"
             />
           </div>
 
           {/* Programme Selection */}
-          <div className="flex items-center border border-gray-400 rounded-lg p-2">
+          <div className="flex items-center border-2 border-slate-100 shadow-lg bg-transparent w-full rounded-lg p-2 mt-1 outline-slate-200">
             <FaGraduationCap className="text-blue-800 mr-2" />
             <select
               name="programmename"
               value={semesters.programmename}
               onChange={handleChange}
-              className="w-full outline-none bg-transparent"
+              className="w-full  outline-none bg-transparent"
             >
               <option value="">Select programme</option>
               {programmeLists.map((programme, index) => (
@@ -179,7 +179,7 @@ const SemesterManager = () => {
           {/* Submit Button */}
           <button
             type="submit"
-            className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 min-w-fit w-[7vw] rounded-lg transition-all duration-200"
+            className="bg-green-500 hover-supported:hover:bg-green-600 text-white font-bold py-2 px-4 min-w-fit w-[7vw] rounded-lg transition-all duration-200"
           >
             {semesters._id ? "update" : "Add"}
           </button>
@@ -193,7 +193,7 @@ const SemesterManager = () => {
           </h1>
 
           {/* Group semesters by programme */}
-          <div className="grid grid-cols-[auto] md:grid-cols-2 gap-5">
+          <div className="grid grid-cols-[auto] md:grid-cols-2 gap-5 pb-5 md:pb-0">
             {programmeLists.map((programme, index) => {
               const programmeSemesters = semesterLists.filter(
                 (semester) =>
@@ -230,7 +230,7 @@ const SemesterManager = () => {
                         .map((semester, semesterIndex) => (
                           <tr
                             key={semesterIndex}
-                            className="border-b border-gray-400  rounded-b-lg hover:bg-gray-300 text-center"
+                            className="border-b border-gray-400  rounded-b-lg hover-supported:hover:bg-gray-300 text-center"
                           >
                             <td className="p-2   w-[5%] border-r border-gray-400">
                               {semesterIndex + 1}.
@@ -249,16 +249,16 @@ const SemesterManager = () => {
                                       behavior: "smooth",
                                     });
                                   }}
-                                  className="text-blue-500 text-xl hover:text-blue-700"
+                                  className="text-blue-500 text-xl hover-supported:hover:text-blue-700"
                                 >
                                   <GrEdit />
                                 </button>
                                 <button
                                   title="Delete"
                                   onClick={() => handleDelete(semester._id)}
-                                  className="text-red-500 hover:text-red-700"
+                                  className="text-red-500 hover-supported:hover:text-red-700"
                                 >
-                                  <FaTrash size={18} />
+                                  <FaTrashAlt size={18} />
                                 </button>
                               </div>
                             </td>

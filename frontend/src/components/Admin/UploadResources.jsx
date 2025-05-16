@@ -6,15 +6,15 @@ import { toast } from "react-toastify";
 import { fetchAllSemesters } from "../../../Services/semesterService";
 import { fetchAllProgrammes } from "../../../Services/programmeService";
 import { addUpload, updateUpload } from "../../../Services/uploadService";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const p_years = ["Year 1", "Year 2", "Year 3", "Year 4"];
 
-const currentYear = new Date().getFullYear();
-const years = [];
-for (let i = 2020; i <= currentYear; i++) {
-  years.push(i);
-}
+// const currentYear = new Date().getFullYear();
+// const years = [];
+// for (let i = 2020; i <= currentYear; i++) {
+//   years.push(i);
+// }
 
 const UploadResources = () => {
   const [programmes, setProgrammes] = useState([]);
@@ -33,6 +33,8 @@ const UploadResources = () => {
     link: existingUpload.link || "",
     _id: existingUpload._id || "",
   });
+
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -99,6 +101,9 @@ const UploadResources = () => {
       if (upload._id) {
         const response = await updateUpload(upload._id, upload);
         if (response.success) {
+          navigate("/study/admin/dashboard/manageresources", {
+            state: { upload },
+          });
           toast.success(response.message);
           setUpload({
             resources: "",
@@ -145,7 +150,7 @@ const UploadResources = () => {
   };
 
   return (
-    <div className="w-full mx-auto h-[calc(100vh-240px)] md:h-[calc(100vh-122px)]   flex flex-col  items-center gap-3 bg-transparent overflow-y-scroll scroll-container pb-5 rounded-lg">
+    <div className="w-full mx-auto h-[calc(100vh-210px)] md:h-[calc(100vh-60px)]   flex flex-col  items-center gap-3 bg-transparent overflow-y-scroll scroll-container pb-5 rounded-lg">
       <h1 className="text-2xl font-bold pt-5 ">
         {upload._id ? "Edit Resources" : "Upload Resources"}
       </h1>
@@ -153,14 +158,14 @@ const UploadResources = () => {
         onSubmit={handleSubmit}
         className="flex flex-col w-full md:w-[70%] lg:w-[50%] gap-4"
       >
-        <div className="flex gap-2 justify-center items-center border border-gray-400 rounded-lg p-2">
+        <div className="flex gap-2 justify-center items-center border-2 border-slate-100 shadow-lg bg-transparent rounded-lg p-2 mt-1 outline-slate-200 ">
           <GrResources className="text-purple-500" />
 
           <select
             name="resources"
             value={upload.resources}
             onChange={handleChange}
-            className="w-full outline-none bg-transparent"
+            className="w-full  outline-none bg-transparent"
             required
           >
             <option value="">Select resources</option>
@@ -170,13 +175,13 @@ const UploadResources = () => {
           </select>
         </div>
 
-        <div className="flex gap-2 justify-center items-center border border-gray-400 rounded-lg p-2">
+        <div className="flex gap-2 justify-center items-center border-2 border-slate-100 shadow-lg bg-transparent rounded-lg p-2 mt-1 outline-slate-200 ">
           <FaGraduationCap className="text-blue-500" />
           <select
             name="programmename"
             value={upload.programmename}
             onChange={handleChange}
-            className="w-full outline-none bg-transparent"
+            className="w-full  outline-slate-200 bg-transparent"
             required
           >
             <option value="">Select programme</option>
@@ -189,13 +194,13 @@ const UploadResources = () => {
         </div>
 
         {/* {upload.resources === "syllabus" && ( */}
-        <div className="flex gap-2 justify-center items-center border border-gray-400 rounded-lg p-2">
+        <div className="flex gap-2 justify-center items-center border-2 border-slate-100 shadow-lg bg-transparent rounded-lg p-2 mt-1 outline-slate-200 ">
           <MdCategory className="text-green-500" />
           <select
             name="academicstructure"
             value={upload.academicstructure}
             onChange={handleChange}
-            className="w-full outline-none bg-transparent capitalize"
+            className="w-full  outline-none bg-transparent capitalize"
             required
           >
             <option value="">Select Academic Structure</option>
@@ -209,14 +214,14 @@ const UploadResources = () => {
         {/* )} */}
 
         {upload.academicstructure === "yearly" && (
-          <div className="flex gap-2 justify-center items-center border border-gray-400 rounded-lg p-2">
+          <div className="flex gap-2 justify-center items-center border-2 border-slate-100 shadow-lg bg-transparent rounded-lg p-2 mt-1 outline-slate-200 ">
             <MdDateRange className="text-red-500" />
 
             <select
               name="year"
               value={upload.year}
               onChange={handleChange}
-              className="w-full outline-none bg-transparent"
+              className="w-full  outline-none bg-transparent"
               required
             >
               <option value="">Select Year</option>
@@ -229,13 +234,13 @@ const UploadResources = () => {
           </div>
         )}
         {upload.academicstructure === "semester" && (
-          <div className="flex gap-2 justify-center items-center border border-gray-400 rounded-lg p-2 ">
+          <div className="flex gap-2 justify-center items-center border-2 border-slate-100 shadow-lg bg-transparent rounded-lg p-2 mt-1 outline-slate-200 ">
             <FaCalendarAlt className="text-gray-500" />
             <select
               name="semestername"
               value={upload.semestername}
               onChange={handleChange}
-              className="w-full outline-none bg-transparent"
+              className="w-full  outline-slate-200 bg-transparent"
               required
             >
               <option value="">Select Semester</option>
@@ -256,14 +261,14 @@ const UploadResources = () => {
             value={upload.link}
             onChange={handleChange}
             placeholder="Place google drive link here"
-            className="w-full outline-none bg-transparent"
+            className="w-full  outline-slate-200 bg-transparent"
             required
           />
         </div>
 
         <button
           type="submit"
-          className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 w-fit  text-center rounded-lg transition-all duration-200"
+          className="bg-green-500 hover-supported:hover:bg-green-600 text-white font-bold py-2 px-4 w-fit  text-center rounded-lg transition-all duration-200"
         >
           {upload._id ? "Update Resources" : " Upload Resources "}
         </button>

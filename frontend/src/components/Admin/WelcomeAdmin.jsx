@@ -11,7 +11,7 @@ const WelcomeAdmin = () => {
   console.log(user);
 
   return (
-    <div className="flex flex-col items-center  scroll-container  w-full text-black py-8 pb-20   overflow-y-scroll  bg-transparent mx-auto h-[calc(100vh-220px)] md:h-[calc(100vh-120px)]">
+    <div className="flex flex-col items-center  scroll-container  w-full text-black py-8 pb-20   overflow-y-scroll  bg-transparent mx-auto h-[calc(100vh-210px)] md:h-[calc(100vh-60px)]">
       <div className="flex flex-col justify-center items-center gap-2 text-justify md:text-center mb-8">
         <div className="text-[5vw] md:text-3xl text-center font-bold mb-4">
           <h1>

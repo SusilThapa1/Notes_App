@@ -20,12 +20,12 @@ const Sidebar = () => {
   };
 
   return (
-    <div className=" gap-5 md:flex md:flex-col justify-center md:justify-start grid grid-cols-2 w-full text-center md:gap-5 border-r-gray-400 border-b-gray-400 md:border-2 md:h-[calc(100vh - 60px)] md:mt-0 pt-10 md:pb-20 md:px-2">
+    <div className=" gap-5 md:flex md:flex-col justify-center md:justify-start grid grid-cols-2 w-full text-center md:gap-5 border-r-gray-400 border-b-gray-400 md:border-2 pt-10  md:px-2">
       {menus.map((menu) => (
         <Link
           to={menu.link}
           key={menu.name}
-          className={`flex gap-2 items-center justify-center bg-transparent   shadow-lg border-[2px] border-gray-300 p-2 rounded-md hover:text-green-500 ${
+          className={`flex gap-2 items-center justify-center bg-transparent hover-supported:hover:animate-pulse  shadow-lg border-[2px]  border-slate-100 p-2 rounded-lg hover-supported:hover:text-green-500 ${
             activeLink === menu.link
               ? "bg-blue-200 animate-bounce  text-green-600"
               : ""

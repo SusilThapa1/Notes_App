@@ -1,6 +1,5 @@
 import { useState, useContext, useRef } from "react";
 import Swal from "sweetalert2";
-import { FiEdit, FiTrash2 } from "react-icons/fi";
 import upload_Image from "/upload_area.svg";
 
 import { toast } from "react-toastify";
@@ -10,6 +9,7 @@ import {
   addProgramme,
 } from "../../../Services/programmeService";
 import { ProgrammesContext } from "../Context/ProgrammeContext";
+import { MdOutlineDeleteForever } from "react-icons/md";
 
 const ProgrammeManager = () => {
   const scrollRef = useRef(null);
@@ -149,7 +149,7 @@ const ProgrammeManager = () => {
   return (
     <div
       ref={scrollRef}
-      className="flex flex-col items-center  w-full max-w-6xl  mt-4   overflow-y-scroll scroll-container bg-transparent shadow-sm mx-auto h-[calc(100vh-200px)] md:h-[calc(100vh-75px)]"
+      className="flex flex-col items-center  w-full max-w-6xl mt-4  pb-10 md:pb-0  overflow-y-scroll scroll-container bg-transparent shadow-sm mx-auto h-[calc(100vh-200px)] md:h-[calc(100vh-75px)]"
     >
       <h1 className="text-2xl font-semibold mb-4 text-center">
         {programmeData._id ? "Edit Programme" : "Add New Programme"}
@@ -172,7 +172,7 @@ const ProgrammeManager = () => {
                   : programmeData.image || upload_Image
               }
               alt="upload"
-              className="cursor-pointer w-32 h-32 object-cover rounded-lg "
+              className="cursor-pointer w-32 h-32 object-cover bg-transparent shadow-lg rounded-lg "
               loading="lazy"
             />
             <span>Cover image</span>
@@ -197,8 +197,9 @@ const ProgrammeManager = () => {
             id="programmefullname"
             name="programmefullname"
             value={programmeData.programmefullname}
+            placeholder="Programme fullname..."
             onChange={handleChange}
-            className="border border-gray-400 bg-transparent rounded p-2 mt-1"
+            className="border-2 border-slate-100 shadow-lg bg-transparent rounded-lg p-2 mt-1 outline-slate-200 "
             required
           />
         </div>
@@ -215,8 +216,9 @@ const ProgrammeManager = () => {
             id="programmeshortname"
             name="programmeshortname"
             value={programmeData.programmeshortname}
+            placeholder="Programme shortname..."
             onChange={handleChange}
-            className="border border-gray-400 bg-transparent rounded p-2 mt-1"
+            className="border-2 border-slate-100 shadow-lg bg-transparent rounded-lg p-2 mt-1  outline-slate-200"
             required
           />
         </div>
@@ -230,7 +232,7 @@ const ProgrammeManager = () => {
             id="structure"
             onChange={handleChange}
             value={programmeData.academicstructure}
-            className="border border-gray-400 bg-transparent rounded p-2 mt-1"
+            className="border-2 border-slate-100 shadow-lg bg-transparent rounded-lg p-2 mt-1  outline-slate-200"
             required
           >
             <option value="">Select</option>
@@ -242,7 +244,7 @@ const ProgrammeManager = () => {
         <div className="text-center">
           <button
             type="submit"
-            className="bg-green-500 text-white font-semibold py-2 px-4 rounded-lg w-full hover:bg-green-600 transition-colors"
+            className="bg-green-500 text-white font-semibold py-2 px-4 rounded-lg w-[50%] hover-supported:hover:bg-green-600 transition-colors"
           >
             {programmeData._id ? "Update Programme" : "Add Programme"}
           </button>
@@ -289,7 +291,7 @@ const ProgrammeManager = () => {
                 programmeLists.map((programme) => (
                   <tr
                     key={programme._id}
-                    className="border-b border-gray-500 bg-gray-200   hover:bg-gray-300 text-center transition-all duration-500"
+                    className="border-b border-gray-500 bg-gray-200   hover-supported:hover:bg-gray-300 text-center transition-all duration-500"
                   >
                     <td className="p-2 flex justify-center items-center  border-r border-gray-400">
                       <img
@@ -330,9 +332,9 @@ const ProgrammeManager = () => {
                         <button
                           title="Delete"
                           onClick={() => handleDelete(programme._id)}
-                          className="text-red-500 hover:text-red-700"
+                          className="text-red-500 hover-supported:hover:text-red-700"
                         >
-                          <FiTrash2 size={18} />
+                          <MdOutlineDeleteForever size={20} />
                         </button>
                       </div>
                     </td>
