@@ -2,33 +2,79 @@ import { FaGithub, FaFacebook, FaWhatsapp } from "react-icons/fa";
 
 const Footer = () => {
   return (
-    <footer className="bg-[#5CAE59] text-white  py-3 overflow-x-hidden w-full border-t-2 border-slate-100 shadow-xl">
-      <div className="flex flex-col justify-center items-center gap-5 max-w-7xl mx-auto text-center">
+    <footer className="relative bottom-0 bg-[#6aaa4c] text-white  py-3 overflow-x-hidden w-full border-t-2 border-slate-100 shadow-xl md:text-[1.5vw] lg:text-[1.1vw]">
+      <div className="flex flex-col justify-center items-center gap-5 max-w-7xl w-full mx-auto text-center text-[12px] sm:text-sm md:text-[1.5vw] lg:text-[1vw]">
         <div className=" animate-marquee text-nowrap pb-2">
           This website is currently under development ! Stay focused and keep
           learning 😊
         </div>
-        <div className="flex  gap-5 md:gap-10 items-center">
-          <a
-            href="/study/privacy-policy"
-            className="hover:underline hover:text-blue-600"
-          >
-            Privacy Policy
-          </a>
-          <a
-            href="/study/terms-and-conditions"
-            className="hover:underline hover:text-blue-600"
-          >
-            Terms & Conditions
-          </a>
-          <a
-            href="/study/contact-us"
-            className="hover:underline hover:text-blue-600"
-          >
-            Contact
-          </a>
+        <div className="flex items-start  justify-center   gap-10 ">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5  gap-1  place-items-start">
+            <a
+              href="/study/privacy-policy"
+              className="hover:underline hover:text-blue-600 transition-all duration-300"
+            >
+              Privacy Policy
+            </a>
+            <a
+              href="/study/terms-and-conditions"
+              className="hover:underline hover:text-blue-600 transition-all duration-300"
+            >
+              Terms & Conditions
+            </a>
+            <a
+              href="/study/code-of-conduct"
+              className="hover:underline hover:text-blue-600 transition-all duration-300"
+            >
+              Code of Conduct
+            </a>
+            <a
+              href="/study/contact-us"
+              className="hover:underline hover:text-blue-600 transition-all duration-300"
+            >
+              Contact Us
+            </a>
+            <a
+              href="/study/feedback"
+              className="hover:underline hover:text-blue-600 transition-all duration-300"
+            >
+              Submit Feedback
+            </a>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-2 md:gap-1 place-items-start">
+            <a
+              href="/"
+              className="hover:underline hover:text-blue-600 transition-all duration-300"
+            >
+              Home
+            </a>
+            <a
+              href="/study/syllabus"
+              className="hover:underline hover:text-blue-600 transition-all duration-300"
+            >
+              Syllabus
+            </a>
+            <a
+              href="/study/notes"
+              className="hover:underline hover:text-blue-600 transition-all duration-300"
+            >
+              Notes
+            </a>
+            <a
+              href="/study/questions"
+              className="hover:underline hover:text-blue-600 transition-all duration-300"
+            >
+              Questions
+            </a>
+            <a
+              onClick={() => window.scrollTo(0, 0)}
+              className="hover:underline hover:text-blue-600 cursor-pointer transition-all duration-300"
+            >
+              Back to Top
+            </a>
+          </div>
         </div>
-        <div className="flex justify-center items-center gap-10 text-2xl">
+        <div className="flex justify-center items-center gap-10 text-2xl  ">
           <a
             href="https://github.com/SusilThapa1"
             target="_blank"
@@ -36,7 +82,7 @@ const Footer = () => {
           >
             <FaGithub
               size={30}
-              className="hover:text-gray-700 transition-colors duration-500"
+              className="hover:text-gray-700 transition-all duration-300"
               title="github"
             />
           </a>
@@ -47,7 +93,7 @@ const Footer = () => {
           >
             <FaFacebook
               size={30}
-              className="hover:text-blue-700 transition-colors duration-500"
+              className="hover:text-blue-700 transition-all duration-300"
               title="facebook"
             />
           </a>
@@ -58,7 +104,7 @@ const Footer = () => {
           >
             <FaWhatsapp
               size={30}
-              className="hover:text-green-500 transition-colors duration-500"
+              className="hover:text-green-600 transition-all duration-300"
               title="whatsapp"
             />
           </a>
