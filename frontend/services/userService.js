@@ -14,7 +14,7 @@ const fetchAllUsers = async () => {
 };
 
 // Fetch a single user (requires token)
-const fetchSinglelUser = async () => {
+const fetchSingleUser = async () => {
   try {
     const res = await axios.get(`${API_URL}/userprofile`, {
       withCredentials: true,
@@ -56,12 +56,16 @@ const registerUser = async (userData) => {
 // Upload profile image
 const uploadProfile = async (userId, formData) => {
   try {
-    const response = await axios.put(`${API_URL}/profile/${userId}`, formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-      withCredentials: true,
-    });
+    const response = await axios.patch(
+      `${API_URL}/profile/${userId}`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+        withCredentials: true,
+      }
+    );
     return response.data;
   } catch (error) {
     throw error;
@@ -83,10 +87,42 @@ const userLogin = async (data) => {
 // Update user info (e.g., username, phone, etc.)
 const updateUser = async (userId, userData) => {
   try {
-    const response = await axios.put(`${API_URL}/update/${userId}`, userData, {
+    const response = await axios.patch(
+      `${API_URL}/update/${userId}`,
+      userData,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      }
+    );
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+//Change password
+const changePass = async (userData) => {
+  try {
+    const response = await axios.patch(`${API_URL}/change-password`, userData, {
       headers: {
         "Content-Type": "application/json",
       },
+      withCredentials: true,
+    });
+    console.log(response.data);
+    return response.data;
+  } catch (err) {
+    throw err;
+  }
+};
+
+// Delete a user (admin only)
+const deleteUser = async (userId) => {
+  try {
+    const response = await axios.delete(`${API_URL}/delete/${userId}`, {
       withCredentials: true,
     });
     return response.data;
@@ -95,10 +131,18 @@ const updateUser = async (userId, userData) => {
   }
 };
 
-// Delete a user (admin only)
-const deleteUser = async (userId) => {
+const deleteUserAccount = async (password) => {
   try {
-    const response = await axios.delete(`${API_URL}/delete/${userId}`);
+    const response = await axios.post(
+      `${API_URL}/delete`,
+      { password },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      }
+    );
     return response.data;
   } catch (error) {
     throw error;
@@ -117,15 +161,51 @@ const logoutUser = async () => {
   }
 };
 
+//send email verification-otp
+const sendVerifyOtp = async (email) => {
+  try {
+    const response = await axios.post(
+      `${API_URL}/send-emailverify-otp`,
+      { email },
+      {
+        withCredentials: true,
+      }
+    );
+    return response.data;
+  } catch (err) {
+    throw err;
+  }
+};
+
+//verify email
+const verifyEmail = async (otp) => {
+  try {
+    const response = await axios.post(
+      `${API_URL}/verify-email`,
+      { otp },
+      {
+        withCredentials: true,
+      }
+    );
+    return response.data;
+  } catch (err) {
+    throw err;
+  }
+};
+
 //  Export all functions
 export {
   registerUser,
   userLogin,
   uploadProfile,
   deleteProfile,
-  fetchSinglelUser,
+  fetchSingleUser,
   fetchAllUsers,
   updateUser,
+  changePass,
   deleteUser,
+  deleteUserAccount,
   logoutUser,
+  sendVerifyOtp,
+  verifyEmail,
 };

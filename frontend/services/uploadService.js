@@ -14,7 +14,9 @@ const fetchAllUploads = async () => {
 
 const addUpload = async (uploadData) => {
   try {
-    const response = await axios.post(`${API_URL}/addData`, uploadData);
+    const response = await axios.post(`${API_URL}/addData`, uploadData, {
+      withCredentials: true,
+    });
     return response.data;
   } catch (error) {
     throw error;
@@ -25,7 +27,10 @@ const updateUpload = async (uploadId, uploadData) => {
   try {
     const response = await axios.put(
       `${API_URL}/updateData/${uploadId}`,
-      uploadData
+      uploadData,
+      {
+        withCredentials: true,
+      }
     );
     return response.data;
   } catch (error) {
@@ -35,7 +40,9 @@ const updateUpload = async (uploadId, uploadData) => {
 
 const deleteUpload = async (uploadId) => {
   try {
-    const response = await axios.delete(`${API_URL}/deleteData/${uploadId}`);
+    const response = await axios.delete(`${API_URL}/deleteData/${uploadId}`, {
+      withCredentials: true,
+    });
     return response.data;
   } catch (error) {
     throw error;

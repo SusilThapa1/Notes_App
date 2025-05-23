@@ -14,7 +14,9 @@ const fetchAllSemesters = async () => {
 
 const addSemester = async (semesterData) => {
   try {
-    const response = await axios.post(`${API_URL}/add`, semesterData);
+    const response = await axios.post(`${API_URL}/add`, semesterData, {
+      withCredentials: true,
+    });
     return response.data;
   } catch (error) {
     throw error;
@@ -25,7 +27,8 @@ const updateSemester = async (semesterId, semesterData) => {
   try {
     const response = await axios.put(
       `${API_URL}/update/${semesterId}`,
-      semesterData
+      semesterData,
+      { withCredentials: true }
     );
     return response.data;
   } catch (error) {
@@ -35,7 +38,9 @@ const updateSemester = async (semesterId, semesterData) => {
 
 const deleteSemester = async (semesterId) => {
   try {
-    const response = await axios.delete(`${API_URL}/delete/${semesterId}`);
+    const response = await axios.delete(`${API_URL}/delete/${semesterId}`, {
+      withCredentials: true,
+    });
     return response.data;
   } catch (error) {
     throw error;

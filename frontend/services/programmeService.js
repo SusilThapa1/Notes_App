@@ -19,6 +19,7 @@ const addProgramme = async (programmeData) => {
       programmeData,
       {
         headers: { "Content-Type": "multipart/form-data" },
+        withCredentials: true,
       }
     );
     return response.data;
@@ -34,6 +35,7 @@ const updateProgramme = async (programmeId, programmeData) => {
       programmeData,
       {
         headers: { "Content-Type": "multipart/form-data" },
+        withCredentials: true,
       }
     );
     return response.data;
@@ -45,7 +47,10 @@ const updateProgramme = async (programmeId, programmeData) => {
 const deleteProgramme = async (programmeId) => {
   try {
     const response = await axios.delete(
-      `${API_URL}/deleteProgramme/${programmeId}`
+      `${API_URL}/deleteProgramme/${programmeId}`,
+      {
+        withCredentials: true,
+      }
     );
     return response.data;
   } catch (error) {
