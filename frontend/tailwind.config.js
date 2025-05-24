@@ -5,7 +5,7 @@ export default {
     extend: {
       height: {
         "screen-minus-64": "calc(100vh - 64px)",
-        "screen-minus-50": "calc(100vh - 48px)",
+        "screen-minus-50": "calc(100vh - 50px)",
       },
       backgroundImage: {
         "custom-gradient":
@@ -14,7 +14,18 @@ export default {
       screens: {
         "3xl": "1600px", // Custom breakpoint for greater than 2xl
       },
+
+      fontFamily: {
+        poppins: ["Poppins", "sans-serif"],
+      },
     },
   },
-  plugins: [],
+  plugins: [
+    function ({ addVariant }) {
+      addVariant(
+        "hover-supported",
+        "@media (hover: hover) and (pointer: fine)"
+      );
+    },
+  ],
 };

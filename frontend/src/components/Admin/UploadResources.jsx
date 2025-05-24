@@ -86,6 +86,7 @@ const UploadResources = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    toast.dismiss();
 
     if (
       !upload.resources ||
@@ -151,14 +152,14 @@ const UploadResources = () => {
 
   return (
     <div className="w-full mx-auto h-[calc(100vh-210px)] md:h-[calc(100vh-60px)]   flex flex-col  items-center gap-3 bg-transparent overflow-y-scroll scroll-container pb-5 rounded-lg">
-      <h1 className="text-2xl font-bold pt-5 ">
+      <h1 className="text-2xl font-bold pt-8    text-[#5CAE59]">
         {upload._id ? "Edit Resources" : "Upload Resources"}
       </h1>
       <form
         onSubmit={handleSubmit}
-        className="flex flex-col w-full md:w-[70%] lg:w-[50%] gap-4"
+        className="flex flex-col w-full md:w-[70%] lg:w-[50%] gap-4 text-gray-800"
       >
-        <div className="flex gap-2 justify-center items-center border-2 border-slate-100 shadow-lg bg-transparent rounded-lg p-2 mt-1 outline-slate-200 ">
+        <div className="flex gap-2 justify-center items-center px-4 py-3 rounded-2xl shadow-lg    bg-transparent border  border-slate-100  placeholder:font-medium">
           <GrResources className="text-purple-500" />
 
           <select
@@ -175,13 +176,13 @@ const UploadResources = () => {
           </select>
         </div>
 
-        <div className="flex gap-2 justify-center items-center border-2 border-slate-100 shadow-lg bg-transparent rounded-lg p-2 mt-1 outline-slate-200 ">
+        <div className="flex gap-2 justify-center items-center px-4 py-3 rounded-2xl shadow-lg    bg-transparent border  border-slate-100  placeholder:font-medium">
           <FaGraduationCap className="text-blue-500" />
           <select
             name="programmename"
             value={upload.programmename}
             onChange={handleChange}
-            className="w-full  outline-slate-200 bg-transparent"
+            className="w-full  outline-none bg-transparent"
             required
           >
             <option value="">Select programme</option>
@@ -194,7 +195,7 @@ const UploadResources = () => {
         </div>
 
         {/* {upload.resources === "syllabus" && ( */}
-        <div className="flex gap-2 justify-center items-center border-2 border-slate-100 shadow-lg bg-transparent rounded-lg p-2 mt-1 outline-slate-200 ">
+        <div className="flex gap-2 justify-center items-center px-4 py-3 rounded-2xl shadow-lg    bg-transparent border  border-slate-100  placeholder:font-medium">
           <MdCategory className="text-green-500" />
           <select
             name="academicstructure"
@@ -214,7 +215,7 @@ const UploadResources = () => {
         {/* )} */}
 
         {upload.academicstructure === "yearly" && (
-          <div className="flex gap-2 justify-center items-center border-2 border-slate-100 shadow-lg bg-transparent rounded-lg p-2 mt-1 outline-slate-200 ">
+          <div className="flex gap-2 justify-center items-center px-4 py-3 rounded-2xl shadow-lg    bg-transparent border  border-slate-100  placeholder:font-medium">
             <MdDateRange className="text-red-500" />
 
             <select
@@ -253,7 +254,7 @@ const UploadResources = () => {
           </div>
         )}
 
-        <div className="flex gap-2 justify-center items-center border border-gray-400 rounded-lg p-2">
+        <div className="flex gap-2 justify-center items-center px-4 py-3 rounded-2xl shadow-lg    bg-transparent border  border-slate-100  placeholder:font-medium ">
           <FaLink />
           <input
             type="text"
@@ -261,16 +262,16 @@ const UploadResources = () => {
             value={upload.link}
             onChange={handleChange}
             placeholder="Place google drive link here"
-            className="w-full  outline-slate-200 bg-transparent"
+            className="w-full  outline-none bg-transparent"
             required
           />
         </div>
 
         <button
           type="submit"
-          className="bg-green-500 hover-supported:hover:bg-green-600 text-white font-bold py-2 px-4 w-fit  text-center rounded-lg transition-all duration-200"
+          className="px-4 py-3 rounded-2xl bg-transparent border  border-slate-100  placeholder:font-medium hover-supported: hover:bg-[#5CAE59] hover-supported:hover:text-gray-200 active:bg-green-600 shadow-lg transition-all duration-500 self-center"
         >
-          {upload._id ? "Update Resources" : " Upload Resources "}
+          {upload._id ? "Update  " : " Upload  "}
         </button>
       </form>
     </div>

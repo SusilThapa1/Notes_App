@@ -54,13 +54,16 @@ const Login = () => {
   return (
     <div className="mx-auto h-screen my-auto w-full flex justify-center items-center ">
       <div className="flex flex-col justify-center items-center gap-5 px-5 py-8 w-[85%]  md:w-[600px] rounded-xl bg-transparent  shadow-lg border-2  border-slate-100">
-        <h1 className="text-[12px] sm:text-sm md:text-[1.5vw] lg:text-[1vw] text-[#5CAE59] text-center font-bold">
-          Sign in to Continue - Study
+        <h1 className="  text-[#5CAE59] text-center font-bold">
+          Welcome Back !
+        </h1>
+        <h1 className="  text-[#5CAE59] text-center font-bold">
+          Sign in to Continue - EasyStudyZone
         </h1>
         <form
           method="POST"
           onSubmit={handleSubmit}
-          className="flex flex-col gap-7 w-full text-[12px] sm:text-sm md:text-[1.5vw] lg:text-[1vw]"
+          className="flex flex-col gap-7 w-full  "
         >
           <div
             className={`flex items-center bg-transparent border  border-slate-100 outline-none  px-4 py-3 rounded-full    shadow-lg transition-all duration-500 `}
@@ -106,7 +109,7 @@ const Login = () => {
             Sign in
           </button>
         </form>
-        <div className="flex flex-col justify-center items-center gap-2 text-[12px] sm:text-sm md:text-[1.5vw] lg:text-[1vw]">
+        <div className="flex flex-col justify-center items-center gap-2  ">
           <Link
             to="/study/forgot-password"
             className="text-blue-500 hover-supported:hover:underline "

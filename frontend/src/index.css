@@ -6,6 +6,8 @@
   box-sizing: border-box;
 }
 
+
+
 .Toastify__toast-container--top-center {
   left: 50% !important;
   transform: translateX(-50%) !important;
@@ -24,10 +26,12 @@
   }
 }
 
-/* Add this custom CSS to check the cursor image */
-.cursor-custom {
-  cursor: url('/Nepal-Flag-icon.png'), pointer;
+@layer base {
+  input:focus::placeholder {
+    color: transparent;
+  }
 }
+
 
 
 /* Hide number input arrows in Chrome, Safari, Edge, and Opera */
@@ -42,17 +46,43 @@ input[type="number"] {
   -moz-appearance: textfield;
 }
 
+
+.toast-auto-width {
+  min-width: auto;
+
+
+}
+
+
+
+
 @keyframes marquee {
   0% {
-    transform: translateX(700px);
+    transform: translateX(200%);
   }
 
   100% {
-    transform: translateX(-800px);
+    transform: translateX(-200%);
   }
 }
 
 .animate-marquee {
   display: inline-block;
-  animation: marquee 10s linear infinite;
+  animation: marquee 12s linear infinite;
+}
+
+@keyframes marqueeLong {
+  0% {
+    transform: translateX(110%);
+  }
+
+  100% {
+    transform: translateX(-150%);
+  }
+}
+
+.animate-marqueeLong {
+  display: inline-block;
+  white-space: nowrap;
+  animation: marqueeLong 16s linear infinite;
 }

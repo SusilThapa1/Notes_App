@@ -8,7 +8,7 @@ const TermsConditions = () => {
           conditions.
         </p>
       </div>
-      <div className="text-[12px] sm:text-sm md:text-[1.5vw] lg:text-[1vw]">
+      <div>
         <h2 className=" font-semibold mt-6 mb-2">1. Use of Content</h2>
         <p>
           You may view and download notes for educational purposes only. Do not

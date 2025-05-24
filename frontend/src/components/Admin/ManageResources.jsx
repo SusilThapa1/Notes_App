@@ -4,12 +4,13 @@ import { deleteUpload } from "../../../Services/uploadService";
 import { FaFilter } from "react-icons/fa";
 import { ProgrammesContext } from "../Context/ProgrammeContext";
 import Table from "../Table";
+import Loader from "../Loader";
 
 const ManageResources = () => {
   const [programSelected, setProgramSelected] = useState("");
   const [resourceSelected, setResourceSelected] = useState("");
 
-  const { uploads, programmeLists } = useContext(ProgrammesContext);
+  const { uploads, programmeLists, loading } = useContext(ProgrammesContext);
 
   // Filter the uploadList based on selected program, resource
   const filteredUploads = uploads.filter(
@@ -28,10 +29,15 @@ const ManageResources = () => {
   const questionsUploads = filteredUploads.filter(
     (upload) => upload.resources === "questions"
   );
+  if (loading) {
+    return <Loader />;
+  }
 
   return (
-    <div className="flex flex-col items-center w-full overflow-y-scroll scroll-container bg-transparent shadow-sm mx-auto h-[calc(100vh-200px)] md:h-[calc(100vh-65px)] pb-10 md:pb-0 px-2 pt-10">
-      <h1 className="text-3xl font-medium text-center ">Resources List</h1>
+    <div className="flex flex-col items-center w-full overflow-y-scroll scroll-container gap-5 bg-transparent shadow-sm mx-auto h-[calc(100vh-200px)] md:h-[calc(100vh-65px)] pb-10 md:pb-0 px-2 pt-10">
+      <h1 className="text-3xl font-medium text-center    text-[#5CAE59]">
+        Resources List
+      </h1>
 
       {/* Program selection and resource type selection */}
       <div className="w-full flex  flex-col justify-between items-start md:items-center rounded-lg border  border-green-50  p-2 gap-4 mb-5 md:mb-10">

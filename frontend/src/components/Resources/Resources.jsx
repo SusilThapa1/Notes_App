@@ -1,9 +1,8 @@
-import React, { useEffect, useContext } from "react";
+import { useEffect, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ProgrammesContext } from "../Context/ProgrammeContext";
-import Syllabus from "./Syllabus";
-import Notes from "./Notes";
-import Questions from "./Questions";
+import Loader from "../Loader";
+import SemesterYear from "./SemesterYear";
 
 const Resources = ({ resource }) => {
   const { programme } = useParams();
@@ -21,21 +20,25 @@ const Resources = ({ resource }) => {
   }, [programme, validProgrammes, navigate, loading]); //navigate not found page
 
   if (loading) {
-    return (
-      <div className="text-center text-2xl font-bold mt-20">Loading...</div>
-    );
+    return <Loader />;
   }
 
   return (
-    <div className="mt-24 flex flex-col gap-5 px-5 my-10 md:px-10 lg:px-20 mb-24 md:mb-1">
-      <h1 className="md:text-3xl text-2xl text-center underline font-bold">
+    <div className="mt-24 flex flex-col gap-5 px-5 my-10 md:px-10 lg:px-20 md:mb-1">
+      <h1 className="md:text-3xl text-2xl text-center underline    text-[#5CAE59] font-bold">
         <span className="uppercase">{programme} </span>
         <span className="capitalize">{resource}</span>
       </h1>
 
-      {resource === "syllabus" && <Syllabus programme={programme} />}
-      {resource === "notes" && <Notes programme={programme} />}
-      {resource === "questions" && <Questions programme={programme} />}
+      {resource === "syllabus" && (
+        <SemesterYear programme={programme} resource={resource} />
+      )}
+      {resource === "notes" && (
+        <SemesterYear programme={programme} resource={resource} />
+      )}
+      {resource === "questions" && (
+        <SemesterYear programme={programme} resource={resource} />
+      )}
     </div>
   );
 };

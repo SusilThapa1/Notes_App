@@ -9,11 +9,18 @@ import {
   uploadProfile,
 } from "../../Services/userService";
 import { AuthContext } from "./Context/AuthContext";
-import { Link } from "react-router-dom";
+import { MdVerified } from "react-icons/md";
+import { emailRegex } from "../../Validator/validator";
 
 const Profile = () => {
-  const { token, user, setUser, userDetails, setUserDetails, loading } =
-    useContext(AuthContext);
+  const {
+    user,
+    setUser,
+    userDetails,
+    setUserDetails,
+    loading,
+    emailChangeVerifyOtp,
+  } = useContext(AuthContext);
 
   const [profileImage, setProfileImage] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -24,7 +31,6 @@ const Profile = () => {
     username: "",
     email: "",
     gender: "",
-    phone: "",
   });
 
   useEffect(() => {
@@ -34,14 +40,12 @@ const Profile = () => {
         username: userDetails.username || "",
         email: userDetails.email || "",
         gender: userDetails.gender || "",
-        phone: userDetails.phone || "",
       });
     }
   }, [userDetails]);
 
   const fileInputRef = useRef(null);
 
-  // Function to fetch the user details
   const imageHandler = (e) => {
     setProfileImage(e.target.files[0]);
     setIsEditing(true);
@@ -84,7 +88,10 @@ const Profile = () => {
 
         localStorage.setItem(
           "user",
-          JSON.stringify({ id: updatedUser._id, username: updatedUser.usename })
+          JSON.stringify({
+            id: updatedUser._id,
+            username: updatedUser.username,
+          })
         );
 
         toast.success("Profile image updated successfully!");
@@ -151,32 +158,46 @@ const Profile = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!emailRegex.test(userData.email)) {
+      return toast.error("Invalid email format");
+    }
+
+    const isEmailChanged =
+      userData.email && userDetails?.email !== userData.email;
+
+    if (isEmailChanged) {
+      await emailChangeVerifyOtp(userData.email);
+      return;
+    }
+
     try {
       const res = await updateUser(userDetails._id, userData);
+
       if (res.success) {
         setUserData(res.data);
         setUserDetails((prev) => ({
           ...prev,
-          username: userData?.username,
-          email: userData?.email,
-          gender: userData?.gender,
-          phone: userData?.phone,
+          username: userData.username,
+          email: userData.email,
+          gender: userData.gender,
         }));
-        toast.success(res.message);
 
         localStorage.setItem(
           "user",
-          JSON.stringify({ id: userData._id, username: userData.username })
+          JSON.stringify({
+            id: userData._id,
+            username: userData.username,
+            role: userDetails?.role,
+          })
         );
 
+        toast.success(res.message);
         setIsEditDetails(false);
       } else {
         toast.error("Failed to update details!");
       }
     } catch (error) {
-      toast.error(
-        error?.response?.data?.message || "Something went wrong while updating."
-      );
+      toast.error(error?.response?.data?.message || "Something went wrong");
       console.error(error);
     }
   };
@@ -188,52 +209,71 @@ const Profile = () => {
     }
   }, [showImageModal, profileImage, userDetails]);
 
-  if (!token) {
-    return (
-      <div className="flex flex-col justify-center items-center gap-5 mt-24 text-center px-5 font-bold ">
-        <img src="/prof.webp" alt="Profile" className="w-40 h-40" />
-        <h1 className="text-2xl">
-          Please sign up or sign in to view your profile details.
-        </h1>
-        <div className="flex items-center justify-center gap-10">
-          <Link
-            to="/study/signup"
-            className="relative group border   border-slate-100 hover-supported:hover:border-transparent  text-center shadow-lg rounded-lg px-4 py-2 min-w-max overflow-hidden transition-colors duration-300"
-          >
-            <span className="absolute bottom-0 left-0 h-full bg-green-600  w-0 hover-supported:group-hover:w-full transition-all duration-300 ease-in-out z-0"></span>
-
-            <span className="relative z-10">Sign up</span>
-          </Link>
-          <Link
-            to="/study/signin"
-            className="relative group border border-slate-100   hover-supported:hover:border-transparent  text-center shadow-lg rounded-lg px-4 py-2 min-w-max overflow-hidden transition-colors duration-300"
-          >
-            <span className="absolute bottom-0 left-0 h-full bg-green-600   w-0 hover-supported:group-hover:w-full transition-all duration-300 ease-in-out z-0"></span>
-
-            <span className="relative z-10">Sign in</span>
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
   if (loading) {
     return <Loader />;
   }
 
+  // if (!token) {
+  //   return (
+  //     <div className="flex flex-col justify-center items-center gap-5 mt-5 text-center px-5 font-bold h-[65vh] md:h-[calc(100vh-90px)]  ">
+  //       <img src="/prof.webp" alt="Profile" className="w-40 h-40" />
+  //       <h1>Please sign up or sign in to view your profile details.</h1>
+  //       <div className="flex items-center justify-center gap-10">
+  //         <Link
+  //           to="/study/signup"
+  //           className="relative group border   border-slate-100 hover-supported:hover:border-transparent  text-center shadow-lg rounded-lg px-4 py-2 min-w-max overflow-hidden transition-colors duration-300"
+  //         >
+  //           <span className="absolute bottom-0 left-0 h-0 bg-[#5CAE59]   w-full hover-supported:group-hover:h-full transition-all duration-300 ease-in-out z-0"></span>
+
+  //           <span className="relative z-10 hover-supported:group-hover:text-white">
+  //             Sign up
+  //           </span>
+  //         </Link>
+  //         <Link
+  //           to="/study/signin"
+  //           className="relative group border border-slate-100   hover-supported:hover:border-transparent  text-center shadow-lg rounded-lg px-4 py-2 min-w-max overflow-hidden transition-colors duration-300"
+  //         >
+  //           <span className="absolute bottom-0 left-0 h-0 bg-[#5CAE59] w-full hover-supported:group-hover:h-full transition-all duration-300 ease-in-out z-0"></span>
+
+  //           <span className="relative z-10 hover-supported:group-hover:text-white">
+  //             Sign in
+  //           </span>
+  //         </Link>
+  //       </div>
+  //     </div>
+  //   );
+  // }
+
+  // if (!userDetails?.isAccountVerified) {
+  //   return (
+  //     <div className="flex flex-col justify-center items-center gap-5 mt-5 text-center px-5h-[65vh] md:h-[calc(100vh-90px)]  ">
+  //       <img src="/prof.webp" alt="Profile" className="w-40 h-40" />
+  //       <h1 className=" font-bold ">Verify your account first</h1>
+
+  //       <button
+  //         type="button"
+  //         className="text-blue-500 hover:underline transition-all duration-500"
+  //         onClick={() => sendEmailVerifyOtp(user?.email)}
+  //       >
+  //         To verify click here!
+  //       </button>
+  //     </div>
+  //   );
+  // }
+
   return (
-    <div className="flex flex-col  h-[calc(100vh - 100px)] justify-center items-center gap-5 mt-24 px-5 md:px-10 lg:px-20  w-full ">
+    <div className="flex flex-col  h-[calc(100vh - 110px)] justify-center items-center gap-5 mt-24 px-5 md:px-10 lg:px-20 pb-24 w-full  ">
       <h1 className="  text-xl font-medium ">Your Profile </h1>
-      <div className="flex flex-col md:flex-row min-h-max  justify-cebter items-center gap-5 md:gap-20 w-[85vw] md:w-[95%] lg:w-[90%] border-2 md:border-white  shadow-lg p-2 md:py-10 lg:py-14 rounded-lg">
-        <div className="flex flex-col justify-center items-center md:border-r-2 border-gray-300 md:pr-[-20px] md:w-[60%] lg:w-[50%]">
+      <div className="flex flex-col md:flex-row min-h-max  justify-center items-center gap-5 md:gap-20 w-[85vw] md:w-[90%] lg:w-[80%] border-2 md:border-slate-100  shadow-lg p-2 md:py-10 lg:py-14 rounded-2xl">
+        <div className="flex flex-col justify-center items-center md:border-r-2 border-gray-300 md:pr-[-20px] md:w-[60%] lg:w-[45%]">
           <div className="flex flex-col justify-center items-center gap-5 font-medium">
             <div
               onClick={() => setShowImageModal(true)}
-              className={`cursor-pointer ${
+              className={`cursor-pointer rounded-full border-[4px]   transition-all duration-500 ${
                 profileImage || userDetails?.profilepath
-                  ? "hover:shadow-[0px_2px_20px_12px_rgba(120,_180,_200,_0.5)] border-[3px] hover-supported:hover:border-dotted border-blue-400"
+                  ? "shadow-lg border-[#6aaa4c] border-dotted"
                   : ""
-              }   rounded-full  transition-all duration-500`}
+              }`}
             >
               <img
                 src={
@@ -247,14 +287,14 @@ const Profile = () => {
               />
             </div>
 
-            <div className="flex gap-4 justify-center items-center text-[12px] md:text-[1.5vw] lg:text-[1.1vw]">
+            <div className="flex gap-4 justify-center items-center ">
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
-                className="px-3 py-2 bg-blue-500 text-white rounded hover-supported:hover:bg-blue-600"
+                className="px-3 py-2 bg-blue-500 text-white rounded hover-supported:hover:bg-blue-600 transition-colors duration-500"
               >
                 {profileImage || userDetails?.profilepath
-                  ? "Change Profile Image"
+                  ? "Change Profile"
                   : "Upload Profile"}
               </button>
 
@@ -271,7 +311,7 @@ const Profile = () => {
                 <button
                   onClick={handleProfileUpload}
                   disabled={!profileImage}
-                  className="px-3 py-2 bg-green-500 hover-supported:hover:bg-green-600 disabled:opacity-50  shadow-lg rounded"
+                  className="px-3 py-2 bg-green-500 hover-supported: hover:bg-[#5CAE59] disabled:opacity-50  shadow-lg rounded transition-colors duration-500"
                 >
                   Save Profile
                 </button>
@@ -283,21 +323,12 @@ const Profile = () => {
                     !(profileImage || userDetails?.profilepath)
                   }
                   onClick={handleProfileDelete}
-                  className="px-3 py-2 bg-red-500 text-white rounded hover-supported:hover:bg-red-600"
+                  className="px-3 py-2 bg-red-500 text-white rounded hover-supported:hover:bg-red-600 transition-colors duration-500"
                 >
                   Delete Profile
                 </button>
               )}
             </div>
-
-            <input
-              id="profile"
-              name="image"
-              type="file"
-              accept="image/*,.webp,.avif"
-              onChange={imageHandler}
-              hidden
-            />
           </div>
         </div>
 
@@ -306,9 +337,9 @@ const Profile = () => {
         {userDetails && isEditDetails ? (
           <form
             onSubmit={handleSubmit}
-            className="flex text-sm items-start flex-col gap-3 font-medium md:text-[1.5vw] lg:text-[1.1vw]   md:p-2"
+            className="flex text-sm items-start flex-col gap-3 font-medium md:text-[1.5vw] lg:text-[1.1vw] w-full md:w-[50%]   md:p-2"
           >
-            <div className="flex justify-center items-center gap-2  w-full  ">
+            <div className="flex justify-center items-center gap-2  md:w-full  ">
               <label htmlFor="username" className="text-gray-800 font-medium">
                 Username:
               </label>
@@ -318,7 +349,7 @@ const Profile = () => {
                 id="username"
                 value={userData.username}
                 onChange={handleChange}
-                className="rounded-md border-2 border-gray-400 px-2  w-full bg-transparent"
+                className="rounded-md border-2 border-gray-400 p-2   w-full bg-transparent"
               />
             </div>
             <div className="flex items-center gap-2 w-full">
@@ -331,7 +362,7 @@ const Profile = () => {
                 id="email"
                 value={userData.email} // Bind input to userData, not userDetails
                 onChange={handleChange}
-                className="rounded-md border-2 border-gray-400 px-1  w-full  bg-transparent"
+                className="rounded-md border-2 border-gray-400 px-1 py-2  w-full  bg-transparent"
               />
             </div>
             <div className="flex  items-center w-full gap-1 py-2 md:gap-5">
@@ -374,7 +405,7 @@ const Profile = () => {
                   id="others"
                   checked={userData.gender === "others"} // Bind checked to userData
                   onChange={handleChange}
-                  className="cursor-pointer"
+                  className="cursor-pointer "
                   aria-label="Other"
                 />
                 <label htmlFor="others" className="cursor-pointer">
@@ -382,28 +413,7 @@ const Profile = () => {
                 </label>
               </div>
             </div>
-            <div className="flex items-center gap-2 w-full">
-              <label htmlFor="phone" className="text-gray-800 font-medium  ">
-                Phone number:
-              </label>
-              <div className="flex items-center gap-2 rounded-md border-2 border-gray-400 px-2  bg-transparent  ">
-                <div className="flex justify-center items-center">
-                  <img src="/Nepal-Flag-icon.png" alt="+977" className="w-6" />
 
-                  <span>+977 </span>
-                </div>
-                <input
-                  type="number"
-                  name="phone"
-                  id="phone"
-                  placeholder="Your phone number"
-                  className="appearance-none bg-transparent    outline-slate-200"
-                  aria-label="Phone"
-                  value={userData.phone} // Bind input to userData, not userDetails
-                  onChange={handleChange}
-                />
-              </div>
-            </div>
             <div className="mx-auto flex justify-between items-center w-full text-white">
               <button
                 onClick={() => setIsEditDetails(false)}
@@ -413,14 +423,14 @@ const Profile = () => {
               </button>
               <button
                 type="submit"
-                className="bg-green-600 px-3 py-2 rounded-md hover-supported:hover:bg-green-500"
+                className="bg-[#6aaa4c] px-3 py-2 rounded-md hover-supported:hover:bg-green-500"
               >
                 Update
               </button>
             </div>
           </form>
         ) : (
-          <div className="flex items-start flex-col gap-5 font-medium text-[12px] md:text-[1.5vw] lg:text-[1.1vw] md:p-2">
+          <div className="flex items-start md:justify-center flex-col gap-5 font-medium text-[12px] md:text-[1.5vw] lg:text-[1.1vw] md:p-2 w-full md:w-auto px-5">
             <div className="flex gap-2">
               <h1 className="text-gray-800 font-medium ">Username:</h1>
               <p className="text-gray-700">{userDetails?.username}</p>
@@ -436,15 +446,29 @@ const Profile = () => {
               </p>
             </div>
             <div className="flex gap-2">
-              <h1 className="text-gray-800 font-medium ">Phone number:</h1>
-              <p className="text-gray-700">{userDetails?.phone || "N/A"}</p>
+              <h1 className="text-gray-800 font-medium ">Account:</h1>
+              <div className="text-gray-700">
+                {userDetails?.isAccountVerified ? (
+                  <p className="flex justify-center items-center gap-3">
+                    <span>Verified</span>{" "}
+                    <MdVerified className="text-[#6aaa4c] md:text-[20px]" />
+                  </p>
+                ) : (
+                  "Not verified"
+                )}
+              </div>
             </div>
-            <div
+            <div className="flex gap-2">
+              <h1 className="text-gray-800 font-medium ">Role:</h1>
+              <p className="text-gray-700 capitalize">{userDetails?.role}</p>
+            </div>
+
+            <button
               onClick={() => setIsEditDetails(true)}
-              className="bg-green-600 px-3 py-2 rounded-md text-center text-white hover-supported:hover:bg-green-500 mx-auto w-full"
+              className="bg-[#6aaa4c] px-3 py-2 rounded-md text-center text-white hover-supported:hover:bg-green-600 mx-auto transition-colors duration-500"
             >
-              <button>Edit details</button>
-            </div>
+              Edit details
+            </button>
           </div>
         )}
       </div>

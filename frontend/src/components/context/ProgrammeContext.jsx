@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, createContext } from "react";
+import React, { useEffect, useState, createContext } from "react";
 import { fetchAllProgrammes } from "../../../Services/programmeService";
 import { fetchAllUploads } from "../../../Services/uploadService";
 import { fetchAllSemesters } from "../../../Services/semesterService";
@@ -9,49 +9,56 @@ const ProgrammesProvider = ({ children }) => {
   const [programmeLists, setProgrammeLists] = useState([]);
   const [semesterLists, setSemesterLists] = useState([]);
   const [uploads, setUploads] = useState([]);
-  const [loading, setLoading] = useState(true); // Single loading state
+  const [loading, setLoading] = useState(true);
 
-  // Fetch All Data in Parallel
-  const fetchAllData = useCallback(async () => {
+  const fetchAllData = async () => {
     setLoading(true);
+
+    // 1. Fetch Programmes
     try {
-      const [programmesResponse, semestersResponse, uploadsResponse] =
-        await Promise.all([
-          fetchAllProgrammes(),
-          fetchAllSemesters(),
-          fetchAllUploads(),
-        ]);
-
-      if (programmesResponse.success) {
-        setProgrammeLists(programmesResponse.data);
+      const res = await fetchAllProgrammes();
+      if (res.success) {
+        setProgrammeLists(res.data);
       } else {
-        console.error("Error fetching programmes:", programmesResponse.message);
+        console.error("Error fetching programmes:", res.message);
       }
-
-      if (semestersResponse.success) {
-        setSemesterLists(semestersResponse.data);
-      } else {
-        console.error("Error fetching semesters:", semestersResponse.message);
-      }
-
-      if (uploadsResponse.success) {
-        setUploads(uploadsResponse.data);
-      } else {
-        console.error("Error fetching uploads:", uploadsResponse.message);
-      }
-    } catch (error) {
-      console.error("Error fetching data:", error.message);
-    } finally {
-      setLoading(false);
+    } catch (err) {
+      console.error("Programme fetch error:", err.message);
     }
-  }, []);
+
+    // 2. Fetch Semesters
+    try {
+      const res = await fetchAllSemesters();
+      if (res.success) {
+        setSemesterLists(res.data);
+      } else {
+        console.error("Error fetching semesters:", res.message);
+      }
+    } catch (err) {
+      console.error("Semester fetch error:", err.message);
+    }
+
+    // 3. Fetch Uploads
+    try {
+      const res = await fetchAllUploads();
+      if (res.success) {
+        setUploads(res.data);
+      } else {
+        console.error("Error fetching uploads:", res.message);
+      }
+    } catch (err) {
+      console.error("Upload fetch error:", err.message);
+    }
+
+    setLoading(false);
+  };
 
   useEffect(() => {
     const timer = setTimeout(() => {
       fetchAllData();
-    }, 200); // 200ms delay
+    }, 200);
 
-    return () => clearTimeout(timer); // Cleanup
+    return () => clearTimeout(timer);
   }, []);
 
   return (

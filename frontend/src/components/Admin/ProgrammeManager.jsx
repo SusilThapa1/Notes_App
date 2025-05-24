@@ -10,6 +10,7 @@ import {
 } from "../../../Services/programmeService";
 import { ProgrammesContext } from "../Context/ProgrammeContext";
 import { MdOutlineDeleteForever } from "react-icons/md";
+import Loader from "../Loader";
 
 const ProgrammeManager = () => {
   const scrollRef = useRef(null);
@@ -20,7 +21,7 @@ const ProgrammeManager = () => {
     programmeshortname: "",
     _id: "",
   });
-  const { fetchAllData, programmeLists, setProgrammeLists } =
+  const { fetchAllData, programmeLists, setProgrammeLists, loading } =
     useContext(ProgrammesContext);
 
   const handleSubmit = async (e) => {
@@ -146,12 +147,16 @@ const ProgrammeManager = () => {
     }
   };
 
+  if (loading) {
+    return <Loader />;
+  }
+
   return (
     <div
       ref={scrollRef}
-      className="flex flex-col items-center  w-full max-w-6xl mt-4  pb-10 md:pb-0  overflow-y-scroll scroll-container bg-transparent shadow-sm mx-auto h-[calc(100vh-200px)] md:h-[calc(100vh-75px)]"
+      className="flex flex-col items-center  w-full max-w-6xl mt-8  pb-10 md:pb-0  overflow-y-scroll scroll-container bg-transparent shadow-sm mx-auto h-[calc(100vh-200px)] md:h-[calc(100vh-75px)]"
     >
-      <h1 className="text-2xl font-semibold mb-4 text-center">
+      <h1 className="text-2xl font-semibold mb-4 text-center    text-[#5CAE59]">
         {programmeData._id ? "Edit Programme" : "Add New Programme"}
       </h1>
 
@@ -169,10 +174,10 @@ const ProgrammeManager = () => {
               src={
                 image
                   ? URL.createObjectURL(image)
-                  : programmeData.image || upload_Image
+                  : programmeData.image || "/upload_area.png"
               }
               alt="upload"
-              className="cursor-pointer w-32 h-32 object-cover bg-transparent shadow-lg rounded-lg "
+              className="cursor-pointer w-32 h-32 object-cover bg-transparent shadow-lg rounded-lg border-2 border-slate-100 "
               loading="lazy"
             />
             <span>Cover image</span>
@@ -199,7 +204,7 @@ const ProgrammeManager = () => {
             value={programmeData.programmefullname}
             placeholder="Programme fullname..."
             onChange={handleChange}
-            className="border-2 border-slate-100 shadow-lg bg-transparent rounded-lg p-2 mt-1 outline-slate-200 "
+            className="px-4 py-3 rounded-2xl shadow-lg focus: outline-slate-200 focus:ring-2 focus:ring-gray-200 bg-transparent border  border-slate-100  placeholder:font-medium"
             required
           />
         </div>
@@ -218,7 +223,7 @@ const ProgrammeManager = () => {
             value={programmeData.programmeshortname}
             placeholder="Programme shortname..."
             onChange={handleChange}
-            className="border-2 border-slate-100 shadow-lg bg-transparent rounded-lg p-2 mt-1  outline-slate-200"
+            className="px-4 py-3 rounded-2xl shadow-lg focus:outline-slate-200 focus:ring-2 focus:ring-gray-200 bg-transparent border  border-slate-100  placeholder:font-medium"
             required
           />
         </div>
@@ -232,7 +237,7 @@ const ProgrammeManager = () => {
             id="structure"
             onChange={handleChange}
             value={programmeData.academicstructure}
-            className="border-2 border-slate-100 shadow-lg bg-transparent rounded-lg p-2 mt-1  outline-slate-200"
+            className="px-4 py-3 rounded-2xl shadow-lg focus: outline-slate-200 focus:ring-2 focus:ring-gray-200 bg-transparent border  border-slate-100  placeholder:font-medium"
             required
           >
             <option value="">Select</option>
@@ -244,7 +249,7 @@ const ProgrammeManager = () => {
         <div className="text-center">
           <button
             type="submit"
-            className="bg-green-500 text-white font-semibold py-2 px-4 rounded-lg w-[50%] hover-supported:hover:bg-green-600 transition-colors"
+            className="bg-transparent border  border-slate-100 hover-supported:hover:border-transparent  px-4 py-3 rounded-2xl font-medium hover-supported: hover:bg-[#5CAE59] hover-supported:hover:text-gray-200 active:bg-green-600 shadow-lg transition-all duration-500"
           >
             {programmeData._id ? "Update Programme" : "Add Programme"}
           </button>
@@ -255,16 +260,11 @@ const ProgrammeManager = () => {
         <h2 className="text-xl font-semibold mb-4 text-center">
           Programmes List
         </h2>
-        <div className="overflow-x-auto">
-          <table
-            border="collapse"
-            className="min-w-full bg-transparent shadow-lg text-center "
-          >
-            <thead className="bg-green-600 text-white text-[12px] md:text-base">
+        <div className="overflow-x-auto bg-transparent border-2 border-slate-300 rounded-lg shadow-lg">
+          <table border="collapse" className="w-full  text-center h-max ">
+            <thead className="bg-green-600 text-white text-[12px] md:text-base ">
               <tr className="text-center border-b border-gray-400">
-                <th className="p-2  border-r border-gray-400 rounded-tl-lg ">
-                  Image
-                </th>
+                <th className="p-2  border-x-2 border-gray-400   ">Image</th>
                 <th className="px-4 py-2   border-r border-gray-400">
                   Fullname
                 </th>

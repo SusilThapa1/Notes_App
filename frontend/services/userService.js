@@ -97,6 +97,7 @@ const updateUser = async (userId, userData) => {
         withCredentials: true,
       }
     );
+    console.log(response.data);
     return response.data;
   } catch (error) {
     throw error;
@@ -192,6 +193,37 @@ const verifyEmail = async (otp) => {
     throw err;
   }
 };
+//send email change verification-otp
+const sendEmailChangeVerifyOtp = async (email) => {
+  try {
+    const response = await axios.post(
+      `${API_URL}/send-email-change-verify-otp`,
+      { email },
+      {
+        withCredentials: true,
+      }
+    );
+    return response.data;
+  } catch (err) {
+    throw err;
+  }
+};
+
+//verify email change
+const verifyEmailChange = async (otp) => {
+  try {
+    const response = await axios.post(
+      `${API_URL}/verify-email-change`,
+      { otp },
+      {
+        withCredentials: true,
+      }
+    );
+    return response.data;
+  } catch (err) {
+    throw err;
+  }
+};
 
 //  Export all functions
 export {
@@ -208,4 +240,6 @@ export {
   logoutUser,
   sendVerifyOtp,
   verifyEmail,
+  sendEmailChangeVerifyOtp,
+  verifyEmailChange,
 };

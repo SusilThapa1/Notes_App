@@ -13,7 +13,7 @@ const DeleteMyAccount = () => {
 
   const handleChange = (e) => {
     const value = e.target.value;
-    setUserData(value);
+    setPassword(value);
   };
 
   const passwordShow = () => {

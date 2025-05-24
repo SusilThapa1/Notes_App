@@ -10,6 +10,7 @@ import {
 import Swal from "sweetalert2";
 import { toast } from "react-toastify";
 import { ProgrammesContext } from "../Context/ProgrammeContext";
+import Loader from "../Loader";
 
 const SemesterManager = () => {
   const [semesters, setSemesters] = useState({
@@ -18,8 +19,13 @@ const SemesterManager = () => {
     _id: "",
   });
   const scrollRef = useRef(null);
-  const { programmeLists, fetchAllData, semesterLists, setSemesterLists } =
-    useContext(ProgrammesContext);
+  const {
+    programmeLists,
+    fetchAllData,
+    semesterLists,
+    setSemesterLists,
+    loading,
+  } = useContext(ProgrammesContext);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -108,7 +114,14 @@ const SemesterManager = () => {
       confirmButtonColor: "#49bb0f",
       cancelButtonColor: "#d33",
       confirmButtonText: "Yes, delete it!",
-      width: "400px",
+      customClass: {
+        popup: "text-base sm:text-lg md:text-xl",
+        title: "text-xl sm:text-2xl md:text-3xl font-semibold",
+        confirmButton:
+          "text-sm sm:text-base md:text-lg bg-blue-600 text-white px-4 py-2 rounded",
+        cancelButton:
+          "text-sm sm:text-base md:text-lg bg-gray-400 text-white px-4 py-2 rounded",
+      },
     });
 
     if (!response.isConfirmed) return;
@@ -132,13 +145,17 @@ const SemesterManager = () => {
     }
   };
 
+  if (loading) {
+    return <Loader />;
+  }
+
   return (
     <div
       ref={scrollRef}
       className="flex flex-col items-center  w-full mt-4 overflow-y-scroll scroll-container bg-transparent shadow-sm mx-auto h-[calc(100vh-200px)] md:h-[calc(100vh-60px)] pb-20 md:pb-0"
     >
       <div className="w-full flex flex-col gap-3  justify-center items-center h-fit pt-5 rounded-lg">
-        <h1 className="text-2xl font-bold text-center">
+        <h1 className="text-2xl font-bold text-center    text-[#5CAE59]">
           {semesters._id ? "Edit semesters" : "Add semesters"}
         </h1>
         <form
@@ -179,7 +196,7 @@ const SemesterManager = () => {
           {/* Submit Button */}
           <button
             type="submit"
-            className="bg-green-500 hover-supported:hover:bg-green-600 text-white font-bold py-2 px-4 min-w-fit w-[7vw] rounded-lg transition-all duration-200"
+            className="bg-green-500 hover-supported: hover:bg-[#5CAE59] text-white font-bold py-2 px-4 min-w-fit w-[7vw] rounded-lg transition-all duration-200"
           >
             {semesters._id ? "update" : "Add"}
           </button>
@@ -230,7 +247,7 @@ const SemesterManager = () => {
                         .map((semester, semesterIndex) => (
                           <tr
                             key={semesterIndex}
-                            className="border-b border-gray-400  rounded-b-lg hover-supported:hover:bg-gray-300 text-center"
+                            className="border-b border-gray-400 bg-transparent rounded-b-lg hover-supported:hover:bg-slate-100 text-center"
                           >
                             <td className="p-2   w-[5%] border-r border-gray-400">
                               {semesterIndex + 1}.

@@ -25,10 +25,8 @@ const Sidebar = () => {
         <Link
           to={menu.link}
           key={menu.name}
-          className={`flex gap-2 items-center justify-center bg-transparent hover-supported:hover:animate-pulse  shadow-lg border-[2px]  border-slate-100 p-2 rounded-lg hover-supported:hover:text-green-500 ${
-            activeLink === menu.link
-              ? "bg-blue-200 animate-bounce  text-green-600"
-              : ""
+          className={`flex gap-2 items-center justify-center px-4 py-3 rounded-2xl shadow-lg   bg-transparent border  border-slate-100 hover-supported:hover:text-green-600 ${
+            activeLink === menu.link ? "bg-blue-200    text-[#5CAE59]" : ""
           }`}
           onClick={() => handleClick(menu.link)}
         >

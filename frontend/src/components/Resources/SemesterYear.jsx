@@ -21,15 +21,15 @@ const SemesterYear = ({ programme, resource }) => {
     });
 
   return (
-    <div>
+    <div className="h-screen">
       {filteredSyllabus.length > 0 ? (
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10 md:gap-16 place-items-center">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10 md:gap-16 place-items-center pb-16">
           {filteredSyllabus.map((data, index) => (
             <div key={index} className="w-full flex justify-center">
               <Link
                 to={data.link}
                 className="relative group border  border-slate-100 hover-supported:hover:border-transparent  text-center uppercase
-                    shadow-lg rounded-xl p-4 w-full overflow-hidden
+                    shadow-lg rounded-2xl p-4 w-full overflow-hidden
                    transition-colors duration-300"
               >
                 {/* Background animated bar */}
@@ -39,10 +39,14 @@ const SemesterYear = ({ programme, resource }) => {
                      transition-all duration-500 ease-in-out 
                      z-0"
                 ></span>
-
-                <span className="relative z-10">
-                  {data?.semestername || data?.year}
-                </span>
+                <div className="relative z-10 flex justify-between items-center">
+                  <div className="text-gray-700">
+                    {data?.semestername || data?.year}
+                  </div>
+                  <div className="capitalize text-sm text-gray-600">
+                    Created by : {data.userID.username}
+                  </div>
+                </div>
               </Link>
             </div>
           ))}
