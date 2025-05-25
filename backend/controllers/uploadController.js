@@ -29,12 +29,12 @@ let uploadInsert = async (req, res) => {
     }
 
     let newUpload = new Uploads({
+      userID: req.userid,
       resources,
       programmename,
       academicstructure,
       semestername,
       year,
-
       link,
     });
 
@@ -53,7 +53,7 @@ let uploadInsert = async (req, res) => {
 
 let uploadList = async (req, res) => {
   try {
-    let allUpload = await Uploads.find();
+    let allUpload = await Uploads.find().populate("userID", "username email");
     res
       .status(200)
       .json({ success: 1, message: "Upload List", data: allUpload });

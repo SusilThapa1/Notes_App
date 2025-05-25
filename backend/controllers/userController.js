@@ -1,16 +1,25 @@
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 const Users = require("../models/userModel");
+const path = require("path");
 const { deleteFile } = require("../Utils/fileHelper");
 const {
   emailRegex,
   passwordRegex,
   phoneRegex,
 } = require("../Utils/validators");
+const transporter = require("../config/nodeMailer");
+const {
+  verifyEmailHtml,
+  verifyEmailText,
+  verifyEmailChangeHtml,
+} = require("../config/emailTemplates");
+const { default: mongoose } = require("mongoose");
 
 // Register
 const userSignUp = async (req, res) => {
   try {
-    const { username, email, password, gender, phone } = req.body;
+    const { username, email, password, gender } = req.body;
 
     if (!username || !email || !password || !gender) {
       return res
@@ -32,13 +41,7 @@ const userSignUp = async (req, res) => {
       });
     }
 
-    if (phone && !phoneRegex.test(phone)) {
-      return res
-        .status(400)
-        .json({ success: 0, message: "Phone number must be 10 digits." });
-    }
-
-    const userExists = await Users.findOne({ email });
+    const userExists = await Users.findOne({ email: email.toLowerCase() });
     if (userExists) {
       return res
         .status(400)
@@ -50,30 +53,25 @@ const userSignUp = async (req, res) => {
 
     const newUser = new Users({
       username,
-      email,
+      email: email.toLowerCase(),
       password: hashedPassword,
       gender,
-      phone,
     });
 
     await newUser.save();
 
-    const token = newUser.generateJWT();
-
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production" ? true : false,
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
+    const tempToken = jwt.sign(
+      { id: newUser._id },
+      process.env.Jwt_Secret_Key,
+      { expiresIn: "1m" }
+    );
 
     res.status(200).json({
       success: 1,
       message: "Registered Successfully",
-      token,
+      tempToken,
       user: {
         id: newUser._id,
-        username: newUser.username,
       },
     });
   } catch (err) {
@@ -102,12 +100,12 @@ const userUploadProfile = async (req, res) => {
 
     //  If previous profile image exists, delete it
     if (user.profilepath) {
-      const oldFilename = user.profilepath.split("/").pop(); // get filename only
+      const oldFilename = user.profilepath.split("/").pop();
       const relativePath = `profiles/images/${oldFilename}`;
-      deleteFile(relativePath); // delete from server
+      deleteFile(relativePath);
     }
 
-    //  Update DB with new profile image info
+    //  Update DB with new profile image
     user.profilename = file.filename;
     user.profilepath = `${process.env.SERVER_BASE_URL}/profiles/images/${file.filename}`;
     await user.save();
@@ -122,7 +120,7 @@ const userUploadProfile = async (req, res) => {
     });
   } catch (error) {
     if (req.file && req.file.path) {
-      deleteFile(req.file.path); // delete newly uploaded if error
+      deleteFile(req.file.path);
     }
     console.error("Profile upload failed:", error.message);
     return res.status(500).json({ success: 0, message: "Server error." });
@@ -175,13 +173,13 @@ const userLogin = async (req, res) => {
         .json({ success: 0, message: "Invalid email format." });
     }
 
-    if (!password) {
+    if (!email || !password) {
       return res
         .status(400)
-        .json({ success: 0, message: "Password is required." });
+        .json({ success: 0, message: "Email and password are required." });
     }
 
-    const user = await Users.findOne({ email });
+    const user = await Users.findOne({ email: email.toLowerCase() });
     if (!user) {
       return res.status(400).json({ success: 0, message: "User not found" });
     }
@@ -197,7 +195,7 @@ const userLogin = async (req, res) => {
 
     res.cookie("token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production" ? true : false,
+      secure: process.env.NODE_ENV === "production",
       sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
@@ -209,6 +207,9 @@ const userLogin = async (req, res) => {
       user: {
         id: user._id,
         username: user.username,
+        email: user.email,
+        role: user.role,
+        isAccountVerified: user.isAccountVerified,
       },
     });
   } catch (err) {
@@ -225,6 +226,7 @@ const logout = (req, res) => {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+    maxAge: 0,
   });
   res.status(200).json({ success: 1, message: "Logged out successfully" });
 };
@@ -232,7 +234,7 @@ const logout = (req, res) => {
 // View users list
 const userList = async (req, res) => {
   try {
-    const users = await Users.find();
+    const users = await Users.find().select("-password");
     res.status(200).json({ success: 1, message: "User List", data: users });
   } catch (err) {
     res.status(500).json({
@@ -246,7 +248,7 @@ const userList = async (req, res) => {
 //fetch single user details
 const userProfile = async (req, res) => {
   try {
-    const user = await Users.findById(req.userid);
+    const user = await Users.findById(req.userid).select("-password");
     res.status(200).json({ success: 1, message: "User fetched", data: user });
   } catch (err) {
     res.status(500).json({
@@ -260,20 +262,11 @@ const userProfile = async (req, res) => {
 // update userdetails
 const userUpdate = async (req, res) => {
   const userid = req.params.id;
-  try {
-    const { username, email, gender, phone } = req.body;
-    const existingUser = await Users.findById(userid);
-    if (!existingUser) {
-      return res.status(404).json({ success: 0, message: "User not found" });
-    }
-    const update = {
-      username,
-      email,
-      gender,
-      phone,
-    };
+  const { username, email, gender } = req.body;
 
-    if (!username || !email || !gender || !phone) {
+  try {
+    // Validation
+    if (!username || !email || !gender) {
       return res
         .status(400)
         .json({ success: 0, message: "All fields are required." });
@@ -284,26 +277,43 @@ const userUpdate = async (req, res) => {
         .status(400)
         .json({ success: 0, message: "Invalid email format." });
     }
-    if (!phoneRegex.test(phone)) {
-      return res
-        .status(400)
-        .json({ success: 0, message: "Phone number must be 10 digits." });
+
+    // Find user without password
+    const existingUser = await Users.findById(userid).select("-password");
+    if (!existingUser) {
+      return res.status(404).json({ success: 0, message: "User not found." });
     }
 
-    const updatedUser = await Users.updateOne({ _id: userid }, update);
+    // Check for duplicate email
+    const duplicateEmailUser = await Users.findOne({
+      email: email.toLowerCase(),
+    });
+
+    if (duplicateEmailUser && duplicateEmailUser._id.toString() !== userid) {
+      return res
+        .status(400)
+        .json({ success: 0, message: "Email already in use." });
+    }
+
+    // Update fields
+    existingUser.username = username;
+    existingUser.email = email.toLowerCase();
+    existingUser.gender = gender;
+
+    await existingUser.save();
 
     res.status(200).json({
       success: 1,
-      message: "User details updated successfuly",
-      data: updatedUser,
+      message: "User updated successfully.",
+      data: existingUser,
     });
   } catch (err) {
-    if (req.file && req.file.path) {
-      deleteFile(req.file.path);
-      res
-        .status(500)
-        .json({ success: 0, message: "Update failed", error: err.message });
-    }
+    console.error("User update error:", err.message);
+    res.status(500).json({
+      success: 0,
+      message: "Update failed.",
+      error: err.message,
+    });
   }
 };
 
@@ -318,6 +328,338 @@ const userDelete = async (req, res) => {
   }
 };
 
+const userAccountDelete = async (req, res) => {
+  try {
+    const userId = req.userid;
+    const { password } = req.body;
+
+    const user = await Users.findById(userId);
+    if (!user) {
+      return res.status(404).json({ success: 0, message: "User not found" });
+    }
+
+    // Compare password
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res
+        .status(401)
+        .json({ success: 0, message: "Incorrect password" });
+    }
+
+    // Delete profile image if exists
+    if (user.profilepath) {
+      const oldFilename = user.profilepath.split("/").pop(); // get filename only
+      const relativePath = `profiles/images/${oldFilename}`;
+      deleteFile(relativePath); // delete from server
+    }
+
+    await Users.findByIdAndDelete(userId);
+
+    res.clearCookie("token");
+    res
+      .status(200)
+      .json({ success: 1, message: "Account deleted successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: 0, message: "Server error" });
+  }
+};
+
+const sendVerifyOtp = async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return res.json({ success: 0, message: "Email is required" });
+    }
+
+    const user = await Users.findOne({ email: email.toLowerCase() });
+
+    if (!user) {
+      return res.json({ success: 0, message: "User not found" });
+    }
+
+    if (user.isAccountVerified) {
+      return res.json({ success: 0, message: "Account already verified." });
+    }
+
+    const otp = String(Math.floor(100000 + Math.random() * 900000));
+    user.otp = otp;
+    user.otpExpireAt = Date.now() + 24 * 60 * 60 * 1000;
+    await user.save();
+
+    const mailOptions = {
+      from: process.env.SENDER_EMAIL,
+      to: user.email,
+      subject: `Email Verification OTP`,
+      text: verifyEmailText(otp),
+      html: verifyEmailHtml(otp).replace("{{image}}", "cid:logo@easy"),
+      attachments: [
+        {
+          filename: "desktop.png",
+          path: path.join(__dirname, "desktop.png"),
+          cid: "logo@easy",
+        },
+      ],
+    };
+
+    await transporter.sendMail(mailOptions);
+    res.json({
+      success: 1,
+      message: `Verification OTP sent on email: ${email.toLowerCase()}`,
+    });
+  } catch (error) {
+    res.json({ success: 0, message: error.message });
+  }
+};
+
+const verifyEmail = async (req, res) => {
+  const { otp, userId } = req.body;
+  console.log(userId, otp);
+  if (!otp) {
+    return res.json({
+      success: 0,
+      message: "Enter the OTP sent to your email",
+    });
+  }
+  try {
+    const user = await Users.findById(
+      new mongoose.Types.ObjectId(userId)
+    ).select("-password");
+    if (!user) {
+      return res.json({ success: 0, message: "User not found" });
+    }
+
+    if (user.otp === "" || user.otp !== otp) {
+      return res.json({ success: 0, message: "Invalid OTP" });
+    }
+    if (user.otpExpireAt < Date.now()) {
+      return res.json({ success: 0, message: "OTP is expired" });
+    }
+
+    user.isAccountVerified = true;
+    user.otp = "";
+    user.otpExpireAt = 0;
+
+    await user.save();
+
+    const token = user.generateJWT();
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    res.json({
+      success: 1,
+      message: "Email verified successfully.",
+      token,
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        isAccountVerified: user.isAccountVerified,
+        gender: user.gender,
+        role: user.role,
+      },
+    });
+  } catch (error) {
+    res.json({ success: 0, message: error.message });
+  }
+};
+
+//Send Email change verify otp to user
+const sendEmailChangeVerifyOtp = async (req, res) => {
+  try {
+    const userId = req.userid;
+    const { email: newEmail } = req.body;
+
+    if (!newEmail) {
+      return res.json({ success: 0, message: "New email is required" });
+    }
+
+    if (!emailRegex.test(newEmail)) {
+      return res.json({ success: 0, message: "Invalid email format" });
+    }
+
+    // Optional: check if new email is already in use
+    const existing = await Users.findOne({ email: newEmail.toLowerCase() });
+    if (existing) {
+      return res.json({ success: 0, message: "Email already in use" });
+    }
+
+    const user = await Users.findById(userId);
+    if (!user) {
+      return res.json({ success: 0, message: "User not found" });
+    }
+
+    const otp = String(Math.floor(100000 + Math.random() * 900000));
+    user.otp = otp;
+    user.otpExpireAt = Date.now() + 10 * 60 * 1000; // shorter expiry, like 10 min
+    user.newEmail = newEmail.toLowerCase(); // store temp
+
+    await user.save();
+
+    const mailOptions = {
+      from: process.env.SENDER_EMAIL,
+      to: newEmail.toLowerCase(),
+      subject: `Email Change Verification OTP`,
+      text: verifyEmailText(otp),
+      html: verifyEmailChangeHtml(otp).replace("{{image}}", "cid:logo@easy"),
+      attachments: [
+        {
+          filename: "desktop.png",
+          path: path.join(__dirname, "desktop.png"),
+          cid: "logo@easy",
+        },
+      ],
+    };
+
+    await transporter.sendMail(mailOptions);
+    res.json({
+      success: 1,
+      message: `OTP sent to new email: ${newEmail.toLowerCase()}`,
+    });
+  } catch (error) {
+    res.json({ success: 0, message: error.message });
+  }
+};
+
+const verifyEmailChange = async (req, res) => {
+  const userId = req.userid;
+  const { otp } = req.body;
+
+  if (!otp) {
+    return res.json({
+      success: 0,
+      message: "Enter the OTP sent to your new email",
+    });
+  }
+
+  try {
+    const user = await Users.findById(userId);
+    if (!user) {
+      return res.json({ success: 0, message: "User not found" });
+    }
+
+    if (user.otp !== otp) {
+      return res.json({ success: 0, message: "Invalid OTP" });
+    }
+
+    if (user.otpExpireAt < Date.now()) {
+      return res.json({ success: 0, message: "OTP expired" });
+    }
+
+    // 🔥 Replace email with newEmail
+    user.email = user.newEmail;
+    user.newEmail = "";
+    user.otp = "";
+    user.otpExpireAt = 0;
+    user.isAccountVerified = true;
+
+    await user.save();
+
+    const updatedUser = await Users.findById(userId).select("-password");
+    const newToken = updatedUser.generateJWT();
+
+    res.json({
+      success: 1,
+      message: "Email changed and verified successfully.",
+      token: newToken,
+      user: {
+        id: updatedUser._id,
+        username: updatedUser.username,
+        email: updatedUser.email,
+        isAccountVerified: updatedUser.isAccountVerified,
+        gender: updatedUser.gender,
+        role: updatedUser.role,
+      },
+    });
+  } catch (error) {
+    res.json({ success: 0, message: error.message });
+  }
+};
+
+const changePassword = async (req, res) => {
+  try {
+    const userId = req.userid;
+    const { oldpassword, newpassword } = req.body;
+
+    const user = await Users.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        success: 0,
+        message: "User not found",
+      });
+    }
+
+    if (oldpassword === newpassword) {
+      return res.status(400).json({
+        success: 0,
+        message: "New password must be different from old one",
+      });
+    }
+
+    const passMatch = await bcrypt.compare(oldpassword, user.password);
+    if (!passMatch) {
+      return res.status(400).json({
+        success: 0,
+        message: "Old password is incorrect",
+      });
+    }
+
+    if (!passwordRegex.test(newpassword)) {
+      return res.status(400).json({
+        success: 0,
+        message:
+          "Password must be at least 8 characters and include uppercase, lowercase, number, and special character",
+      });
+    }
+
+    const hashedPassword = await bcrypt.hash(newpassword, 10);
+    user.password = hashedPassword;
+    await user.save();
+
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+    });
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      samesite: process.env.NODE_ENV === "production" ? "none" : "strict",
+    });
+
+    return res.status(200).json({
+      success: 1,
+      message: "Password changed successfully",
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: 0,
+      message: "Failed to change password",
+      error: err.message,
+    });
+  }
+};
+
+const passReset = async (req, res) => {
+  const { email } = req.body;
+  if (!email) {
+    return res.json({ success: 0, message: "Enter your registered email" });
+  }
+  try {
+    const user = await Users.findOne(email);
+    if (!user) {
+      return res.json({ success: 0, message: "User not found" });
+    }
+  } catch (err) {
+    res.json({ success: 0, message: err.message });
+  }
+};
+
 module.exports = {
   userSignUp,
   userUploadProfile,
@@ -326,6 +668,12 @@ module.exports = {
   logout,
   userList,
   userProfile,
+  changePassword,
   userUpdate,
   userDelete,
+  userAccountDelete,
+  sendVerifyOtp,
+  verifyEmail,
+  verifyEmailChange,
+  sendEmailChangeVerifyOtp,
 };
