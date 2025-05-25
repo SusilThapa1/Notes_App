@@ -2,6 +2,11 @@ const mongoose = require("mongoose");
 
 const uploadSchema = new mongoose.Schema(
   {
+    userID: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "users",
+      required: true,
+    },
     resources: {
       type: String,
       enum: ["syllabus", "notes", "questions"],

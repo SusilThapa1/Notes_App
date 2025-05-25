@@ -6,11 +6,27 @@ const userSchema = new mongoose.Schema(
     profilename: { type: String },
     profilepath: { type: String },
     username: { type: String, required: true },
-    email: { type: String, unique: true, required: true, maxlength: 32 },
+    email: {
+      type: String,
+      unique: true,
+      required: true,
+      maxlength: 32,
+      lowercase: true,
+      trim: true,
+    },
     password: { type: String, maxlength: 128, minlength: 6, required: true },
     gender: { type: String },
-    phone: { type: Number, maxlength: 10, minlength: 10 },
-    admin: { type: Boolean, default: false },
+    newEmail: { type: String },
+    role: {
+      type: String,
+      enum: ["user", "admin"],
+      default: "admin",
+    },
+    otp: { type: String, default: "" },
+    otpExpireAt: { type: Number, default: 0 },
+    resetOtp: { type: String, default: "" },
+    resetOtpExpireAt: { type: Number, default: 0 },
+    isAccountVerified: { type: Boolean, default: false },
   },
   { timestamps: true }
 );
@@ -22,4 +38,4 @@ userSchema.methods.generateJWT = function () {
   });
 };
 
-module.exports = mongoose.model("users", userSchema);
+module.exports = mongoose.model.users || mongoose.model("users", userSchema);
