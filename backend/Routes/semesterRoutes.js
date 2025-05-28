@@ -6,13 +6,18 @@ const {
   semesterUpdate,
   semesterSingle,
 } = require("../controllers/semesterController");
+const { verifyToken, verifyAdmin } = require("../middlewares/authMiddleware");
 
 const semesterRouter = express.Router();
 
-semesterRouter.post("/add", semesterInsert);
+semesterRouter.post("/add", verifyToken, verifyAdmin, semesterInsert);
 semesterRouter.get("/semesterView", semesterList);
-semesterRouter.delete("/delete/:id", semesterDelete);
-semesterRouter.get("/singlesemester/:id", semesterSingle);
-semesterRouter.put("/update/:id", semesterUpdate);
+semesterRouter.delete("/delete/:id", verifyToken, verifyAdmin, semesterDelete);
+semesterRouter.get(
+  "/singlesemester/:id",
+
+  semesterSingle
+);
+semesterRouter.put("/update/:id", verifyToken, verifyAdmin, semesterUpdate);
 
 module.exports = semesterRouter;

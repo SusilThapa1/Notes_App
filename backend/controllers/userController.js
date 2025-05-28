@@ -13,6 +13,7 @@ const {
   verifyEmailHtml,
   verifyEmailText,
   verifyEmailChangeHtml,
+  pass_Reset_Temp,
 } = require("../config/emailTemplates");
 const { default: mongoose } = require("mongoose");
 
@@ -63,7 +64,7 @@ const userSignUp = async (req, res) => {
     const tempToken = jwt.sign(
       { id: newUser._id },
       process.env.Jwt_Secret_Key,
-      { expiresIn: "1m" }
+      { expiresIn: "10m" }
     );
 
     res.status(200).json({
@@ -384,7 +385,7 @@ const sendVerifyOtp = async (req, res) => {
 
     const otp = String(Math.floor(100000 + Math.random() * 900000));
     user.otp = otp;
-    user.otpExpireAt = Date.now() + 24 * 60 * 60 * 1000;
+    user.otpExpireAt = Date.now() + 10 * 60 * 1000;
     await user.save();
 
     const mailOptions = {
@@ -414,7 +415,7 @@ const sendVerifyOtp = async (req, res) => {
 
 const verifyEmail = async (req, res) => {
   const { otp, userId } = req.body;
-  console.log(userId, otp);
+  // console.log(userId, otp);
   if (!otp) {
     return res.json({
       success: 0,
@@ -551,7 +552,7 @@ const verifyEmailChange = async (req, res) => {
       return res.json({ success: 0, message: "OTP expired" });
     }
 
-    // 🔥 Replace email with newEmail
+    // Replace email with newEmail
     user.email = user.newEmail;
     user.newEmail = "";
     user.otp = "";
@@ -645,18 +646,220 @@ const changePassword = async (req, res) => {
   }
 };
 
-const passReset = async (req, res) => {
+const sendPassResetOtp = async (req, res) => {
   const { email } = req.body;
   if (!email) {
     return res.json({ success: 0, message: "Enter your registered email" });
   }
   try {
-    const user = await Users.findOne(email);
+    const user = await Users.findOne({ email: email.toLowerCase() }).select(
+      "-password"
+    );
+
     if (!user) {
       return res.json({ success: 0, message: "User not found" });
     }
+
+    const otp = String(Math.floor(100000 + Math.random() * 900000));
+    user.resetOtp = otp;
+    user.resetOtpExpireAt = Date.now() + 10 * 60 * 1000;
+
+    await user.save();
+
+    const mailOptions = {
+      from: process.env.SENDER_EMAIL,
+      to: email.toLowerCase(),
+      subject: `Email Verification OTP`,
+      text: verifyEmailText(otp),
+      html: pass_Reset_Temp(otp).replace("{{image}}", "cid:logo@easy"),
+      attachments: [
+        {
+          filename: "desktop.png",
+          path: path.join(__dirname, "desktop.png"),
+          cid: "logo@easy",
+        },
+      ],
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    res.json({ success: 1, message: "Otp has been sent to your email" });
   } catch (err) {
     res.json({ success: 0, message: err.message });
+  }
+};
+
+const verifyPassResetOtp = async (req, res) => {
+  const { otp, email } = req.body;
+  if (!otp) {
+    return res.json({ success: 0, message: "Enter 6 digits OTP first" });
+  }
+  try {
+    const user = await Users.findOne({ email: email.toLowerCase() }).select(
+      "-password"
+    );
+    if (!user) {
+      res.json({ success: 0, message: "User not found" });
+    }
+
+    if (otp !== user.resetOtp) {
+      return res.json({ success: 0, message: "Invalid OTP" });
+    }
+    if (user.resetOtpExpireAt < Date.now()) {
+      return res.json({ success: 0, message: "OTP expired" });
+    }
+
+    user.resetOtp = "";
+    user.resetOtpExpireAt = 0;
+    user.isAccountVerified = true;
+
+    await user.save();
+
+    res.json({ success: 1, message: "OTP verified" });
+  } catch (err) {
+    res.json({ success: 0, message: err.message });
+  }
+};
+
+const passResetSuccess = async (req, res) => {
+  const { password, email } = req.body;
+
+  if (!password) {
+    return res.json({ success: 0, message: "Password is required" });
+  }
+
+  try {
+    const user = await Users.findOne({ email: email.toLowerCase() }).select(
+      "-password"
+    );
+    if (!user) {
+      return res.json({ success: 0, message: "User not found" });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    user.password = hashedPassword;
+
+    await user.save();
+
+    res.json({ success: 1, message: "Password has been reset successfully" });
+  } catch (err) {
+    res.json({ success: 0, message: err.message });
+  }
+};
+
+const resetOtpResend = async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) {
+    return res.status(400).json({ success: 0, message: "Email is required" });
+  }
+
+  try {
+    const user = await Users.findOne({ email: email.toLowerCase() }).select(
+      "-password"
+    );
+
+    if (!user) {
+      return res.status(400).json({ success: 0, message: "User not found" });
+    }
+
+    const now = new Date();
+    const cooldown = 50 * 1000; // 50 seconds
+
+    if (user.otpRequestedAt && now - user.otpRequestedAt < cooldown) {
+      const secondsLeft = Math.ceil(
+        (cooldown - (now - user.otpRequestedAt)) / 1000
+      );
+      return res.status(429).json({
+        success: 0,
+        message: `Please wait ${secondsLeft}s before requesting another OTP.`,
+        secondsLeft,
+      });
+    }
+
+    const otp = String(Math.floor(100000 + Math.random() * 900000));
+
+    user.resetOtp = otp;
+    user.resetOtpExpireAt = Date.now() + 10 * 60 * 1000;
+    user.otpRequestedAt = now;
+    await user.save();
+
+    const mailOptions = {
+      from: process.env.SENDER_EMAIL,
+      to: email.toLowerCase(),
+      subject: `Resend Email Verification OTP`,
+      text: verifyEmailText(otp),
+      html: pass_Reset_Temp(otp).replace("{{image}}", "cid:logo@easy"),
+      attachments: [
+        {
+          filename: "desktop.png",
+          path: path.join(__dirname, "desktop.png"),
+          cid: "logo@easy",
+        },
+      ],
+    };
+
+    await transporter.sendMail(mailOptions);
+    return res
+      .status(200)
+      .json({ success: 1, message: "OTP has been resent successfully" });
+  } catch (err) {
+    return res.status(500).json({ success: 0, message: err.message });
+  }
+};
+const otpResend = async (req, res) => {
+  const { userId } = req.body;
+
+  try {
+    const user = await Users.findById(userId);
+
+    if (!user) {
+      return res.status(400).json({ success: 0, message: "User not found" });
+    }
+
+    const now = new Date();
+    const cooldown = 50 * 1000; // 50 seconds
+
+    if (user.otpRequestedAt && now - user.otpRequestedAt < cooldown) {
+      const secondsLeft = Math.ceil(
+        (cooldown - (now - user.otpRequestedAt)) / 1000
+      );
+      return res.status(429).json({
+        success: 0,
+        message: `Please wait ${secondsLeft}s before requesting another OTP.`,
+        secondsLeft,
+      });
+    }
+
+    const otp = String(Math.floor(100000 + Math.random() * 900000));
+
+    user.otp = otp;
+    user.otpExpireAt = Date.now() + 10 * 60 * 1000;
+    user.otpRequestedAt = now;
+    await user.save();
+
+    const mailOptions = {
+      from: process.env.SENDER_EMAIL,
+      to: user.email,
+      subject: `Resend Email Verification OTP`,
+      text: verifyEmailText(otp),
+      html: pass_Reset_Temp(otp).replace("{{image}}", "cid:logo@easy"),
+      attachments: [
+        {
+          filename: "desktop.png",
+          path: path.join(__dirname, "desktop.png"),
+          cid: "logo@easy",
+        },
+      ],
+    };
+
+    await transporter.sendMail(mailOptions);
+    return res
+      .status(200)
+      .json({ success: 1, message: "OTP has been resent successfully" });
+  } catch (err) {
+    return res.status(500).json({ success: 0, message: err.message });
   }
 };
 
@@ -676,4 +879,9 @@ module.exports = {
   verifyEmail,
   verifyEmailChange,
   sendEmailChangeVerifyOtp,
+  sendPassResetOtp,
+  verifyPassResetOtp,
+  passResetSuccess,
+  resetOtpResend,
+  otpResend,
 };
