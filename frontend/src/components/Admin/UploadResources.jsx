@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { FaCalendarAlt, FaBook, FaGraduationCap, FaLink } from "react-icons/fa";
+import { useState, useEffect } from "react";
+import { FaCalendarAlt, FaGraduationCap, FaLink } from "react-icons/fa";
 import { MdCategory, MdDateRange } from "react-icons/md";
 import { GrResources } from "react-icons/gr";
 import { toast } from "react-toastify";
@@ -241,7 +241,7 @@ const UploadResources = () => {
               name="semestername"
               value={upload.semestername}
               onChange={handleChange}
-              className="w-full  outline-slate-200 bg-transparent"
+              className="w-full  outline-none bg-transparent"
               required
             >
               <option value="">Select Semester</option>
@@ -269,7 +269,7 @@ const UploadResources = () => {
 
         <button
           type="submit"
-          className="px-4 py-3 rounded-2xl bg-transparent border  border-slate-100  placeholder:font-medium hover-supported: hover:bg-[#5CAE59] hover-supported:hover:text-gray-200 active:bg-green-600 shadow-lg transition-all duration-500 self-center"
+          className="px-4 py-2 rounded-2xl bg-transparent border  border-slate-100 hover-supported:hover:border-transparent  placeholder:font-medium hover-supported: hover:bg-[#5CAE59] hover-supported:hover:text-gray-200 active:bg-green-600 shadow-lg transition-all duration-500 self-center"
         >
           {upload._id ? "Update  " : " Upload  "}
         </button>

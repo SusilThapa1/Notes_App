@@ -3,10 +3,12 @@ import { GrResources } from "react-icons/gr";
 import { FaBook, FaGraduationCap } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { MdFileUpload } from "react-icons/md";
+import { VscGraph } from "react-icons/vsc";
 
 const Sidebar = () => {
   const url = "/study/admin/dashboard";
   const menus = [
+    { name: "Analytics", link: `${url}/analytics` },
     { name: "Manage Programme", link: `${url}/manageprogramme` },
     { name: "Manage Semesters", link: `${url}/managesemester` },
     { name: "Upload Resources", link: `${url}/uploadresources` },
@@ -31,6 +33,9 @@ const Sidebar = () => {
           onClick={() => handleClick(menu.link)}
         >
           {/* Choose icon based on the menu */}
+          {menu.name === "Analytics" && (
+            <VscGraph className="text-blue-800 text-2xl" />
+          )}
           {menu.name === "Manage Programme" && (
             <FaGraduationCap className="text-blue-800 text-2xl" />
           )}

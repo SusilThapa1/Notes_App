@@ -3,7 +3,7 @@ import { toast } from "react-toastify";
 import { deleteUpload } from "../../../Services/uploadService";
 import { FaFilter } from "react-icons/fa";
 import { ProgrammesContext } from "../Context/ProgrammeContext";
-import Table from "../Table";
+import Table from "./Table";
 import Loader from "../Loader";
 
 const ManageResources = () => {
