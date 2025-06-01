@@ -20,7 +20,7 @@ const userSchema = new mongoose.Schema(
     role: {
       type: String,
       enum: ["user", "admin"],
-      default: "admin",
+      default: "user",
     },
     otp: { type: String, default: "" },
     otpExpireAt: { type: Number, default: 0 },
