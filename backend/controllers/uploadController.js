@@ -1,6 +1,6 @@
 const Uploads = require("../models/uploadModel");
-const fs = require("fs");
-const path = require("path");
+// const fs = require("fs");
+// const path = require("path");
 
 let uploadInsert = async (req, res) => {
   try {

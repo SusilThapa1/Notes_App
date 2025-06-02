@@ -863,6 +863,26 @@ const otpResend = async (req, res) => {
   }
 };
 
+const changeRole = async (req, res) => {
+  const { id, role } = req.body;
+  try {
+    const user = await Users.findById(id).select("-password");
+    if (!user) {
+      return res.status(400).json({ success: 0, message: "User not found" });
+    }
+
+    user.role = role;
+
+    await user.save();
+
+    return res
+      .status(200)
+      .json({ success: 1, message: `Successfully changed role to ${role}` });
+  } catch (err) {
+    res.status(400).json({ success: 0, message: err.message });
+  }
+};
+
 module.exports = {
   userSignUp,
   userUploadProfile,
@@ -884,4 +904,5 @@ module.exports = {
   passResetSuccess,
   resetOtpResend,
   otpResend,
+  changeRole,
 };
