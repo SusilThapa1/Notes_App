@@ -152,7 +152,7 @@ const SemesterManager = () => {
   return (
     <div
       ref={scrollRef}
-      className="flex flex-col items-center  w-full mt-4 overflow-y-scroll scroll-container bg-transparent shadow-sm mx-auto h-[calc(100vh-200px)] md:h-[calc(100vh-60px)] pb-20 md:pb-0"
+      className="flex flex-col items-center w-full mt-4 overflow-y-scroll scroll-container bg-transparent shadow-sm mx-auto h-screen "
     >
       <div className="w-full flex flex-col gap-3  justify-center items-center h-fit pt-5 rounded-lg">
         <h1 className="text-2xl font-bold text-center    text-[#5CAE59]">
@@ -203,7 +203,7 @@ const SemesterManager = () => {
         </form>
       </div>
 
-      <div className="py-4 w-full ">
+      <div className="py-4 w-full 0">
         <div className="max-h-[300px] scroll-container">
           <h1 className="text-xl font-bold mb-4 text-center">
             Available Semesters/Years List
@@ -226,7 +226,7 @@ const SemesterManager = () => {
                     border="collapse"
                     className="min-w-full bg-transparent shadow-lg text-center"
                   >
-                    <thead className="bg-green-600 text-white">
+                    <thead className="bg-[#5CAE59] text-white">
                       <tr className="text-center border-b border-gray-400">
                         <th className="p-2  w-[5%] border-r border-gray-400 rounded-tl-lg">
                           S.N.

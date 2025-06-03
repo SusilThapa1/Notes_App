@@ -121,9 +121,9 @@ const ManageUsers = () => {
   }
 
   return (
-    <div className="flex flex-col items-center w-full scroll-container gap-5 bg-transparent shadow-sm mx-auto px-2 py-10">
-      <h1 className="text-green-600 text-center font-bold text-lg w-full">
-        Total Users
+    <div className="flex flex-col items-center w-full overflow-none   gap-5 bg-transparent shadow-sm mx-auto px-2 py-10 h-screen">
+      <h1 className="text-[#5CAE59] text-center font-bold text-lg w-full">
+        Total Users : {users.length}
       </h1>
 
       {/* Search Input */}
@@ -138,11 +138,11 @@ const ManageUsers = () => {
         <FcSearch size={30} />
       </div>
 
-      <div className="w-full overflow-auto">
-        <table className="w-full bg-transparent shadow-lg text-center scroll-smooth">
-          <thead className="bg-[#5CAE59] text-white">
+      <div className="w-full overflow-x-auto scroll-container scroll-smooth ">
+        <table className="w-full bg-transparent shadow-lg text-center rounded-2xl">
+          <thead className="bg-[#5CAE59] text-white ">
             <tr className="border-b border-gray-400">
-              <th className="p-2 w-[5%] border-r border-gray-400 rounded-tl-lg">
+              <th className="p-2 w-[5%] border-r-2 border-gray-400 rounded-tl-lg">
                 S.N.
               </th>
               <th className="p-2 border-r border-gray-400">Profile</th>
@@ -161,7 +161,7 @@ const ManageUsers = () => {
                 .map((user, index) => (
                   <tr
                     key={user._id}
-                    className="border-b border-gray-400 hover-supported:hover:bg-gray-300 transition-all duration-500"
+                    className="   border-b-2 border-gray-300 hover-supported:hover:bg-gray-300 transition-all duration-500"
                   >
                     <td className="p-2 border-r border-gray-400">
                       {index + 1}.
@@ -214,7 +214,7 @@ const ManageUsers = () => {
                   </tr>
                 ))
             ) : (
-              <tr>
+              <tr className="md:h-[65vh]">
                 <td
                   colSpan="8"
                   className="  py-5 text-red-600 font-semibold text-xl w-full h-full"

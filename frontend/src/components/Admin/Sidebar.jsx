@@ -4,11 +4,13 @@ import { FaArrowCircleRight, FaBook, FaGraduationCap } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { MdFileUpload } from "react-icons/md";
 import { VscGraph } from "react-icons/vsc";
+import { FaUser } from "react-icons/fa6";
 
 const Sidebar = () => {
   const url = "/study/admin/dashboard";
   const menus = [
-    { name: "Analytics", link: `${url}/analytics` },
+    { name: "View Analytics", link: `${url}/analytics` },
+    { name: "Manage Users", link: `${url}/manageusers` },
     { name: "Manage Programme", link: `${url}/manageprogramme` },
     { name: "Manage Semesters", link: `${url}/managesemester` },
     { name: "Upload Resources", link: `${url}/uploadresources` },
@@ -27,33 +29,36 @@ const Sidebar = () => {
   };
 
   return (
-    <div className="relative w-full">
+    <div className="relative w-full md:h-screen">
       {/* Desktop Admin menu */}
-      <div className=" hidden  md:flex flex-col justify-center md:justify-start w-full text-center gap-5 border-r-gray-400 h-full border-b-gray-400  border-2 mt-10 py-5 px-2 ">
+      <div className=" hidden  h-screen  md:flex flex-col justify-center md:justify-start text-center gap-5 border-r-gray-400 border-b-gray-400  border-2 mt-5 py-5 px-2 z-0">
         {menus.map((menu) => (
           <Link
             to={menu.link}
             key={menu.name}
-            className={`flex gap-2 items-center justify-center px-4 py-3 rounded-2xl shadow-lg   bg-transparent border  border-slate-100 hover-supported:hover:text-green-600 ${
-              activeLink === menu.link ? "bg-blue-200    text-[#5CAE59]" : ""
+            className={`flex gap-2 items-center justify-center  py-3 rounded-2xl shadow-lg   bg-transparent border  border-slate-100 hover-supported:hover:text-green-600 ${
+              activeLink === menu.link ? "bg-blue-200 text-[#5CAE59]" : ""
             }`}
             onClick={() => handleClick(menu.link)}
           >
             {/* Choose icon based on the menu */}
-            {menu.name === "Analytics" && (
-              <VscGraph className="text-blue-800 text-2xl" />
+            {menu.name === "View Analytics" && (
+              <VscGraph size={20} className="text-purple-500 " />
+            )}
+            {menu.name === "Manage Users" && (
+              <FaUser size={20} className="text-gray-800 " />
             )}
             {menu.name === "Manage Programme" && (
-              <FaGraduationCap className="text-blue-800 text-2xl" />
+              <FaGraduationCap size={20} className="text-blue-800 " />
             )}
             {menu.name === "Manage Semesters" && (
-              <FaBook className="text-yellow-600" />
+              <FaBook size={20} className="text-yellow-600" />
             )}
             {menu.name === "Upload Resources" && (
-              <MdFileUpload className="text-red-600 text-2xl" />
+              <MdFileUpload size={20} className="text-red-600 " />
             )}
             {menu.name === "Manage Resources" && (
-              <GrResources className="text-blue-600 text-2xl" />
+              <GrResources size={20} className="text-blue-600 " />
             )}
             <h1>{menu.name}</h1>
           </Link>
@@ -66,14 +71,14 @@ const Sidebar = () => {
         size={20}
         onClick={handleAdminMenu}
         title="Admin menu"
-        className={` md:hidden absolute top-0  z-50 ${
+        className={` md:hidden fixed top-16  z-50 ${
           adminMenuOpen
-            ? "rotate-180 left-48 text-red-600"
-            : "-left-3 text-green-600"
+            ? "rotate-180 left-52 text-red-600"
+            : "left-5 text-[#5CAE59]"
         } transition-all duration-500 `}
       />
       <div
-        className={`fixed left-0 top-14 border border-r-yellow-50  backdrop-blur-sm flex h-screen w-max flex-col items-start justify-start gap-10 px-2 py-5  shadow-lg transition-transform duration-500 md:hidden ${
+        className={`fixed left-0 top-14 border border-r-yellow-50 h-screen backdrop-blur-sm flex  w-max flex-col items-start justify-start gap-10 px-2 py-5  shadow-lg transition-transform duration-500 md:hidden ${
           adminMenuOpen ? "-translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -81,7 +86,7 @@ const Sidebar = () => {
           <Link
             to={menu.link}
             key={menu.name}
-            className={`flex gap-2 items-center justify-center px-4 py-3  hover-supported:hover:text-green-600 ${
+            className={`flex gap-2 items-center justify-center px-4 py-3 hover-supported:hover:text-green-600 ${
               activeLink === menu.link ? "  text-[#5CAE59]" : ""
             } `}
             onClick={() => {
@@ -90,20 +95,23 @@ const Sidebar = () => {
             }}
           >
             {/* Choose icon based on the menu */}
-            {menu.name === "Analytics" && (
-              <VscGraph className="text-blue-800 text-2xl" />
+            {menu.name === "View Analytics" && (
+              <VscGraph size={15} className="text-purple-500 " />
+            )}
+            {menu.name === "Manage Users" && (
+              <FaUser size={15} className="text-gray-800 " />
             )}
             {menu.name === "Manage Programme" && (
-              <FaGraduationCap className="text-blue-800 text-2xl" />
+              <FaGraduationCap size={15} className="text-blue-800 " />
             )}
             {menu.name === "Manage Semesters" && (
-              <FaBook className="text-yellow-600" />
+              <FaBook size={15} className="text-yellow-600" />
             )}
             {menu.name === "Upload Resources" && (
-              <MdFileUpload className="text-red-600 text-2xl" />
+              <MdFileUpload size={15} className="text-red-600 " />
             )}
             {menu.name === "Manage Resources" && (
-              <GrResources className="text-blue-600 text-2xl" />
+              <GrResources size={15} className="text-blue-600 " />
             )}
             <h1>{menu.name}</h1>
           </Link>

@@ -154,7 +154,7 @@ const ProgrammeManager = () => {
   return (
     <div
       ref={scrollRef}
-      className="flex flex-col items-center  w-full max-w-6xl mt-8  pb-10 md:pb-0  overflow-y-scroll scroll-container bg-transparent shadow-sm mx-auto h-[calc(100vh-200px)] md:h-[calc(100vh-75px)]"
+      className="flex flex-col items-center  w-full max-w-6xl mt-8 pb-10  overflow-y-scroll scroll-container bg-transparent shadow-sm mx-auto h-screen"
     >
       <h1 className="text-2xl font-semibold mb-4 text-center    text-[#5CAE59]">
         {programmeData._id ? "Edit Programme" : "Add New Programme"}
@@ -291,7 +291,7 @@ const ProgrammeManager = () => {
                 programmeLists.map((programme) => (
                   <tr
                     key={programme._id}
-                    className="border-b border-gray-500 bg-gray-200   hover-supported:hover:bg-gray-300 text-center transition-all duration-500"
+                    className="border-b border-gray-500 bg-gray-200 hover-supported:hover:bg-gray-300 text-center transition-all duration-500"
                   >
                     <td className="p-2 flex justify-center items-center  border-r border-gray-400">
                       <img

@@ -19,7 +19,16 @@ const Table = ({ resource }) => {
       confirmButtonColor: "#49bb0f",
       cancelButtonColor: "#d33",
       confirmButtonText: "Yes, delete it!",
-      width: "400px",
+      background: "#E2E8F0",
+      scrollbarPadding: false,
+      customClass: {
+        popup: "text-base sm:text-lg md:text-xl",
+        title: "text-xl sm:text-2xl md:text-3xl font-semibold",
+        confirmButton:
+          "text-sm sm:text-base md:text-lg bg-blue-600 text-white px-4 py-2 rounded",
+        cancelButton:
+          "text-sm sm:text-base md:text-lg bg-gray-400 text-white px-4 py-2 rounded",
+      },
     });
 
     if (!response.isConfirmed) return;
@@ -49,7 +58,7 @@ const Table = ({ resource }) => {
 
   return (
     <table className="w-full bg-transparent shadow-lg text-center ">
-      <thead className="bg-green-600 text-white">
+      <thead className="bg-[#5CAE59] text-white">
         <tr className="text-center border-b border-gray-400 ">
           <th className="p-2  w-[5%] border-r border-gray-400 rounded-tl-lg">
             S.N.

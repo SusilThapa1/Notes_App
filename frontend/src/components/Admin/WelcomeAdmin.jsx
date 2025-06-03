@@ -10,7 +10,7 @@ const WelcomeAdmin = () => {
   const { user, greeting } = useContext(AuthContext);
 
   return (
-    <div className="flex flex-col items-center  scroll-container  w-full text-black py-8    overflow-y-scroll  bg-transparent mx-auto h-[calc(100vh-210px)] md:h-[calc(100vh-60px)] px-5">
+    <div className="flex flex-col items-center  scroll-container  w-full text-black pt-8 h-screen   overflow-y-scroll  bg-transparent mx-auto pb-10  px-5">
       <div className="flex flex-col justify-center items-center gap-2 text-justify md:text-center mb-8">
         <div className="flex flex-col gap-5 justify-center items-center text-[5vw] md:text-3xl text-center font-bold mb-4    text-[#5CAE59]">
           <h1>

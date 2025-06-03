@@ -7,13 +7,12 @@ import { fetchAllUsers } from "../../../Services/userService";
 import { useEffect } from "react";
 import { useContext } from "react";
 import { ProgrammesContext } from "../Context/ProgrammeContext";
+import Loader from "../Loader";
 
 const Analytics = () => {
-  const [users, setUsers] = useState(10);
-  // const [programmes, setProgrammes] = useState(5);
-  // const [semesters, setUSemesters] = useState(36);
-  // const [uploads, setUploads] = useState(20);
-  const { programmeLists, semesterLists, uploads } =
+  const [users, setUsers] = useState(null);
+
+  const { programmeLists, semesterLists, uploads, loading } =
     useContext(ProgrammesContext);
 
   const [genderCounts, setGenderCounts] = useState({});
@@ -45,8 +44,13 @@ const Analytics = () => {
   // ✨ Prepare chart data
   const labels = Object.keys(genderCounts);
   const dataValues = Object.values(genderCounts);
+
+  if (loading) {
+    return <Loader />;
+  }
+
   return (
-    <div className="flex flex-col items-center w-full overflow-y-scroll scroll-container gap-5 bg-transparent shadow-sm mx-auto    md:pb-0 px-2 pt-10">
+    <div className="flex flex-col items-center w-full overflow-y-scroll scroll-container gap-5 bg-transparent shadow-sm mx-auto  h-screen  px-2 py-10">
       {/* Dashboard Header */}
       <div className="text-center mb-10">
         <h1 className="  font-bold text-gray-800 mb-2">
@@ -63,7 +67,7 @@ const Analytics = () => {
           <FaUsers className="text-3xl md:text-5xl text-gray-500" />
           <h1 className="font-semibold text-green-600 ">Users</h1>
           <span className=" font-bold text-gray-700">
-            Total: {users.length}
+            Total: {users?.length}
           </span>
         </div>
 
@@ -71,7 +75,7 @@ const Analytics = () => {
           <FaGraduationCap className="text-3xl md:text-5xl text-blue-500" />
           <h1 className="font-semibold text-green-600 ">Programmes</h1>
           <span className=" font-bold text-gray-700">
-            Total: {programmeLists.length}
+            Total: {programmeLists?.length}
           </span>
         </div>
 
@@ -79,7 +83,7 @@ const Analytics = () => {
           <FaBook className="text-3xl md:text-5xl text-yellow-500" />
           <h1 className="font-semibold text-green-600 ">Semesters/Years</h1>
           <span className=" font-bold text-gray-700">
-            Total: {semesterLists.length}
+            Total: {semesterLists?.length}
           </span>
         </div>
 
@@ -87,13 +91,13 @@ const Analytics = () => {
           <FaCloudUploadAlt className="text-3xl md:text-5xl text-sky-600" />
           <h1 className="font-semibold text-green-600 ">Uploads</h1>
           <span className=" font-bold text-gray-700">
-            Total: {uploads.length}
+            Total: {uploads?.length}
           </span>
         </div>
       </div>
 
       {/* Bar Chart Section */}
-      <div className="w-full bg-transparent rounded-xl shadow-lg p-6 h-max mx-auto">
+      <div className=" flex justify-center items-center  flex-col w-full bg-transparent rounded-xl shadow-xl p-6 h-[60vh]  ">
         <h2 className=" text-center underline font-semibold text-gray-800 mb-4">
           Chart Showing Users by Gender{" "}
         </h2>
