@@ -1,8 +1,13 @@
 import { useContext, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { verifyEmail, verifyEmailChange } from "../../../Services/userService";
+import {
+  otpResend,
+  verifyEmail,
+  verifyEmailChange,
+} from "../../../Services/userService";
 import { AuthContext } from "../Context/AuthContext";
+import { useEffect } from "react";
 
 const OTPVerify = () => {
   const location = useLocation();
@@ -12,6 +17,9 @@ const OTPVerify = () => {
   const [otp, setOtp] = useState(new Array(6).fill(""));
 
   const [error, setError] = useState("");
+
+  const [countdown, setCountdown] = useState(0);
+  const [disabled, setDisabled] = useState(false);
 
   const { setUserSession } = useContext(AuthContext);
 
@@ -48,8 +56,9 @@ const OTPVerify = () => {
       return toast.error("OTP must be 6 digits.");
     }
 
+    const userId = JSON.parse(localStorage.getItem("user"))?.id;
     try {
-      const res = await verifyEmail(enteredOtp);
+      const res = await verifyEmail(enteredOtp, userId);
       if (res.success) {
         setUserSession(res?.token, res?.user);
         toast.success(res.message);
@@ -64,6 +73,7 @@ const OTPVerify = () => {
 
     setError("");
   };
+
   const handleChangeVerify = async (e) => {
     e.preventDefault();
     toast.dismiss();
@@ -91,6 +101,36 @@ const OTPVerify = () => {
 
     setError("");
   };
+
+  const handleResendOtp = async () => {
+    const userId = JSON.parse(localStorage.getItem("user"))?.id;
+    try {
+      const res = await otpResend(userId);
+      if (res.success) {
+        toast.success(res.message);
+      } else {
+        toast.error(res?.message);
+      }
+    } catch (err) {
+      toast.error(err?.response?.data?.message);
+      console.log(err);
+      const seconds = err.response?.data?.secondsLeft;
+      if (seconds) {
+        setCountdown(seconds);
+        setDisabled(true);
+      }
+    }
+  };
+
+  useEffect(() => {
+    let timer;
+    if (countdown > 0) {
+      timer = setTimeout(() => setCountdown((prev) => prev - 1), 1000);
+    } else {
+      setDisabled(false); // Enable button when time is up
+    }
+    return () => clearTimeout(timer);
+  }, [countdown]);
 
   return (
     <div className="mt-24 flex h-[calc(100vh-100px)] justify-start items-center flex-col w-full px-5">
@@ -139,8 +179,13 @@ const OTPVerify = () => {
             </button>
           </form>
 
-          <button className="bg-blue-500 text-white px-4 py-1 sm:py-2  shadow-lg rounded-lg">
-            Didn't get OTP ? Resend
+          <button
+            onClick={handleResendOtp}
+            disabled={disabled}
+            type="button"
+            className="hover:bg-[#5CAE59] hover-supported:hover:border-transparent hover-supported:hover:text-white border-2  border-slate-100 px-4 sm:px-6 py-1 sm:py-2  shadow-lg rounded-2xl transition-all duration-500"
+          >
+            {disabled ? `Try again in ${countdown}s` : "Resend OTP"}
           </button>
         </div>
       </div>

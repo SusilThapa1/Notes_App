@@ -55,8 +55,8 @@ const ChangePass = () => {
   };
 
   return (
-    <div className="flex flex-col  justify-center items-center pb-5 w-full md:h-max ">
-      <div className="flex flex-col justify-center items-center gap-5 mt-20  w-full md:w-[70%] ">
+    <div className="flex flex-col  justify-center items-center pb-5 w-full h-max md:h-screen ">
+      <div className="flex flex-col justify-center items-center gap-5 mt-20  w-full md:w-[65%] ">
         <h1 className="font-semibold text-lg text-center    text-[#5CAE59]">
           Please enter your old password and new passwords below
         </h1>

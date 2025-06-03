@@ -11,8 +11,7 @@ const Login = () => {
   const [showPass, setShowPass] = useState(false);
   const [formData, setFormData] = useState({ email: "", password: "" });
   const navigate = useNavigate();
-  const { setUserSession, userDetails, sendEmailVerifyOtp } =
-    useContext(AuthContext);
+  const { setUserSession, sendEmailVerifyOtp } = useContext(AuthContext);
   const passShow = () => setShowPass(!showPass);
 
   const handleChange = (e) => {
@@ -29,8 +28,6 @@ const Login = () => {
     try {
       const res = await userLogin(formData);
       if (res?.success) {
-        console.log("Login Response:", res);
-
         setUserSession(res?.token, res?.user);
         if (res?.user?.isAccountVerified) {
           toast.success(res?.message);
@@ -53,12 +50,16 @@ const Login = () => {
 
   return (
     <div className="mx-auto h-screen my-auto w-full flex justify-center items-center ">
-      <div className="flex flex-col justify-center items-center gap-5 px-5 py-8 w-[85%]  md:w-[600px] rounded-xl bg-transparent  shadow-lg border-2  border-slate-100">
+      <div className="flex flex-col justify-center items-center gap-5 px-5 py-8 w-[85%]  md:w-[600px] rounded-xl bg-transparent  shadow-lg border  border-slate-100">
+        <img
+          onClick={() => window.scroll(0, 0)}
+          className="w-12   rounded-lg  shadow-xl bg-transparent border-2 border-gray-200"
+          src="/images/study3D21Copy.png"
+          alt="logo"
+          loading="lazy"
+        />
         <h1 className="  text-[#5CAE59] text-center font-bold">
           Welcome Back !
-        </h1>
-        <h1 className="  text-[#5CAE59] text-center font-bold">
-          Sign in to Continue - EasyStudyZone
         </h1>
         <form
           method="POST"
@@ -117,7 +118,7 @@ const Login = () => {
             Forget password ?
           </Link>
           <p className="w-full text-center">
-            Don't have an account?{" "}
+            Don't have an account ?{" "}
             <Link
               to="/study/signup"
               className="cursor-pointer text-red-500 hover-supported:hover:underline"

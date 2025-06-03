@@ -89,9 +89,9 @@ const SignUp = () => {
 
     try {
       const res = await registerUser(formData);
-
+      console.log(res);
       if (res.success) {
-        setUserSession(res.token, res.user);
+        setUserSession(res?.tempToken, res?.user);
 
         sendEmailVerifyOtp(formData.email);
       } else {
@@ -108,11 +108,18 @@ const SignUp = () => {
 
   return (
     <div className="mx-auto mb-10 h-auto  w-full flex justify-center items-center ">
-      <div className="flex flex-col justify-center items-center gap-5 px-5 py-10 mt-24  w-[85%] border-2  border-slate-100 md:w-[600px] rounded-xl bg-transparent  shadow-lg ">
+      <div className="flex flex-col justify-center items-center gap-5 px-5 py-10 mt-24  w-[85%] border  border-slate-100 md:w-[600px] rounded-xl bg-transparent  shadow-lg ">
+        <img
+          onClick={() => window.scroll(0, 0)}
+          className="w-12   rounded-lg  shadow-xl bg-transparent border-2 border-gray-200"
+          src="/images/study3D21Copy.png"
+          alt="logo"
+          loading="lazy"
+        />
         <h1 className=" text-[#5CAE59] text-center font-bold">
           Create a new account
         </h1>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-8 w-full  ">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-7 w-full  ">
           {/* Username */}
           <div
             className={`flex items-center bg-transparent border border-slate-100 outline-none  px-4 py-3 rounded-full    shadow-lg transition-all duration-500 ${
@@ -307,7 +314,7 @@ const SignUp = () => {
         </form>
 
         <p className="w-full text-center  ">
-          Already have an account?{" "}
+          Already have an account ?{" "}
           <Link to="/study/signin" className="cursor-pointer text-red-500">
             Click here
           </Link>

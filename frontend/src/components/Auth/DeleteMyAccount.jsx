@@ -56,7 +56,7 @@ const DeleteMyAccount = () => {
         localStorage.removeItem("token");
         localStorage.removeItem("user");
         localStorage.removeItem("greet");
-        logOut(false, "");
+        logOut();
       } else {
         toast.error(res?.message);
       }
@@ -92,7 +92,7 @@ const DeleteMyAccount = () => {
         </div>
         <button
           onClick={handleSubmit}
-          className="bg-red-600   border border-red-500 text-white  px-4 py-3 rounded-full font-medium  shadow-lg transition-all duration-500 text-center"
+          className="bg-red-600   border border-red-500 text-white  px-4 py-2 rounded-full font-medium  shadow-lg transition-all duration-500 text-center"
         >
           Delete Account
         </button>
