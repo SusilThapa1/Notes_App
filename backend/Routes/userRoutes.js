@@ -21,13 +21,14 @@ const {
   resendOtp,
   resetOtpResend,
   otpResend,
+  changeRole,
 } = require("../controllers/userController");
 const { profile } = require("../middlewares/file");
 const { verifyToken, verifyAdmin } = require("../middlewares/authMiddleware");
 
 const userRouter = express.Router();
-userRouter.post("/register", userSignUp);
-userRouter.post("/login", userLogin);
+userRouter.post("/auth/register", userSignUp);
+userRouter.post("/auth/login", userLogin);
 userRouter.get("/view", verifyToken, verifyAdmin, userList);
 userRouter.get("/userprofile", verifyToken, userProfile);
 userRouter.patch("/update/:id", verifyToken, userUpdate);
@@ -55,5 +56,6 @@ userRouter.post("/pass-reset-otp-verify", verifyPassResetOtp);
 userRouter.post("/pass-reset-success", passResetSuccess);
 userRouter.post("/reset-otp-resend", resetOtpResend);
 userRouter.post("/otp-resend", otpResend);
+userRouter.post("/change-role", verifyToken, verifyAdmin, changeRole);
 
 module.exports = userRouter;

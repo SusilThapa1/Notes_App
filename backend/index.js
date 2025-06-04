@@ -7,6 +7,7 @@ const userRouter = require("./Routes/userRoutes");
 const semesterRouter = require("./Routes/semesterRoutes");
 const programmeRouter = require("./Routes/programmeRoutes");
 const uploadRouter = require("./Routes/uploadRoutes");
+const reviewRouter = require("./Routes/reviewRoutes");
 const { upload, profile } = require("./middlewares/file");
 const cookieParser = require("cookie-parser");
 const cron = require("node-cron");
@@ -20,7 +21,7 @@ connectDB();
 
 app.use(
   cors({
-    origin: "http://192.168.1.23:5173", //frontend URL ||"http://localhost:5173" 192.168.16.153   192.168.1.22 192.168.1.104 192.168.1.45
+    origin: "http://192.168.1.23:5173", //frontend URL ||"http://localhost:5173" 192.168.16.153   192.168.1.23 192.168.1.104 192.168.1.45
     credentials: true,
   })
 );
@@ -93,6 +94,7 @@ app.use("/api/user", userRouter);
 app.use("/api/semester", semesterRouter);
 app.use("/api/programme", programmeRouter);
 app.use("/api/upload", uploadRouter);
+app.use("/api/review", reviewRouter);
 
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`🚀 Sever is running on address ${process.env.SERVER_BASE_URL}`);

@@ -19,8 +19,14 @@ const reviewSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    adminreply: {
-      type: String,
+    reply: {
+      text: String,
+      repliedDate: String,
+      repliedBy: {
+        name: String,
+        email: String,
+        userId: mongoose.Schema.Types.ObjectId, // optional backup ref
+      },
     },
   },
   {
