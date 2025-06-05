@@ -21,9 +21,9 @@ const SemesterYear = ({ programme, resource }) => {
     });
 
   return (
-    <div className="h-screen">
+    <div>
       {filteredSyllabus.length > 0 ? (
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10 md:gap-16 place-items-center pb-16">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10 md:gap-16 place-items-center ">
           {filteredSyllabus.map((data, index) => (
             <div key={index} className="w-full flex justify-center">
               <Link
@@ -44,7 +44,7 @@ const SemesterYear = ({ programme, resource }) => {
                     {data?.semestername || data?.year}
                   </div>
                   <div className="capitalize text-sm text-gray-600">
-                    Created by : {data.userID.username}
+                    Created by : {data?.userID?.username || "Unknown"}
                   </div>
                 </div>
               </Link>

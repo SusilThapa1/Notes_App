@@ -23,11 +23,11 @@ const Programme = () => {
         Purbanchal University (BIT, BCA, BE Civil and others ){" "}
         <span className="capitalize">{resources}</span>
       </h1>
-      {!userDetails?.isAccountVerified && !token && (
-        <div className="flex justify-center items-start text-lg text-red-600 text-center bg-transparent backdrop-blur-sm">
-          Please verify your account first to access study resources.You will
-          see the link below the images to access resources only if the account
-          is verified.
+      {(!userDetails?.isAccountVerified || !token) && (
+        <div className="flex justify-center items-start text-lg text-red-600 text-justify md:text-center bg-transparent backdrop-blur-sm">
+          Please verify your account first to access study resources. Once you
+          verify your account or sign in with the verified account, you will see
+          the link below the images to access resources.
         </div>
       )}
       <div className="grid md:grid-cols-2  lg:grid-cols-3 xl:grid-cols-4 gap-5 justify-center py-5">
@@ -39,7 +39,7 @@ const Programme = () => {
             <img
               src={program.imagepath}
               alt={program.programmefullname}
-              className="object-cover cursor-pointer border  border-slate-100 rounded-lg  shadow-lg hover-supported:hover:scale-95 duration-500 aspect-[30/25]"
+              className="object-cover cursor-pointer border-2  border-slate-100 rounded-lg  shadow-lg hover-supported:hover:scale-95 duration-500 aspect-[30/25]"
               onClick={() => setSelectedImage(program.imagepath)}
               title="view full image"
               loading="lazy"
@@ -49,7 +49,7 @@ const Programme = () => {
             {userDetails?.isAccountVerified && token && (
               <Link
                 to={`/study/${resources}/${program.programmeshortname}`}
-                className="will-change-transform bg-transparent border border-slate-100 text-center  px-3 py-2 rounded-3xl font-medium   shadow-lg hover:scale-105 transition-all duration-500 w-full"
+                className="will-change-transform bg-transparent border-2 border-slate-100 text-center  px-3 py-2 rounded-3xl font-medium   shadow-lg hover:scale-90 transition-all duration-500 w-full"
               >
                 {program.programmefullname} <br />({program.programmeshortname})
               </Link>

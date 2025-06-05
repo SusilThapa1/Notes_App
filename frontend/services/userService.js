@@ -6,7 +6,9 @@ const API_URL = import.meta.env.VITE_API_URL + "/user";
 // Fetch all users (admin use)
 const fetchAllUsers = async () => {
   try {
-    const response = await axios.get(`${API_URL}/view`);
+    const response = await axios.get(`${API_URL}/view`, {
+      withCredentials: true,
+    });
     return response.data;
   } catch (error) {
     throw error;
@@ -41,7 +43,7 @@ const deleteProfile = async (userid) => {
 // Register a new user
 const registerUser = async (userData) => {
   try {
-    const response = await axios.post(`${API_URL}/register`, userData, {
+    const response = await axios.post(`${API_URL}/auth/register`, userData, {
       headers: {
         "Content-Type": "application/json",
       },
@@ -75,7 +77,7 @@ const uploadProfile = async (userId, formData) => {
 // Login user
 const userLogin = async (data) => {
   try {
-    const response = await axios.post(`${API_URL}/login`, data, {
+    const response = await axios.post(`${API_URL}/auth/login`, data, {
       withCredentials: true,
     });
     return response.data;
@@ -97,7 +99,6 @@ const updateUser = async (userId, userData) => {
         withCredentials: true,
       }
     );
-    console.log(response.data);
     return response.data;
   } catch (error) {
     throw error;
@@ -179,11 +180,11 @@ const sendVerifyOtp = async (email) => {
 };
 
 //verify email
-const verifyEmail = async (otp) => {
+const verifyEmail = async (otp, userId) => {
   try {
     const response = await axios.post(
       `${API_URL}/verify-email`,
-      { otp },
+      { otp, userId },
       {
         withCredentials: true,
       }
@@ -214,7 +215,80 @@ const verifyEmailChange = async (otp) => {
   try {
     const response = await axios.post(
       `${API_URL}/verify-email-change`,
-      { otp },
+      {
+        otp,
+      },
+      {
+        withCredentials: true,
+      }
+    );
+    return response.data;
+  } catch (err) {
+    throw err;
+  }
+};
+
+const passResetOtp = async (email) => {
+  try {
+    const response = await axios.post(`${API_URL}/pass-reset-otp`, { email });
+    return response.data;
+  } catch (err) {
+    throw err;
+  }
+};
+
+const passResetOtpVerify = async (otp, email) => {
+  try {
+    const response = await axios.post(`${API_URL}/pass-reset-otp-verify`, {
+      otp,
+      email,
+    });
+    return response.data;
+  } catch (err) {
+    throw err;
+  }
+};
+
+const passResetSuccess = async (password, email) => {
+  try {
+    const response = await axios.post(`${API_URL}/pass-reset-success`, {
+      password,
+      email,
+    });
+    return response.data;
+  } catch (err) {
+    throw err;
+  }
+};
+
+const otpResend = async (userId) => {
+  try {
+    const response = await axios.post(
+      `${API_URL}/otp-resend`,
+      { userId },
+      {
+        withCredentials: true,
+      }
+    );
+    return response.data;
+  } catch (err) {
+    throw err;
+  }
+};
+const resetOtpResend = async (email) => {
+  try {
+    const response = await axios.post(`${API_URL}/reset-otp-resend`, { email });
+    return response.data;
+  } catch (err) {
+    throw err;
+  }
+};
+
+const changeRole = async (id, role) => {
+  try {
+    const response = await axios.post(
+      `${API_URL}/change-role`,
+      { id, role },
       {
         withCredentials: true,
       }
@@ -242,4 +316,10 @@ export {
   verifyEmail,
   sendEmailChangeVerifyOtp,
   verifyEmailChange,
+  passResetOtp,
+  passResetOtpVerify,
+  passResetSuccess,
+  otpResend,
+  resetOtpResend,
+  changeRole,
 };

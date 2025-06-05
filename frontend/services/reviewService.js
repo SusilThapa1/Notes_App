@@ -30,5 +30,25 @@ const sendReplyReview = async (id, data) => {
     throw err;
   }
 };
+const updateReview = async (id, data) => {
+  try {
+    const response = await axios.put(`${API_URL}/update-review/${id}`, data, {
+      withCredentials: true,
+    });
+    return response.data;
+  } catch (err) {
+    throw err;
+  }
+};
+const deleteReview = async (id) => {
+  try {
+    const response = await axios.delete(`${API_URL}/delete-review/${id}`, {
+      withCredentials: true,
+    });
+    return response.data;
+  } catch (err) {
+    throw err;
+  }
+};
 
-export { addReview, viewReview, sendReplyReview };
+export { addReview, viewReview, sendReplyReview, updateReview, deleteReview };

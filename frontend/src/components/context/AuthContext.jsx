@@ -1,6 +1,7 @@
 import { createContext, useState, useEffect, useRef } from "react";
 import { toast } from "react-toastify";
 import {
+  fetchAllUsers,
   fetchSingleUser,
   logoutUser,
   sendEmailChangeVerifyOtp,
@@ -13,6 +14,7 @@ const AuthContext = createContext(null);
 
 const AuthProvider = ({ children }) => {
   const [userDetails, setUserDetails] = useState(null);
+
   const [loading, setLoading] = useState(true);
   const [greeting, setGreeting] = useState(localStorage.getItem("greet"));
   const [token, setToken] = useState(localStorage.getItem("token"));
@@ -84,7 +86,6 @@ const AuthProvider = ({ children }) => {
   };
 
   const userDetail = async () => {
-    if (!token) return;
     try {
       const res = await fetchSingleUser();
       if (res.success) {
@@ -94,7 +95,7 @@ const AuthProvider = ({ children }) => {
       }
     } catch (e) {
       console.error(e);
-      toast.error("Error fetching user details.");
+      // toast.error("Error fetching user details.");
     } finally {
       setLoading(false);
     }

@@ -118,11 +118,11 @@ const Navbar = () => {
             );
           })}
         </ul>
-        {!token ? (
+        {!token || !userDetails?.isAccountVerified ? (
           <div className="flex items-center justify-between gap-5">
             <Link
               to="/study/signup"
-              className="relative group border   border-slate-100 hover-supported:hover:border-transparent  text-center shadow-lg rounded-lg px-4 py-2 min-w-max overflow-hidden transition-colors duration-300"
+              className="relative group border   border-slate-100 hover-supported:hover:border-transparent  text-center shadow-lg rounded-full px-3 py-1 min-w-max overflow-hidden transition-colors duration-300"
             >
               <span className="absolute bottom-0 left-0 h-0 bg-[#5CAE59]   w-full hover-supported:group-hover:h-full transition-all duration-300 ease-in-out z-0"></span>
 
@@ -132,7 +132,7 @@ const Navbar = () => {
             </Link>
             <Link
               to="/study/signin"
-              className="relative group border border-slate-100   hover-supported:hover:border-transparent  text-center shadow-lg rounded-lg px-4 py-2 min-w-max overflow-hidden transition-colors duration-300"
+              className="relative group border border-slate-100   hover-supported:hover:border-transparent  text-center shadow-lg rounded-full px-3 py-1 min-w-max overflow-hidden transition-colors duration-300"
             >
               <span className="absolute bottom-0 left-0 h-0 bg-[#5CAE59] w-full hover-supported:group-hover:h-full transition-all duration-300 ease-in-out z-0"></span>
 
@@ -168,7 +168,7 @@ const Navbar = () => {
               <div
                 className={`${
                   isOpenAccountDetails ? "flex" : "hidden"
-                } absolute top-14 md:top-[65px] right-0 font-medium rounded-b-2xl border  bg-slate-200  flex-col min-w-max p-5 gap-3 justify-center items-center z-40 transition-all duration-300  shadow-lg text-sm  `}
+                } absolute top-14 md:top-[62px]    right-0 font-medium rounded-b-2xl border  bg-gray-200  flex-col min-w-max p-5 gap-3 justify-center items-center z-40 transition-all duration-300  shadow-lg text-sm  `}
               >
                 <Link
                   onClick={openAccountMenu}

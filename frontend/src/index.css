@@ -27,7 +27,9 @@
 }
 
 @layer base {
-  input:focus::placeholder {
+
+  input:focus::placeholder,
+  textarea:focus::placeholder {
     color: transparent;
   }
 }

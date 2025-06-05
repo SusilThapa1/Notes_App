@@ -187,7 +187,11 @@ const Profile = () => {
           JSON.stringify({
             id: userData._id,
             username: userData.username,
+            email: userData?.email,
             role: userDetails?.role,
+            account: userDetails?.isAccountVerified
+              ? "verified"
+              : "not verified",
           })
         );
 
@@ -213,58 +217,10 @@ const Profile = () => {
     return <Loader />;
   }
 
-  // if (!token) {
-  //   return (
-  //     <div className="flex flex-col justify-center items-center gap-5 mt-5 text-center px-5 font-bold h-[65vh] md:h-[calc(100vh-90px)]  ">
-  //       <img src="/prof.webp" alt="Profile" className="w-40 h-40" />
-  //       <h1>Please sign up or sign in to view your profile details.</h1>
-  //       <div className="flex items-center justify-center gap-10">
-  //         <Link
-  //           to="/study/signup"
-  //           className="relative group border   border-slate-100 hover-supported:hover:border-transparent  text-center shadow-lg rounded-lg px-4 py-2 min-w-max overflow-hidden transition-colors duration-300"
-  //         >
-  //           <span className="absolute bottom-0 left-0 h-0 bg-[#5CAE59]   w-full hover-supported:group-hover:h-full transition-all duration-300 ease-in-out z-0"></span>
-
-  //           <span className="relative z-10 hover-supported:group-hover:text-white">
-  //             Sign up
-  //           </span>
-  //         </Link>
-  //         <Link
-  //           to="/study/signin"
-  //           className="relative group border border-slate-100   hover-supported:hover:border-transparent  text-center shadow-lg rounded-lg px-4 py-2 min-w-max overflow-hidden transition-colors duration-300"
-  //         >
-  //           <span className="absolute bottom-0 left-0 h-0 bg-[#5CAE59] w-full hover-supported:group-hover:h-full transition-all duration-300 ease-in-out z-0"></span>
-
-  //           <span className="relative z-10 hover-supported:group-hover:text-white">
-  //             Sign in
-  //           </span>
-  //         </Link>
-  //       </div>
-  //     </div>
-  //   );
-  // }
-
-  // if (!userDetails?.isAccountVerified) {
-  //   return (
-  //     <div className="flex flex-col justify-center items-center gap-5 mt-5 text-center px-5h-[65vh] md:h-[calc(100vh-90px)]  ">
-  //       <img src="/prof.webp" alt="Profile" className="w-40 h-40" />
-  //       <h1 className=" font-bold ">Verify your account first</h1>
-
-  //       <button
-  //         type="button"
-  //         className="text-blue-500 hover:underline transition-all duration-500"
-  //         onClick={() => sendEmailVerifyOtp(user?.email)}
-  //       >
-  //         To verify click here!
-  //       </button>
-  //     </div>
-  //   );
-  // }
-
   return (
-    <div className="flex flex-col  h-[calc(100vh - 110px)] justify-center items-center gap-5 mt-24 px-5 md:px-10 lg:px-20 pb-24 w-full  ">
+    <div className="flex flex-col h-screen justify-center items-center gap-5  px-5 md:px-10 lg:px-20  w-full  ">
       <h1 className="  text-xl font-medium ">Your Profile </h1>
-      <div className="flex flex-col md:flex-row min-h-max  justify-center items-center gap-5 md:gap-20 w-[85vw] md:w-[90%] lg:w-[80%] border-2 md:border-slate-100  shadow-lg p-2 md:py-10 lg:py-14 rounded-2xl">
+      <div className="flex flex-col md:flex-row min-h-max  justify-center items-center gap-5 md:gap-20 w-[85vw] md:w-[90%] lg:w-[80%] border-2 border-slate-100  shadow-lg p-2 md:py-10 lg:py-14 rounded-2xl">
         <div className="flex flex-col justify-center items-center md:border-r-2 border-gray-300 md:pr-[-20px] md:w-[60%] lg:w-[45%]">
           <div className="flex flex-col justify-center items-center gap-5 font-medium">
             <div
@@ -339,7 +295,7 @@ const Profile = () => {
             onSubmit={handleSubmit}
             className="flex text-sm items-start flex-col gap-3 font-medium md:text-[1.5vw] lg:text-[1.1vw] w-full md:w-[50%]   md:p-2"
           >
-            <div className="flex justify-center items-center gap-2  md:w-full  ">
+            <div className="flex justify-center items-center gap-2  w-full">
               <label htmlFor="username" className="text-gray-800 font-medium">
                 Username:
               </label>
@@ -349,11 +305,11 @@ const Profile = () => {
                 id="username"
                 value={userData.username}
                 onChange={handleChange}
-                className="rounded-md border-2 border-gray-400 p-2   w-full bg-transparent"
+                className="rounded-md border-2 border-gray-400 p-2  w-full bg-transparent"
               />
             </div>
             <div className="flex items-center gap-2 w-full">
-              <label htmlFor="email" className="text-gray-800 font-medium  ">
+              <label htmlFor="email" className="text-gray-800 font-medium">
                 Email:
               </label>
               <input
@@ -373,7 +329,7 @@ const Profile = () => {
                   name="gender"
                   value="male"
                   id="male"
-                  checked={userData.gender === "male"} // Bind checked to userData
+                  checked={userData.gender === "male"}
                   onChange={handleChange}
                   className="cursor-pointer"
                   aria-label="Male"
@@ -388,7 +344,7 @@ const Profile = () => {
                   name="gender"
                   value="female"
                   id="female"
-                  checked={userData.gender === "female"} // Bind checked to userData
+                  checked={userData.gender === "female"}
                   onChange={handleChange}
                   className="cursor-pointer"
                   aria-label="Female"
@@ -403,7 +359,7 @@ const Profile = () => {
                   name="gender"
                   value="others"
                   id="others"
-                  checked={userData.gender === "others"} // Bind checked to userData
+                  checked={userData.gender === "others"}
                   onChange={handleChange}
                   className="cursor-pointer "
                   aria-label="Other"
@@ -430,7 +386,7 @@ const Profile = () => {
             </div>
           </form>
         ) : (
-          <div className="flex items-start md:justify-center flex-col gap-5 font-medium text-[12px] md:text-[1.5vw] lg:text-[1.1vw] md:p-2 w-full md:w-auto px-5">
+          <div className="flex  items-start md:justify-center flex-col gap-5 font-medium text-[12px] md:text-[1.5vw] lg:text-[1.1vw] md:p-2 w-full md:w-auto px-5">
             <div className="flex gap-2">
               <h1 className="text-gray-800 font-medium ">Username:</h1>
               <p className="text-gray-700">{userDetails?.username}</p>
@@ -446,7 +402,7 @@ const Profile = () => {
               </p>
             </div>
             <div className="flex gap-2">
-              <h1 className="text-gray-800 font-medium ">Account:</h1>
+              <h1 className="text-gray-800 font-medium ">Account status:</h1>
               <div className="text-gray-700">
                 {userDetails?.isAccountVerified ? (
                   <p className="flex justify-center items-center gap-3">
@@ -465,7 +421,7 @@ const Profile = () => {
 
             <button
               onClick={() => setIsEditDetails(true)}
-              className="bg-[#6aaa4c] px-3 py-2 rounded-md text-center text-white hover-supported:hover:bg-green-600 mx-auto transition-colors duration-500"
+              className="bg-[#6aaa4c] px-3 py-2 rounded-md text-center text-white hover-supported:hover:bg-green-600 mx-auto transition-colors duration-500 w-full"
             >
               Edit details
             </button>

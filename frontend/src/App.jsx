@@ -23,18 +23,21 @@ import CodeOfConduct from "./components/Footer/CodeOfConduct.jsx";
 import { useEffect } from "react";
 import ScrollToTop from "./components/ScrollToTop.jsx";
 import NotAuthorized from "./components/NotAuthorized.jsx";
+import PublicRoute from "./components/PublicRoute.jsx";
 
 function App() {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="">
       <ScrollToTop />
       <Navbar />
-      <main className="flex-grow">
+      <main className="flex-grow flex flex-col min-h-screen">
         <Routes>
           <Route path="/" element={<Homepage />} />
           <Route path="/study/programme" element={<Programme />} />
-          <Route path="/study/signin" element={<Login />} />
-          <Route path="/study/signup" element={<SignUp />} />
+          <Route element={<PublicRoute />}>
+            <Route path="/study/signin" element={<Login />} />
+            <Route path="/study/signup" element={<SignUp />} />
+          </Route>
 
           {/* Grouped resource routes */}
           <Route path="/study/syllabus" element={<Programme />} />
@@ -51,7 +54,6 @@ function App() {
               path="/study/user/change-password"
               element={<ChangePass />}
             />
-            <Route path="/study/forgot-password" element={<ForgotPassword />} />
             <Route
               path="/study/user/deletemyaccount"
               element={<DeleteMyAccount />}
@@ -65,6 +67,7 @@ function App() {
               element={<OTPVerify />}
             />
           </Route>
+          <Route path="/study/forgot-password" element={<ForgotPassword />} />
 
           <Route path="/study/userprofile" element={<Profile />} />
 

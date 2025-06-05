@@ -8,7 +8,7 @@ const Footer = () => {
         learning 😊
       </div>
       <div className="flex items-start  justify-center   gap-10 ">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5  gap-1 md:gap-1  place-items-start">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5  gap-1 md:gap-5  place-items-start md:place-items-center">
           <a
             href="/study/privacy-policy"
             className="hover:underline hover:text-blue-600 transition-all duration-300"

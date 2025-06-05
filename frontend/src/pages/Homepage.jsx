@@ -1,8 +1,13 @@
 // App.js
+import { Link, useLocation } from "react-router-dom";
 import AboutUs from "../components/AboutUs";
-import ContactUs from "../components/ContactUs";
+import Review from "../components/Review/Review";
 
 const Homepage = () => {
+  const location = useLocation();
+
+  const existingReview = location.state?.review || {};
+
   return (
     <div className="flex flex-col">
       <div className="  mt-20 px-5 md:px-10 lg:px-20 w-full overflow-x-hidden">
@@ -25,12 +30,12 @@ const Homepage = () => {
               other courses.
             </p>
 
-            <a
-              href="#contact"
+            <Link
+              to="/study/contact-us"
               className="bg-transparent border-2 text-sm border-slate-100   px-2 py-1 md:px-4 md:py-2 rounded-full font-semibold  active:bg-[white] hover-supported:hover:bg-[white] hover-supported:hover:text-[#2b352b] transition-all duration-500  shadow-lg"
             >
               Contact Us
-            </a>
+            </Link>
           </div>
         </section>
 
@@ -39,9 +44,13 @@ const Homepage = () => {
         <section id="about" className="py-10  ">
           <AboutUs />
         </section>
-        <hr className="w-full   border-gray-300 border-[1px]" />
+        {/* <hr className="w-full   border-gray-300 border-[1px]" />
         <section id="contact" className=" px-5 md:px-10 lg:px-20 w-full">
           <ContactUs />
+        </section> */}
+        <hr className="w-full   border-gray-300 border-[1px]" />
+        <section id="review" className="py-10  ">
+          <Review existingReview={existingReview} />
         </section>
       </div>
     </div>
