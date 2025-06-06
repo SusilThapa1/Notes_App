@@ -13,7 +13,7 @@ const AdminPage = () => {
     <div className="md:grid md:grid-cols-[20%,80%] gap-2  md:lg:grid-col-[5%,90%] mt-[45px] overflow-hidden md:h-screen h-screen bg-transparent bg-no-repeat bg-center bg-cover scroll-smooth  px-5 md:pl-0 ">
       <Sidebar />
       <Routes>
-        <Route index element={<WelcomeAdmin />} />
+        <Route index path="/dashboard" element={<WelcomeAdmin />} />
         <Route path="analytics" element={<Analytics />} />
         <Route path="manageusers" element={<ManageUsers />} />
         <Route path="manageprogramme" element={<ProgrammeManager />} />

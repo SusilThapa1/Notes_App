@@ -6,7 +6,7 @@ import Review from "../components/Review/Review";
 const Homepage = () => {
   const location = useLocation();
 
-  const existingReview = location.state?.review || {};
+  const existingReview = location.state?.review || null;
 
   return (
     <div className="flex flex-col">
