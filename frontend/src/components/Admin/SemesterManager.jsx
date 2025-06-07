@@ -1,5 +1,5 @@
 import React, { useState, useContext, useRef } from "react";
-import { FaTrash, FaTrashAlt } from "react-icons/fa";
+import { FaRegCalendarAlt, FaTrash, FaTrashAlt } from "react-icons/fa";
 import { GrEdit } from "react-icons/gr";
 import { FaGraduationCap, FaBookOpen } from "react-icons/fa";
 import {
@@ -163,7 +163,7 @@ const SemesterManager = () => {
           className="flex flex-col gap-4 md:w-[80%] lg:w-[50%] w-full "
         >
           <div className="flex items-center border-2 border-slate-100 shadow-lg bg-transparent rounded-lg p-2 mt-1 outline-slate-200 ">
-            <FaBookOpen className="text-orange-600 mr-2" />
+            <FaRegCalendarAlt className="text-yellow-600 mr-2" />
             <input
               type="text"
               name="semestername"

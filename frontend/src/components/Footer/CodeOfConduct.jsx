@@ -7,7 +7,7 @@ const CodeOfConduct = () => {
       subContent: [
         "Always be kind and polite in any interaction.",
         "No hate speech, harassment, or discrimination.",
-        "Respect different opinions — don’t start fights.",
+        "Respect different opinions — avoid unnecessary arguments.",
       ],
     },
     {

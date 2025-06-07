@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { FaUsers } from "react-icons/fa6";
-import { FaGraduationCap, FaBook, FaCloudUploadAlt } from "react-icons/fa";
+import {
+  FaGraduationCap,
+  FaCloudUploadAlt,
+  FaRegCalendarAlt,
+} from "react-icons/fa";
 import BarChart from "./BarChart";
 import { toast } from "react-toastify";
 import { fetchAllUsers } from "../../../Services/userService";
@@ -50,19 +54,19 @@ const Analytics = () => {
   }
 
   return (
-    <div className="flex flex-col items-center w-full overflow-y-scroll scroll-container gap-5 bg-transparent shadow-sm mx-auto  h-screen  px-2 py-10">
+    <div className="flex flex-col items-center w-full  gap-5    px-2 py-10">
       {/* Dashboard Header */}
       <div className="text-center mb-10">
-        <h1 className="  font-bold text-gray-800 mb-2">
-          Admin Analytics Dashboard
+        <h1 className="text-lg font-bold text-gray-800 mb-2">
+          Platform Analytics
         </h1>
         <p className="text-gray-600  ">
-          Here's a quick overview of your platform’s performance and activity.
+          Get insights into users, programmes, semesters, and uploads.
         </p>
       </div>
 
       {/* Analytics Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-10 mb-12">
+      <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-10 mb-12 w-full">
         <div className="bg-transparent shadow-lg p-6 rounded-xl flex flex-col items-center justify-center gap-3 transition duration-500 hover:scale-105">
           <FaUsers className="text-3xl md:text-5xl text-gray-500" />
           <h1 className="font-semibold text-green-600 ">Users</h1>
@@ -80,7 +84,7 @@ const Analytics = () => {
         </div>
 
         <div className="bg-transparent shadow-lg p-6 rounded-xl flex flex-col items-center justify-center gap-3 transition duration-500 hover:scale-105">
-          <FaBook className="text-3xl md:text-5xl text-yellow-500" />
+          <FaRegCalendarAlt className="text-3xl md:text-5xl text-yellow-500" />
           <h1 className="font-semibold text-green-600 ">Semesters/Years</h1>
           <span className=" font-bold text-gray-700">
             Total: {semesterLists?.length}
@@ -97,7 +101,7 @@ const Analytics = () => {
       </div>
 
       {/* Bar Chart Section */}
-      <div className=" flex justify-center items-center  flex-col w-full bg-transparent rounded-xl shadow-xl p-6 h-[60vh]  ">
+      <div className=" flex justify-center items-center  flex-col w-full   p-6   md:h-[65vh]  ">
         <h2 className=" text-center underline font-semibold text-gray-800 mb-4">
           Chart Showing Users by Gender{" "}
         </h2>

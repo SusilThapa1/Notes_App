@@ -46,7 +46,7 @@ function App() {
 
           {/* Protected Route */}
           <Route element={<ProtectedRoute roleRequired="admin" />}>
-            <Route path="/study/admin/dashboard/*" element={<AdminPage />} />
+            <Route path="/study/admin/*" element={<AdminPage />} />
           </Route>
 
           <Route element={<ProtectedRoute />}>

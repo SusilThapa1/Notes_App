@@ -26,6 +26,37 @@
   }
 }
 
+/* Custom scrollbar styles */
+.scrollbar-custom::-webkit-scrollbar {
+  width: 2px;
+  height: 2px;
+}
+
+.scrollbar-custom::-webkit-scrollbar-track {
+  background: #f3f4f6;
+  border-radius: 9999px;
+
+}
+
+.scrollbar-custom::-webkit-scrollbar-thumb {
+  background-color: #22c55e;
+  border-radius: 9999px;
+  border: 2px solid #f3f4f6;
+
+}
+
+.scrollbar-custom::-webkit-scrollbar-thumb:hover {
+  background-color: #16a34a;
+
+}
+
+
+.scrollbar-custom {
+  scrollbar-width: thin;
+  scrollbar-color: #22c55e #f3f4f6;
+  scrollbar-darkshadow-color: burlywood;
+}
+
 @layer base {
 
   input:focus::placeholder,

@@ -67,6 +67,7 @@ const Footer = () => {
             Questions
           </a>
           <a
+            href="#"
             onClick={() => window.scrollTo(0, 0)}
             className="hover:underline hover:text-blue-600 cursor-pointer transition-all duration-300"
           >
