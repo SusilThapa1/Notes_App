@@ -3,7 +3,6 @@ const Review = require("../models/reviewModel");
 
 const sendReview = async (req, res) => {
   const userId = req.userid;
-  console.log("UserID from req:", userId);
 
   const { rating, message, date } = req.body;
 
@@ -20,7 +19,7 @@ const sendReview = async (req, res) => {
       return res.status(400).json({
         successs: 0,
         message:
-          "Already submitted review. You can now edit or delete the existing one.",
+          "You have already submitted review. You can now edit or delete the existing one.",
       });
     }
 
@@ -108,9 +107,10 @@ const updateReview = async (req, res) => {
     if (!review) {
       return res.status(404).json({ success: 0, message: "Review not found" });
     }
-    review.message = text;
+    review.message = message;
     review.rating = rating;
     review.date = date;
+    review.reply = "";
 
     await review.save();
     res.status(200).json({ success: 1, message: "Review edited successfully" });
@@ -128,7 +128,7 @@ const deleteReview = async (req, res) => {
         .status(400)
         .json({ success: 0, message: "Failed to delete your review" });
     }
-    res.status(200).json({ success: 1, message: "Your review is deleted" });
+    res.status(200).json({ success: 1, message: "Review deleted" });
   } catch (err) {
     res.status(500).json({ success: 0, message: err.message });
   }

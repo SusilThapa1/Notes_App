@@ -21,7 +21,7 @@ connectDB();
 
 app.use(
   cors({
-    origin: "http://192.168.1.23:5173", //frontend URL ||"http://localhost:5173" 192.168.16.153   192.168.1.23 192.168.1.104 192.168.1.45
+    origin: "http://localhost:5173", //frontend URL ||"http://localhost:5173" 192.168.16.153   192.168.1.23 192.168.1.104 192.168.1.45
     credentials: true,
   })
 );
