@@ -40,6 +40,16 @@ const updateReview = async (id, data) => {
     throw err;
   }
 };
+const deleteReplyReview = async (id) => {
+  try {
+    const response = await axios.put(`${API_URL}/delete-reviewreply/${id}`, {
+      withCredentials: true,
+    });
+    return response.data;
+  } catch (err) {
+    throw err;
+  }
+};
 const deleteReview = async (id) => {
   try {
     const response = await axios.delete(`${API_URL}/delete-review/${id}`, {
@@ -51,4 +61,11 @@ const deleteReview = async (id) => {
   }
 };
 
-export { addReview, viewReview, sendReplyReview, updateReview, deleteReview };
+export {
+  addReview,
+  viewReview,
+  sendReplyReview,
+  updateReview,
+  deleteReplyReview,
+  deleteReview,
+};

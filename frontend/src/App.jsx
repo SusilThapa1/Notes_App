@@ -33,7 +33,7 @@ function App() {
       <main className="flex-grow flex flex-col min-h-screen">
         <Routes>
           <Route path="/" element={<Homepage />} />
-          <Route path="/study/programme" element={<Programme />} />
+          {/* <Route path="/study/programme" element={<Programme />} /> */}
           <Route element={<PublicRoute />}>
             <Route path="/study/signin" element={<Login />} />
             <Route path="/study/signup" element={<SignUp />} />

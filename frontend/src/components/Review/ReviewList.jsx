@@ -3,7 +3,11 @@ import { MdSend } from "react-icons/md";
 import { AiFillStar, AiOutlineStar } from "react-icons/ai";
 import { IoArrowRedoSharp } from "react-icons/io5";
 import { HiOutlineDotsVertical } from "react-icons/hi";
-import { deleteReview, sendReplyReview } from "../../../Services/reviewService";
+import {
+  deleteReplyReview,
+  deleteReview,
+  sendReplyReview,
+} from "../../../Services/reviewService";
 import { AuthContext } from "../Context/AuthContext";
 import Swal from "sweetalert2";
 import { toast } from "react-toastify";
@@ -121,6 +125,45 @@ const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
       );
     }
   };
+  const handleReviewReplyDelete = async (id) => {
+    const response = await Swal.fire({
+      title: "Are you sure, you want to delete admin eply to review?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#49bb0f",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+      background: "#E2E8F0",
+      scrollbarPadding: false,
+      customClass: {
+        popup: "text-base sm:text-lg md:text-xl",
+        title: "text-xl sm:text-2xl md:text-3xl font-semibold",
+        confirmButton:
+          "text-sm sm:text-base md:text-lg bg-blue-600 text-white px-4 py-2 rounded",
+        cancelButton:
+          "text-sm sm:text-base md:text-lg bg-gray-400 text-white px-4 py-2 rounded",
+      },
+    });
+
+    if (!response.isConfirmed) return;
+
+    try {
+      const deleteResponse = await deleteReplyReview(id);
+      if (deleteResponse.success) {
+        toast.success(deleteResponse.message);
+        setAllReview((prevReview) =>
+          prevReview.filter((review) => review._id !== id)
+        );
+      }
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Failed to delete review");
+      console.error(
+        "Error deleting review:",
+        error?.response?.data?.message || error.message
+      );
+    }
+  };
 
   return (
     <div className="flex flex-col p-4 gap-4 border-2 border-slate-100 shadow-md rounded-xl max-h-[90vh]">
@@ -135,12 +178,12 @@ const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
               <div className="flex justify-between items-center gap-3">
                 <div className="flex items-center gap-3">
                   <img
-                    src={ownReview.userId.profilepath || "/prof.webp"}
+                    src={ownReview?.userId?.profilepath || "/prof.webp"}
                     alt="profile"
                     className="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover"
                   />
                   <h3 className="text-md font-semibold text-gray-800">
-                    {ownReview.userId.username} (You)
+                    {ownReview?.userId?.username} (You)
                   </h3>
                 </div>
                 {token &&
@@ -307,12 +350,12 @@ const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
               <div className="flex justify-between items-center gap-3">
                 <div className="flex items-center gap-3">
                   <img
-                    src={singleReview.userId.profilepath || "/prof.webp"}
+                    src={singleReview?.userId?.profilepath || "/prof.webp"}
                     alt="profile"
                     className="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover"
                   />
                   <h3 className="text-md font-semibold text-gray-800">
-                    {singleReview.userId.username}
+                    {singleReview?.userId?.username}
                   </h3>
                 </div>
                 {token &&
@@ -457,7 +500,10 @@ const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
                       <button
                         type="button"
                         aria-label="delete reply"
-                        onClick={() => setSelectedAdminReplyId(null)}
+                        onClick={() => {
+                          setSelectedAdminReplyId(null),
+                            handleReviewReplyDelete(singleReview?._id);
+                        }}
                         className="hover-supported:hover:text-red-500 active:text-red-500"
                       >
                         Delete reply
