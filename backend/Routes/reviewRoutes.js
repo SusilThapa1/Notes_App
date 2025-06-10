@@ -13,6 +13,12 @@ reviewRouter.post("/send-review", verifyToken, sendReview);
 reviewRouter.get("/view-review", getReviews);
 reviewRouter.put("/reply-review/:id", verifyAdmin, adminReply);
 reviewRouter.put("/update-review/:id", verifyToken, updateReview);
+reviewRouter.put(
+  "/delete-reviewreply/:id",
+  verifyToken,
+  verifyAdmin,
+  deleteReview
+);
 reviewRouter.delete("/delete-review/:id", verifyToken, deleteReview);
 
 module.exports = reviewRouter;
