@@ -42,9 +42,14 @@ const updateReview = async (id, data) => {
 };
 const deleteReplyReview = async (id) => {
   try {
-    const response = await axios.put(`${API_URL}/delete-reviewreply/${id}`, {
-      withCredentials: true,
-    });
+    const response = await axios.put(
+      `${API_URL}/delete-reviewreply/${id}`,
+      {},
+      {
+        withCredentials: true,
+      }
+    );
+    console.log(response?.data);
     return response.data;
   } catch (err) {
     throw err;

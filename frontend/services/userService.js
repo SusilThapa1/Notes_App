@@ -43,7 +43,7 @@ const deleteProfile = async (userid) => {
 // Register a new user
 const registerUser = async (userData) => {
   try {
-    const response = await axios.post(`${API_URL}/auth/register`, userData, {
+    const response = await axios.post(`${API_URL}/register`, userData, {
       headers: {
         "Content-Type": "application/json",
       },
@@ -77,7 +77,7 @@ const uploadProfile = async (userId, formData) => {
 // Login user
 const userLogin = async (data) => {
   try {
-    const response = await axios.post(`${API_URL}/auth/login`, data, {
+    const response = await axios.post(`${API_URL}/login`, data, {
       withCredentials: true,
     });
     return response.data;

@@ -125,9 +125,12 @@ const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
       );
     }
   };
+
+// const handleReviewReplyEdit = async ()
+
   const handleReviewReplyDelete = async (id) => {
     const response = await Swal.fire({
-      title: "Are you sure, you want to delete admin eply to review?",
+      title: "Are you sure, you want to delete reply ?",
       text: "You won't be able to revert this!",
       icon: "warning",
       showCancelButton: true,
@@ -155,6 +158,9 @@ const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
         setAllReview((prevReview) =>
           prevReview.filter((review) => review._id !== id)
         );
+      }
+      else{
+        toast.error(deleteResponse?.message)
       }
     } catch (error) {
       toast.error(error?.response?.data?.message || "Failed to delete review");
@@ -492,7 +498,7 @@ const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
                       <button
                         type="button"
                         aria-label="edit reply"
-                        onClick={() => setSelectedAdminReplyId(null)}
+                        onClick={() => {setSelectedAdminReplyId(null) }}
                         className="hover-supported:hover:text-[#5CAE59] active:text-[#5CAE59]"
                       >
                         Edit reply

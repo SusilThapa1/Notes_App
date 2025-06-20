@@ -20,7 +20,7 @@ import TermsConditions from "./components/Footer/TermsConditions.jsx";
 import Footer from "./components/Footer/Footer.jsx";
 import ContactUs from "./components/ContactUs.jsx";
 import CodeOfConduct from "./components/Footer/CodeOfConduct.jsx";
-import { useEffect } from "react";
+ 
 import ScrollToTop from "./components/ScrollToTop.jsx";
 import NotAuthorized from "./components/NotAuthorized.jsx";
 import PublicRoute from "./components/PublicRoute.jsx";

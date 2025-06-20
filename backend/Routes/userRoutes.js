@@ -27,8 +27,8 @@ const { profile } = require("../middlewares/file");
 const { verifyToken, verifyAdmin } = require("../middlewares/authMiddleware");
 
 const userRouter = express.Router();
-userRouter.post("/auth/register", userSignUp);
-userRouter.post("/auth/login", userLogin);
+userRouter.post("/register", userSignUp);
+userRouter.post("/login", userLogin);
 userRouter.get("/view", verifyToken, verifyAdmin, userList);
 userRouter.get("/userprofile", verifyToken, userProfile);
 userRouter.patch("/update/:id", verifyToken, userUpdate);

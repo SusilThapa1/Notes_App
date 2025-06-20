@@ -39,7 +39,6 @@ const Analytics = () => {
       toast.error(err.response?.data?.message || "Something went wrong");
     }
   };
-  console.log(genderCounts);
 
   useEffect(() => {
     allUsers();
