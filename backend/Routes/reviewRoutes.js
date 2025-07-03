@@ -5,6 +5,7 @@ const {
   deleteReview,
   updateReview,
   deleteAdminReply,
+  editAdminReply,
 } = require("../controllers/reviewController");
 const { verifyToken, verifyAdmin } = require("../middlewares/authMiddleware");
 const express = require("express");
@@ -14,6 +15,12 @@ reviewRouter.post("/send-review", verifyToken, sendReview);
 reviewRouter.get("/view-review", getReviews);
 reviewRouter.put("/reply-review/:id", verifyAdmin, adminReply);
 reviewRouter.put("/update-review/:id", verifyToken, updateReview);
+reviewRouter.put(
+  "/update-reviewreply/:id",
+  verifyToken,
+  verifyAdmin,
+  editAdminReply
+);
 reviewRouter.put(
   "/delete-reviewreply/:id",
   verifyToken,

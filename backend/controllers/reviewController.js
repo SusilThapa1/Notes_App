@@ -119,6 +119,37 @@ const updateReview = async (req, res) => {
   }
 };
 
+const editAdminReply = async (req, res) => {
+  const { replyText, date } = req.body;
+  if (!replyText) {
+    return res
+      .status(400)
+      .json({ success: 0, message: "Review reply message is missing" });
+  }
+
+  try {
+    const review = await Review.findById(req.params.id);
+    if (!review) {
+      return res.status(404).json({ message: "Review not found" });
+    }
+    review.reply = {
+      text: replyText,
+      repliedDate: date,
+      repliedBy: {
+        name: req.user.username,
+        email: req.user.email,
+        userId: req.user._id,
+      },
+    };
+    await review.save();
+    res
+      .status(200)
+      .json({ success: 1, message: "Reply added successfully", review });
+  } catch (err) {
+    res.status(500).json({ success: 0, message: err.message });
+  }
+};
+
 const deleteAdminReply = async (req, res) => {
   const adminId = req.user.id;
   const reviewId = req.params.id;
@@ -165,6 +196,7 @@ module.exports = {
   getReviews,
   adminReply,
   updateReview,
+  editAdminReply,
   deleteAdminReply,
   deleteReview,
 };
