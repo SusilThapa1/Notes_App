@@ -7,6 +7,7 @@ import {
   deleteReplyReview,
   deleteReview,
   sendReplyReview,
+  editReplyReview, // <--- new import for editing reply
 } from "../../../Services/reviewService";
 import { AuthContext } from "../Context/AuthContext";
 import Swal from "sweetalert2";
@@ -19,6 +20,10 @@ const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
   const navigate = useNavigate();
   const { userDetails, token } = useContext(AuthContext);
   const isAdmin = userDetails?.role === "admin";
+
+  // New states for editing admin reply
+  const [editingReplyId, setEditingReplyId] = useState(null);
+  const [editReplyText, setEditReplyText] = useState("");
 
   const [replyReview, setReplyReview] = useState({
     replyText: "",
@@ -52,6 +57,8 @@ const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
     const { name, value } = e.target;
     setReplyReview((prev) => ({ ...prev, [name]: value }));
   };
+
+  // Handle sending new reply
   const handleReply = async (e, id) => {
     e.preventDefault();
     toast.dismiss();
@@ -79,6 +86,36 @@ const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
     } catch (err) {
       toast.error(err.response?.data?.message);
       console.log(err.message);
+    }
+  };
+
+  // New: Handle editing admin reply submit
+  const handleReplyEdit = async (e, id) => {
+    e.preventDefault();
+    toast.dismiss();
+
+    if (!editReplyText.trim()) {
+      return toast.error("Reply cannot be empty");
+    }
+
+    const payload = {
+      replyText: editReplyText,
+      date: today,
+    };
+
+    try {
+      const res = await editReplyReview(id, payload);
+      if (res.success) {
+        toast.success(res.message);
+        setEditingReplyId(null);
+        setEditReplyText("");
+        getAllReview();
+      } else {
+        toast.error(res.message);
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error(err.response?.data?.message || "Something went wrong");
     }
   };
 
@@ -126,11 +163,9 @@ const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
     }
   };
 
-// const handleReviewReplyEdit = async ()
-
   const handleReviewReplyDelete = async (id) => {
     const response = await Swal.fire({
-      title: "Are you sure, you want to delete reply ?",
+      title: "Are you sure, you want to delete reply?",
       text: "You won't be able to revert this!",
       icon: "warning",
       showCancelButton: true,
@@ -155,12 +190,9 @@ const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
       const deleteResponse = await deleteReplyReview(id);
       if (deleteResponse.success) {
         toast.success(deleteResponse.message);
-        setAllReview((prevReview) =>
-          prevReview.filter((review) => review._id !== id)
-        );
-      }
-      else{
-        toast.error(deleteResponse?.message)
+        getAllReview();
+      } else {
+        toast.error(deleteResponse?.message);
       }
     } catch (error) {
       toast.error(error?.response?.data?.message || "Failed to delete review");
@@ -176,8 +208,7 @@ const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
       <h2 className="text-lg font-semibold text-gray-700 text-left">
         User Reviews ({allReview.length})
       </h2>
-      {/*  review example */}
-      <div className="  overflow-y-scroll scroll-container scroll-smooth">
+      <div className="overflow-y-scroll scroll-container scroll-smooth">
         {ownReview && (
           <div className="flex flex-col justify-center items-center w-full">
             <div className="relative flex flex-col gap-1 border-t border-gray-400 pt-4 text-left w-full">
@@ -210,7 +241,8 @@ const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
                     type="button"
                     aria-label="edit review"
                     onClick={() => {
-                      setSelectedUserReviewId(null), handleEdit(ownReview);
+                      setSelectedUserReviewId(null);
+                      handleEdit(ownReview);
                     }}
                     className="hover-supported:hover:text-[#5CAE59] active:text-[#5CAE59]"
                   >
@@ -220,8 +252,8 @@ const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
                     type="button"
                     aria-label="delete review"
                     onClick={() => {
-                      setSelectedUserReviewId(null),
-                        handleReviewDelete(ownReview?._id);
+                      setSelectedUserReviewId(null);
+                      handleReviewDelete(ownReview?._id);
                     }}
                     className="hover-supported:hover:text-red-500 active:text-red-500"
                   >
@@ -291,7 +323,7 @@ const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
 
             {/* review reply */}
             {ownReview?.reply && (
-              <div className="relative flex flex-col gap-1 px-1  py-4 text-left shadow-sm border border-slate-100 w-full rounded-md my-5">
+              <div className="relative flex flex-col gap-1 px-1 py-4 text-left shadow-sm border border-slate-100 w-full rounded-md my-5">
                 <div className="flex justify-between items-center gap-3">
                   <div className="flex items-center gap-3">
                     <img
@@ -299,7 +331,7 @@ const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
                       alt="profile"
                       className="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover"
                     />
-                    <h3 className=" text-sm md:text-md font-semibold text-green-600">
+                    <h3 className="text-sm md:text-md font-semibold text-green-600">
                       Easy Study Zone{" "}
                       {token &&
                         userDetails?.isAccountVerified &&
@@ -320,16 +352,26 @@ const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
                         selectedAdminReplyId === ownReview._id ? "" : "hidden"
                       } absolute right-5 flex flex-col justify-center items-center gap-3 border border-slate-100 bg-gray-200 p-2 shadow-lg rounded-lg`}
                     >
+                      {/* Edit Reply Button triggers edit mode */}
                       <button
                         type="button"
-                        onClick={() => setSelectedAdminReplyId(null)}
+                        aria-label="edit reply"
+                        onClick={() => {
+                          setEditReplyText(ownReview?.reply?.text);
+                          setSelectedAdminReplyId(null);
+                          setEditingReplyId(ownReview._id);
+                        }}
                         className="hover-supported:hover:text-[#5CAE59] active:text-[#5CAE59]"
                       >
                         Edit reply
                       </button>
                       <button
                         type="button"
-                        onClick={() => setSelectedAdminReplyId(null)}
+                        aria-label="delete reply"
+                        onClick={() => {
+                          setSelectedAdminReplyId(null);
+                          handleReviewReplyDelete(ownReview?._id);
+                        }}
                         className="hover-supported:hover:text-red-500 active:text-red-500"
                       >
                         Delete reply
@@ -343,6 +385,31 @@ const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
                     {ownReview?.reply?.text}
                   </p>
                 </div>
+
+                {/* Edit reply form */}
+                {editingReplyId === ownReview._id && (
+                  <form
+                    onSubmit={(e) => handleReplyEdit(e, ownReview._id)}
+                    className="w-full mt-2"
+                  >
+                    <div className="flex items-start gap-2 border-2 p-3 rounded-xl">
+                      <textarea
+                        name="replyText"
+                        value={editReplyText}
+                        onChange={(e) => setEditReplyText(e.target.value)}
+                        maxLength={200}
+                        className="w-full resize-none outline-none bg-transparent text-sm text-gray-700"
+                      />
+                      <button
+                        type="submit"
+                        className="bg-green-600 text-white p-2 rounded-full"
+                        title="Save edited reply"
+                      >
+                        <MdSend size={20} />
+                      </button>
+                    </div>
+                  </form>
+                )}
               </div>
             )}
           </div>
@@ -383,7 +450,8 @@ const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
                     type="button"
                     aria-label="edit review"
                     onClick={() => {
-                      setSelectedUserReviewId(null), handleEdit(singleReview);
+                      setSelectedUserReviewId(null);
+                      handleEdit(singleReview);
                     }}
                     className="hover-supported:hover:text-[#5CAE59] active:text-[#5CAE59]"
                   >
@@ -393,8 +461,8 @@ const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
                     type="button"
                     aria-label="delete review"
                     onClick={() => {
-                      setSelectedUserReviewId(null),
-                        handleReviewDelete(singleReview?._id);
+                      setSelectedUserReviewId(null);
+                      handleReviewDelete(singleReview?._id);
                     }}
                     className="hover-supported:hover:text-red-500 active:text-red-500"
                   >
@@ -404,7 +472,7 @@ const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
               </div>
 
               {/* Date + Stars */}
-              <div className="flex items-center  gap-5 text-sm text-gray-500 mt-1 ">
+              <div className="flex items-center gap-5 text-sm text-gray-500 mt-1 ">
                 <div className="flex items-center gap-1 text-yellow-500">
                   {[1, 2, 3, 4, 5].map((star) =>
                     star <= singleReview?.rating ? (
@@ -460,71 +528,103 @@ const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
                     </form>
                   </div>
                 )}
-            </div>
 
-            {/* review reply */}
-            {singleReview?.reply && (
-              <div className="relative flex flex-col gap-1 px-1  py-4 text-left shadow-sm border border-slate-100 w-full rounded-md my-5">
-                <div className="flex justify-between items-center gap-3">
-                  <div className="flex items-center gap-3">
-                    <img
-                      src="/images/desktop.png"
-                      alt="profile"
-                      className="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover"
-                    />
-                    <h3 className=" text-sm md:text-md font-semibold text-green-600">
-                      Easy Study Zone{" "}
-                      {token &&
-                        userDetails?.isAccountVerified &&
-                        isAdmin &&
-                        `(${singleReview?.reply?.repliedBy?.name})`}
-                    </h3>
-                  </div>
-                  <div className="flex justify-center items-center gap-3 text-sm text-gray-500">
-                    <span>{singleReview?.reply?.repliedDate}</span>
-                    {token && userDetails?.isAccountVerified && isAdmin && (
-                      <HiOutlineDotsVertical
-                        size={15}
-                        onClick={() => handleShowAdminAction(singleReview._id)}
+              {/* admin reply for other users' reviews */}
+              {singleReview?.reply && (
+                <div className="relative flex flex-col gap-1 px-1 py-4 text-left shadow-sm border border-slate-100 w-full rounded-md my-5">
+                  <div className="flex justify-between items-center gap-3">
+                    <div className="flex items-center gap-3">
+                      <img
+                        src="/images/desktop.png"
+                        alt="profile"
+                        className="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover"
                       />
-                    )}
-                    <div
-                      className={`${
-                        selectedAdminReplyId === singleReview._id
-                          ? ""
-                          : "hidden"
-                      } absolute right-5 flex flex-col justify-center items-center gap-3 border border-slate-100 bg-gray-200 p-2 shadow-lg rounded-lg`}
-                    >
-                      <button
-                        type="button"
-                        aria-label="edit reply"
-                        onClick={() => {setSelectedAdminReplyId(null) }}
-                        className="hover-supported:hover:text-[#5CAE59] active:text-[#5CAE59]"
+                      <h3 className="text-sm md:text-md font-semibold text-green-600">
+                        Easy Study Zone{" "}
+                        {token &&
+                          userDetails?.isAccountVerified &&
+                          isAdmin &&
+                          `(${singleReview?.reply?.repliedBy?.name})`}
+                      </h3>
+                    </div>
+                    <div className="flex justify-center items-center gap-3 text-sm text-gray-500">
+                      <span>{singleReview?.reply?.repliedDate}</span>
+                      {token && userDetails?.isAccountVerified && isAdmin && (
+                        <HiOutlineDotsVertical
+                          size={15}
+                          onClick={() =>
+                            handleShowAdminAction(singleReview._id)
+                          }
+                        />
+                      )}
+                      <div
+                        className={`${
+                          selectedAdminReplyId === singleReview._id
+                            ? ""
+                            : "hidden"
+                        } absolute right-5 flex flex-col justify-center items-center gap-3 border border-slate-100 bg-gray-200 p-2 shadow-lg rounded-lg`}
                       >
-                        Edit reply
-                      </button>
-                      <button
-                        type="button"
-                        aria-label="delete reply"
-                        onClick={() => {
-                          setSelectedAdminReplyId(null),
+                        {/* Edit Reply Button triggers edit mode */}
+                        <button
+                          type="button"
+                          aria-label="edit reply"
+                          onClick={() => {
+                            setEditReplyText(singleReview?.reply?.text);
+                            setSelectedAdminReplyId(null);
+                            setEditingReplyId(singleReview._id);
+                          }}
+                          className="hover-supported:hover:text-[#5CAE59] active:text-[#5CAE59]"
+                        >
+                          Edit reply
+                        </button>
+                        <button
+                          type="button"
+                          aria-label="delete reply"
+                          onClick={() => {
+                            setSelectedAdminReplyId(null);
                             handleReviewReplyDelete(singleReview?._id);
-                        }}
-                        className="hover-supported:hover:text-red-500 active:text-red-500"
-                      >
-                        Delete reply
-                      </button>
+                          }}
+                          className="hover-supported:hover:text-red-500 active:text-red-500"
+                        >
+                          Delete reply
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                <div className="flex justify-between items-center gap-2">
-                  <p className="text-sm text-gray-600 ml-1 mt-2">
-                    {singleReview?.reply?.text}
-                  </p>
+                  <div className="flex justify-between items-center gap-2">
+                    <p className="text-sm text-gray-600 ml-1 mt-2">
+                      {singleReview?.reply?.text}
+                    </p>
+                  </div>
+
+                  {/* Edit reply form */}
+                  {editingReplyId === singleReview._id && (
+                    <form
+                      onSubmit={(e) => handleReplyEdit(e, singleReview._id)}
+                      className="w-full mt-2"
+                    >
+                      <div className="flex items-start gap-2 border-2 p-3 rounded-xl">
+                        <textarea
+                          name="replyText"
+                          value={editReplyText}
+                          onChange={(e) => setEditReplyText(e.target.value)}
+                          maxLength={200}
+                          className="w-full resize-none outline-none bg-transparent text-sm text-gray-700"
+                        />
+                        <button
+                          type="submit"
+                          className="bg-green-600 text-white p-2 rounded-full"
+                          title="Save edited reply"
+                        >
+                          <MdSend size={20} />
+                        </button>
+                      </div>
+                    </form>
+                  )}
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         ))}
       </div>
