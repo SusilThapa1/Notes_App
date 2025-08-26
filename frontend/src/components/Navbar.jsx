@@ -110,7 +110,7 @@ const Navbar = () => {
               >
                 <Link to={navlink.link}>{navlink.name}</Link>
                 <span
-                  className={`absolute left-0 -bottom-1 h-[2px] bg-green-600 transition-all duration-300 ${
+                  className={`absolute left-0 -bottom-1 h-[2px] bg-green-600 transition-all duration-500 ${
                     isActive ? "w-full" : "w-0 group-hover:w-full"
                   }`}
                 ></span>
@@ -122,9 +122,9 @@ const Navbar = () => {
           <div className="flex items-center justify-between gap-5">
             <Link
               to="/study/signup"
-              className="relative group border   border-slate-100 hover-supported:hover:border-transparent  text-center shadow-lg rounded-full px-3 py-1 min-w-max overflow-hidden transition-colors duration-300"
+              className="relative group border   border-slate-100 hover-supported:hover:border-transparent  text-center shadow-lg rounded-full px-3 py-1 min-w-max overflow-hidden transition-colors duration-500"
             >
-              <span className="absolute bottom-0 left-0 h-0 bg-[#5CAE59]   w-full hover-supported:group-hover:h-full transition-all duration-300 ease-in-out z-0"></span>
+              <span className="absolute bottom-0 left-0 h-0 bg-[#5CAE59]   w-full hover-supported:group-hover:h-full transition-all duration-500 ease-in-out z-0"></span>
 
               <span className="relative z-10 hover-supported:group-hover:text-white">
                 Sign up
@@ -132,9 +132,9 @@ const Navbar = () => {
             </Link>
             <Link
               to="/study/signin"
-              className="relative group border border-slate-100   hover-supported:hover:border-transparent  text-center shadow-lg rounded-full px-3 py-1 min-w-max overflow-hidden transition-colors duration-300"
+              className="relative group border border-slate-100   hover-supported:hover:border-transparent  text-center shadow-lg rounded-full px-3 py-1 min-w-max overflow-hidden transition-colors duration-500"
             >
-              <span className="absolute bottom-0 left-0 h-0 bg-[#5CAE59] w-full hover-supported:group-hover:h-full transition-all duration-300 ease-in-out z-0"></span>
+              <span className="absolute bottom-0 left-0 h-0 bg-[#5CAE59] w-full hover-supported:group-hover:h-full transition-all duration-500 ease-in-out z-0"></span>
 
               <span className="relative z-10 hover-supported:group-hover:text-white">
                 Sign in
@@ -168,7 +168,7 @@ const Navbar = () => {
               <div
                 className={`${
                   isOpenAccountDetails ? "flex" : "hidden"
-                } absolute top-14 md:top-[62px]    right-0 font-medium rounded-b-2xl border  bg-gray-200  flex-col min-w-max p-5 gap-3 justify-center items-center z-40 transition-all duration-300  shadow-lg text-sm  `}
+                } absolute top-14 md:top-[62px]    right-0 font-medium rounded-b-2xl border  bg-gray-200  flex-col min-w-max p-5 gap-3 justify-center items-center z-40 transition-all duration-500  shadow-lg text-sm  `}
               >
                 <Link
                   onClick={openAccountMenu}
@@ -237,7 +237,7 @@ const Navbar = () => {
             >
               <Link to={navlink.link}>{navlink.name}</Link>
               <span
-                className={`absolute left-0 -bottom-1 h-[2px] bg-green-600 transition-all duration-300 ${
+                className={`absolute left-0 -bottom-1 h-[2px] bg-green-600 transition-all duration-500 ${
                   isActive ? "w-full" : "w-0 "
                 }`}
               ></span>
