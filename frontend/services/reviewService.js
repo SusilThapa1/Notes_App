@@ -40,6 +40,20 @@ const updateReview = async (id, data) => {
     throw err;
   }
 };
+const editReplyReview = async (id, data) => {
+  try {
+    const response = await axios.put(
+      `${API_URL}/update-reviewreply/${id}`,
+      data,
+      {
+        withCredentials: true,
+      }
+    );
+    return response.data;
+  } catch (err) {
+    throw err;
+  }
+};
 const deleteReplyReview = async (id) => {
   try {
     const response = await axios.put(
@@ -71,6 +85,7 @@ export {
   viewReview,
   sendReplyReview,
   updateReview,
+  editReplyReview,
   deleteReplyReview,
   deleteReview,
 };
