@@ -62,7 +62,7 @@ const Review = ({ existingReview }) => {
       return toast.error("Please rate first and write something before submit");
     }
     if (!token && !userDetails?.isAccountVerified) {
-      return toast.error("Please login or verify your account (if not) !");
+      navigate("/study/signin");
     }
     try {
       if (review._id) {
