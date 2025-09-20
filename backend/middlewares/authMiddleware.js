@@ -7,7 +7,14 @@ const verifyToken = async (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.Jwt_Secret_Key);
+    const user = await Users.findById(decoded.id).select("-password");  
+
+    if (!user) {
+      return res.status(404).json({ success: 0, message: "User not found" });
+    }
+
     req.userid = decoded.id;
+    req.user = user;  
     next();
   } catch (err) {
     return res
@@ -15,6 +22,7 @@ const verifyToken = async (req, res, next) => {
       .json({ success: 0, message: "Invalid or expired token" });
   }
 };
+
 
 const verifyAdmin = async (req, res, next) => {
   try {
