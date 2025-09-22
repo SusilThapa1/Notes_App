@@ -1,6 +1,24 @@
 const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
 
+const sessionSchema = new mongoose.Schema(
+  {
+    ip: String,
+    userAgent: String,
+    loginAt: { type: Date, default: Date.now },
+    lastActiveAt: { type: Date, default: Date.now },
+    isActive: { type: Boolean, default: true },
+    location: {
+      country: String,
+      region: String,
+      city: String,
+      lat: Number,
+      lon: Number,
+    },
+  },
+
+);
+
 const userSchema = new mongoose.Schema(
   {
     profilename: { type: String },
@@ -28,7 +46,9 @@ const userSchema = new mongoose.Schema(
     resetOtpExpireAt: { type: Number, default: 0 },
     otpRequestedAt: { type: Date },
     isAccountVerified: { type: Boolean, default: false },
+    sessions: [sessionSchema],
   },
+
   { timestamps: true }
 );
 
