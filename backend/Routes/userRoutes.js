@@ -3,8 +3,8 @@ const {
   userList,
   userDelete,
   userUpdate,
-  userSignUp,
-  userLogin,
+  register,
+  login,
   logout,
   userUploadProfile,
   userProfile,
@@ -18,7 +18,7 @@ const {
   sendPassResetOtp,
   verifyPassResetOtp,
   passResetSuccess,
-  resendOtp,
+  // resendOtp,
   resetOtpResend,
   otpResend,
   changeRole,
@@ -27,8 +27,8 @@ const { profile } = require("../middlewares/file");
 const { verifyToken, verifyAdmin } = require("../middlewares/authMiddleware");
 
 const userRouter = express.Router();
-userRouter.post("/register", userSignUp);
-userRouter.post("/login", userLogin);
+userRouter.post("/register", register);
+userRouter.post("/login", login);
 userRouter.get("/view", verifyToken, verifyAdmin, userList);
 userRouter.get("/userprofile", verifyToken, userProfile);
 userRouter.patch("/update/:id", verifyToken, userUpdate);
@@ -42,7 +42,7 @@ userRouter.patch("/change-password", verifyToken, changePassword);
 userRouter.delete("/profileimageDelete/:id", verifyToken, deleteProfileImage);
 userRouter.post("/delete", verifyToken, userAccountDelete);
 userRouter.delete("/delete/:id", verifyToken, verifyAdmin, userDelete);
-userRouter.delete("/logout", logout);
+userRouter.delete("/logout",verifyToken, logout);
 userRouter.post("/send-emailverify-otp", sendVerifyOtp);
 userRouter.post("/verify-email", verifyEmail);
 userRouter.post(
