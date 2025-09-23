@@ -17,6 +17,7 @@ const Profile = () => {
     setUser,
     userDetails,
     setUserDetails,
+    setUserSession,
     loading,
     emailChangeVerifyOtp,
   } = useContext(AuthContext);
@@ -32,6 +33,8 @@ const Profile = () => {
     gender: "",
   });
 
+  const fileInputRef = useRef(null);
+
   useEffect(() => {
     if (userDetails) {
       setUserData({
@@ -43,8 +46,6 @@ const Profile = () => {
     }
   }, [userDetails]);
 
-  const fileInputRef = useRef(null);
-
   const imageHandler = (e) => {
     setProfileImage(e.target.files[0]);
     setIsEditing(true);
@@ -55,7 +56,7 @@ const Profile = () => {
     setUserData({ ...userData, [name]: value });
   };
 
-  // Handle the profile image upload
+  // ------------------ Upload Profile Image ------------------
   const handleProfileUpload = async (e) => {
     e.preventDefault();
 
@@ -72,26 +73,10 @@ const Profile = () => {
       if (res.success) {
         const { profilepath, profilename } = res.data;
 
-        const updatedUser = {
-          ...user,
-          profilepath,
-          profilename,
-        };
-
+        // Update context state
+        const updatedUser = { ...user, profilepath, profilename };
         setUser(updatedUser);
-        setUserDetails((prev) => ({
-          ...prev,
-          profilepath,
-          profilename,
-        }));
-
-        localStorage.setItem(
-          "user",
-          JSON.stringify({
-            id: updatedUser._id,
-            username: updatedUser.username,
-          })
-        );
+        setUserDetails((prev) => ({ ...prev, profilepath, profilename }));
 
         toast.success("Profile image updated successfully!");
         setIsEditing(false);
@@ -105,7 +90,7 @@ const Profile = () => {
     }
   };
 
-  // Handle profile image delete
+  // ------------------ Delete Profile Image ------------------
   const handleProfileDelete = async () => {
     const response = await Swal.fire({
       title: "Are you sure you want to delete profile image?",
@@ -116,8 +101,6 @@ const Profile = () => {
       cancelButtonColor: "#d33",
       confirmButtonText: "Yes, delete it!",
       cancelButtonText: "No, keep it",
-      background: "#E2E8F0",
-      scrollbarPadding: false,
       customClass: {
         popup: "text-base sm:text-lg md:text-xl",
         title: "text-xl sm:text-2xl md:text-3xl font-semibold",
@@ -129,8 +112,6 @@ const Profile = () => {
     });
 
     if (!response.isConfirmed) return;
-
-    //  Check if there's any image first
     if (!userDetails?.profilepath) {
       toast.info("No profile image to delete!");
       return;
@@ -138,22 +119,15 @@ const Profile = () => {
 
     try {
       const res = await deleteProfile(userData._id);
-
-      if (res.success) {
-        const updatedUser = {
-          ...user,
-          profilename: null,
-          profilepath: null,
-        };
-
+      if (res?.success) {
+        const updatedUser = { ...user, profilepath: null, profilename: null };
         setUser(updatedUser);
         setUserDetails((prev) => ({
           ...prev,
-          profilename: null,
           profilepath: null,
+          profilename: null,
         }));
-
-        localStorage.setItem("user", JSON.stringify(updatedUser));
+        setUserSession(updatedUser);
         toast.success("Profile image deleted!");
       } else {
         toast.error(res.message || "Could not delete image");
@@ -164,6 +138,7 @@ const Profile = () => {
     }
   };
 
+  // ------------------ Update User Details ------------------
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -181,28 +156,10 @@ const Profile = () => {
 
     try {
       const res = await updateUser(userDetails._id, userData);
-
       if (res.success) {
-        setUserData(res.data);
-        setUserDetails((prev) => ({
-          ...prev,
-          username: userData.username,
-          email: userData.email,
-          gender: userData.gender,
-        }));
-
-        localStorage.setItem(
-          "user",
-          JSON.stringify({
-            id: userData._id,
-            username: userData.username,
-            email: userData?.email,
-            role: userDetails?.role,
-            account: userDetails?.isAccountVerified
-              ? "verified"
-              : "not verified",
-          })
-        );
+        // Update context state
+        setUserDetails((prev) => ({ ...prev, ...res.data }));
+        setUser((prev) => ({ ...prev, ...res.data }));
 
         toast.success(res.message);
         setIsEditDetails(false);
@@ -210,11 +167,12 @@ const Profile = () => {
         toast.error("Failed to update details!");
       }
     } catch (error) {
-      toast.error(error?.response?.data?.message || "Something went wrong");
       console.error(error);
+      toast.error(error?.response?.data?.message || "Something went wrong");
     }
   };
 
+  // ------------------ Modal check ------------------
   useEffect(() => {
     if (showImageModal && !profileImage && !userDetails?.profilepath) {
       toast.info("No profile image. Please upload!");
@@ -222,19 +180,19 @@ const Profile = () => {
     }
   }, [showImageModal, profileImage, userDetails]);
 
-  if (loading) {
-    return <Loader />;
-  }
+  if (loading) return <Loader />;
 
   return (
-    <div className="flex flex-col h-screen justify-center items-center gap-5  px-5 md:px-10 lg:px-20  w-full  ">
-      <h1 className="  text-xl font-medium ">Your Profile </h1>
-      <div className="flex flex-col md:flex-row min-h-max  justify-center items-center gap-5 md:gap-20 w-[85vw] md:w-[90%] lg:w-[80%] border-2 border-slate-100  shadow-lg p-2 md:py-10 lg:py-14 rounded-2xl">
+    <div className="flex flex-col h-screen justify-center items-center gap-5 px-5 md:px-10 lg:px-20 w-full">
+      <h1 className="text-xl font-medium">Your Profile</h1>
+
+      <div className="flex flex-col md:flex-row min-h-max justify-center items-center gap-5 md:gap-20 w-[85vw] md:w-[90%] lg:w-[80%] border-2 border-slate-100 shadow-lg p-2 md:py-10 lg:py-14 rounded-2xl">
+        {/* ------------------ Profile Image ------------------ */}
         <div className="flex flex-col justify-center items-center md:border-r-2 border-gray-300 md:pr-[-20px] md:w-[60%] lg:w-[45%]">
           <div className="flex flex-col justify-center items-center gap-5 font-medium">
             <div
               onClick={() => setShowImageModal(true)}
-              className={`cursor-pointer rounded-full border-[4px]   transition-all duration-500 ${
+              className={`cursor-pointer rounded-full border-[4px] transition-all duration-500 ${
                 profileImage || userDetails?.profilepath
                   ? "shadow-lg border-[#6aaa4c] border-dotted"
                   : ""
@@ -252,7 +210,7 @@ const Profile = () => {
               />
             </div>
 
-            <div className="flex gap-4 justify-center items-center ">
+            <div className="flex gap-4 justify-center items-center">
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
@@ -265,7 +223,6 @@ const Profile = () => {
 
               <input
                 ref={fileInputRef}
-                name="image"
                 type="file"
                 accept="image/jpeg,image/png,image/webp,image/avif"
                 onChange={imageHandler}
@@ -276,7 +233,7 @@ const Profile = () => {
                 <button
                   onClick={handleProfileUpload}
                   disabled={!profileImage}
-                  className="px-3 py-2 bg-green-500 hover-supported: hover:bg-[#5CAE59] disabled:opacity-50  shadow-lg rounded transition-colors duration-500"
+                  className="px-3 py-2 bg-green-500 hover-supported:hover:bg-[#5CAE59] disabled:opacity-50 shadow-lg rounded transition-colors duration-500"
                 >
                   Save Profile
                 </button>
@@ -297,14 +254,13 @@ const Profile = () => {
           </div>
         </div>
 
-        {/* conditional render for user details or edit details */}
-
+        {/* ------------------ User Details ------------------ */}
         {userDetails && isEditDetails ? (
           <form
             onSubmit={handleSubmit}
-            className="flex text-sm items-start flex-col gap-3 font-medium md:text-[1.5vw] lg:text-[1.1vw] w-full md:w-[50%]   md:p-2"
+            className="flex text-sm items-start flex-col gap-3 font-medium md:text-[1.5vw] lg:text-[1.1vw] w-full md:w-[50%] md:p-2"
           >
-            <div className="flex justify-center items-center gap-2  w-full">
+            <div className="flex justify-center items-center gap-2 w-full">
               <label htmlFor="username" className="text-gray-800 font-medium">
                 Username:
               </label>
@@ -314,9 +270,10 @@ const Profile = () => {
                 id="username"
                 value={userData.username}
                 onChange={handleChange}
-                className="rounded-md border-2 border-gray-400 p-2  w-full bg-transparent"
+                className="rounded-md border-2 border-gray-400 p-2 w-full bg-transparent"
               />
             </div>
+
             <div className="flex items-center gap-2 w-full">
               <label htmlFor="email" className="text-gray-800 font-medium">
                 Email:
@@ -325,64 +282,36 @@ const Profile = () => {
                 type="text"
                 name="email"
                 id="email"
-                value={userData.email} // Bind input to userData, not userDetails
+                value={userData.email}
                 onChange={handleChange}
-                className="rounded-md border-2 border-gray-400 px-1 py-2  w-full  bg-transparent"
+                className="rounded-md border-2 border-gray-400 px-1 py-2 w-full bg-transparent"
               />
             </div>
-            <div className="flex  items-center w-full gap-1 py-2 md:gap-5">
-              <h1 className="text-gray-800 font-medium min-w-max">Gender :</h1>
-              <div className="flex justify-center items-center ">
-                <input
-                  type="radio"
-                  name="gender"
-                  value="male"
-                  id="male"
-                  checked={userData.gender === "male"}
-                  onChange={handleChange}
-                  className="cursor-pointer"
-                  aria-label="Male"
-                />
-                <label htmlFor="male" className="cursor-pointer">
-                  Male
-                </label>
-              </div>
-              <div className="flex justify-center items-center">
-                <input
-                  type="radio"
-                  name="gender"
-                  value="female"
-                  id="female"
-                  checked={userData.gender === "female"}
-                  onChange={handleChange}
-                  className="cursor-pointer"
-                  aria-label="Female"
-                />
-                <label htmlFor="female" className="cursor-pointer">
-                  Female
-                </label>
-              </div>
-              <div className="flex justify-center items-center">
-                <input
-                  type="radio"
-                  name="gender"
-                  value="others"
-                  id="others"
-                  checked={userData.gender === "others"}
-                  onChange={handleChange}
-                  className="cursor-pointer "
-                  aria-label="Other"
-                />
-                <label htmlFor="others" className="cursor-pointer">
-                  Others
-                </label>
-              </div>
+
+            <div className="flex items-center w-full gap-1 py-2 md:gap-5">
+              <h1 className="text-gray-800 font-medium min-w-max">Gender:</h1>
+              {["male", "female", "others"].map((g) => (
+                <div key={g} className="flex justify-center items-center">
+                  <input
+                    type="radio"
+                    name="gender"
+                    value={g}
+                    id={g}
+                    checked={userData.gender === g}
+                    onChange={handleChange}
+                    className="cursor-pointer"
+                  />
+                  <label htmlFor={g} className="cursor-pointer capitalize">
+                    {g}
+                  </label>
+                </div>
+              ))}
             </div>
 
             <div className="mx-auto flex justify-between items-center w-full text-white">
               <button
                 onClick={() => setIsEditDetails(false)}
-                className="bg-red-500 px-5 py-2  rounded-md hover-supported:hover:bg-red-600"
+                className="bg-red-500 px-5 py-2 rounded-md hover-supported:hover:bg-red-600"
               >
                 Cancel
               </button>
@@ -395,27 +324,27 @@ const Profile = () => {
             </div>
           </form>
         ) : (
-          <div className="flex  items-start md:justify-center flex-col gap-5 font-medium text-[12px] md:text-[1.5vw] lg:text-[1.1vw] md:p-2 w-full md:w-auto px-5">
+          <div className="flex items-start md:justify-center flex-col gap-5 font-medium text-[12px] md:text-[1.5vw] lg:text-[1.1vw] md:p-2 w-full md:w-auto px-5">
             <div className="flex gap-2">
-              <h1 className="text-gray-800 font-medium ">Username:</h1>
+              <h1 className="text-gray-800 font-medium">Username:</h1>
               <p className="text-gray-700">{userDetails?.username}</p>
             </div>
             <div className="flex gap-2">
-              <h1 className="text-gray-800 font-medium ">Email:</h1>
+              <h1 className="text-gray-800 font-medium">Email:</h1>
               <p className="text-gray-700">{userDetails?.email}</p>
             </div>
             <div className="flex gap-2">
-              <h1 className="text-gray-800 font-medium ">Gender:</h1>
+              <h1 className="text-gray-800 font-medium">Gender:</h1>
               <p className="capitalize text-gray-700">
                 {userDetails?.gender || "Not specified"}
               </p>
             </div>
             <div className="flex gap-2">
-              <h1 className="text-gray-800 font-medium ">Account status:</h1>
+              <h1 className="text-gray-800 font-medium">Account status:</h1>
               <div className="text-gray-700">
                 {userDetails?.isAccountVerified ? (
                   <p className="flex justify-center items-center gap-3">
-                    <span>Verified</span>{" "}
+                    <span>Verified</span>
                     <MdVerified className="text-[#6aaa4c] md:text-[20px]" />
                   </p>
                 ) : (
@@ -424,7 +353,7 @@ const Profile = () => {
               </div>
             </div>
             <div className="flex gap-2">
-              <h1 className="text-gray-800 font-medium ">Role:</h1>
+              <h1 className="text-gray-800 font-medium">Role:</h1>
               <p className="text-gray-700 capitalize">{userDetails?.role}</p>
             </div>
 
@@ -437,24 +366,30 @@ const Profile = () => {
           </div>
         )}
       </div>
-      {/* modal to view profile image */}
+
+      {/* ------------------ Modal to view profile image ------------------ */}
       {showImageModal && (profileImage || userDetails?.profilepath) && (
         <div
           onClick={() => setShowImageModal(false)}
-          className="fixed inset-0 bg-black bg-opacity-70 backdrop-blur-md  flex justify-center items-center z-50  "
+          className="fixed inset-0 bg-black bg-opacity-70 backdrop-blur-md flex justify-center items-center z-50"
         >
-          <div className="relative rounded-lg p-1 flex  h-screen justify-center items-center  w-full  ">
-            <button className="absolute  top-1 bg-red-600 px-2 right-0 md:right-1 text-white  z-50">
+          <div className="relative rounded-lg p-1 flex h-screen justify-center items-center w-full">
+            <button
+              onClick={() => setShowImageModal(false)}
+              className="absolute top-1 right-1 bg-red-600 px-2 text-white z-50 rounded"
+            >
               X
             </button>
             <img
               src={
                 profileImage
                   ? URL.createObjectURL(profileImage)
-                  : userDetails?.profilepath || "/prof.webp"
+                  : userDetails?.profilepath
+                  ? `${userDetails.profilepath}?t=${Date.now()}`
+                  : "/prof.webp"
               }
               alt="Full Profile"
-              className=" object-contain  w-auto h-[90%] rounded-lg "
+              className="object-contain w-auto h-[90%] rounded-lg"
             />
           </div>
         </div>
