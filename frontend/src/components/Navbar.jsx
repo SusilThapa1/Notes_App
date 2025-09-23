@@ -14,7 +14,7 @@ const Navbar = () => {
   const [isOpenAccountDetails, setIsOpenAccountDetails] = useState(false);
   const location = useLocation();
 
-  const { token, logOut, userDetails } = useContext(AuthContext);
+  const { logOut, userDetails } = useContext(AuthContext);
   const openAccountMenu = () => setIsOpenAccountDetails(!isOpenAccountDetails);
 
   const toggleMenu = () => setMenuOpen(!menuOpen);
@@ -53,7 +53,7 @@ const Navbar = () => {
   ];
 
   if (
-    token &&
+     
     userDetails?.isAccountVerified &&
     userDetails?.role === "admin"
   ) {
@@ -118,7 +118,7 @@ const Navbar = () => {
             );
           })}
         </ul>
-        {!token || !userDetails?.isAccountVerified ? (
+        { !userDetails ? (
           <div className="flex items-center justify-between gap-5">
             <Link
               to="/study/signup"
@@ -148,7 +148,7 @@ const Navbar = () => {
                 userDetails?.profilepath ? "border-gray-300" : ""
               } relative z-30  shadow-lg`}
               src={
-                token ? userDetails?.profilepath || "/prof.webp" : "/prof.webp"
+                userDetails ? userDetails?.profilepath || "/prof.webp" : "/prof.webp"
               }
               alt="profile"
               loading="lazy"
@@ -178,7 +178,7 @@ const Navbar = () => {
                   <FaRegUser />
                   <p>View Profile</p>
                 </Link>
-                {token && (
+                {userDetails && (
                   <div className="flex flex-col justify-center items-center gap-3">
                     <Link
                       onClick={openAccountMenu}
