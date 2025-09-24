@@ -64,7 +64,8 @@ const Navbar = () => {
     <nav className="fixed top-0 z-50 w-full  bg-transparent  shadow-sm border  border-slate-100">
       <div className="relative backdrop-blur-sm flex items-center justify-between px-5 py-2 md:px-10 lg:px-20 z-20">
         <div className="flex justify-center gap-5 items-center w-28 md:w-auto">
-          <button
+         {userDetails && (
+           <button
             aria-label={menuOpen ? "Close menu" : "Open menu"}
             onClick={toggleMenu}
             className="absolute left-5 text-2xl text-gray-800 md:hidden "
@@ -75,6 +76,7 @@ const Navbar = () => {
               <IoMenu size={25} className=" text-[#5CAE59] " />
             )}
           </button>
+         )}
           <div className="flex justify-between md:justify-center md:flex-col items-center gap-2 ml-7 md:ml-0">
             <Link
               to="/"
@@ -93,7 +95,8 @@ const Navbar = () => {
 
         {/* Desktop Navigation */}
 
-        <ul className="hidden gap-5 font-semibold md:flex">
+        {userDetails && (
+          <ul className="hidden gap-5 font-semibold md:flex">
           {navlinks.map((navlink, index) => {
             const isActive =
               location.pathname === navlink.link ||
@@ -118,6 +121,7 @@ const Navbar = () => {
             );
           })}
         </ul>
+        )}
         { !userDetails ? (
           <div className="flex items-center justify-between gap-5">
             <Link
