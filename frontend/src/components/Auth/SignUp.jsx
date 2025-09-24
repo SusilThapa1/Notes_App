@@ -91,9 +91,8 @@ const SignUp = () => {
       const res = await registerUser(formData);
       console.log(res);
       if (res.success) {
-        setUserSession(res?.tempToken, res?.user);
-
-        sendEmailVerifyOtp(formData.email);
+        //  setUserSession(res?.user);
+       await sendEmailVerifyOtp(formData.email);
       } else {
         toast.error(res.message);
       }
