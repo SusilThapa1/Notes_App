@@ -53,8 +53,7 @@ const DeleteMyAccount = () => {
       const res = await deleteUserAccount(password);
       if (res.success) {
         toast.success("Account deleted successfully!");
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
+         
         localStorage.removeItem("greet");
         logOut();
       } else {
