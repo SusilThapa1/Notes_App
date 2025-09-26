@@ -48,4 +48,3 @@ const cleanupUnverifiedUsers = async () => {
 // Schedule the cron job
 cron.schedule(CRON_SCHEDULE, cleanupUnverifiedUsers);
 
-logger.info(`[CRON] Unverified users cleanup scheduled: ${CRON_SCHEDULE}`);
