@@ -10,8 +10,7 @@ const uploadRouter = require("./Routes/uploadRoutes");
 const reviewRouter = require("./Routes/reviewRoutes");
 const { upload, profile } = require("./middlewares/file");
 const cookieParser = require("cookie-parser");
-const cron = require("node-cron");
-const Users = require("./models/userModel");
+require("./config/cronConfig");
 
 const PORT = 5001;
 
@@ -19,15 +18,22 @@ const app = express();
 
 connectDB();
 
+const allowedOrigins = process.env.FRONTEND_BASE_URL; // add your frontend URLs
+
 app.use(
   cors({
-    origin: "http://localhost:5173", //frontend URL ||"http://localhost:5173" 192.168.16.153   192.168.1.23 192.168.1.104 192.168.1.45
+    origin: allowedOrigins,
     credentials: true,
   })
 );
 
 app.use(express.json());
 app.use(cookieParser());
+
+app.use((req, res, next) => {
+  console.log("Cookies:", req.cookies);
+  next();
+});
 
 // Apply rate limiting to /api/ endpoints
 app.use(
@@ -46,28 +52,6 @@ app.get("/", (req, res) => {
   res.send("Hello from server");
 });
 
-cron.schedule("*/10 * * * *", async () => {
-  try {
-    const oneMinuteAgo = new Date(Date.now() - 10 * 60 * 1000);
-
-    const deletedUsers = await Users.deleteMany({
-      isAccountVerified: false,
-      createdAt: { $lt: oneMinuteAgo },
-    });
-
-    // if (deletedUsers.deletedCount > 0) {
-    //   console.log(
-    //     `[CRON] Deleted ${deletedUsers.deletedCount} unverified users`
-    //   );
-    // }
-  } catch (err) {
-    console.error(
-      "[CRON ERROR] Failed to delete unverified users:",
-      err.message
-    );
-  }
-});
-
 app.post("/uploads", upload.single("image"), (req, res) => {
   if (!req.file) {
     return res.status(400).json({ success: 0, message: "No file uploaded" });
@@ -75,7 +59,7 @@ app.post("/uploads", upload.single("image"), (req, res) => {
   res.status(200).json({
     success: 1,
     message: "Image uploaded successfully",
-    imageUrl: `${process.env.SERVER_BASE_URL}/uploads/images/${req.file.filename}`,
+    imageUrl: `/uploads/images/${req.file.filename}`,
   });
 });
 
@@ -86,7 +70,7 @@ app.post("/profiles", profile.single("image"), (req, res) => {
   res.status(200).json({
     success: 1,
     message: "Profile uploaded successfully",
-    imageUrl: `${process.env.SERVER_BASE_URL}/profiles/images/${req.file.filename}`,
+    imageUrl: `/profiles/images/${req.file.filename}`,
   });
 });
 
