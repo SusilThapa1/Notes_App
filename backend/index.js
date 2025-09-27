@@ -30,10 +30,7 @@ app.use(
 app.use(express.json());
 app.use(cookieParser());
 
-app.use((req, res, next) => {
-  console.log("Cookies:", req.cookies);
-  next();
-});
+ 
 
 // Apply rate limiting to /api/ endpoints
 app.use(
@@ -79,6 +76,7 @@ app.use("/api/semester", semesterRouter);
 app.use("/api/programme", programmeRouter);
 app.use("/api/upload", uploadRouter);
 app.use("/api/review", reviewRouter);
+ 
 
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`🚀 Sever is running on address ${process.env.SERVER_BASE_URL}`);
