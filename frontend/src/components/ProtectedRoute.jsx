@@ -4,14 +4,14 @@ import Loader from "./Loader";
 import { AuthContext } from "./Context/AuthContext";
 
 const ProtectedRoute = ({ roleRequired }) => {
-  const { token, user, loading } = useContext(AuthContext);
+  const { user, loading } = useContext(AuthContext);
 
   if (loading) return <Loader />;
 
-  if (!token || !user) {
-    return <Navigate to="/study/signin" replace />;
-  }
+  // User not logged in
+  if (!user) return <Navigate to="/study/signin" replace />;
 
+  // Role-based access control
   if (roleRequired && user?.role !== roleRequired) {
     return <Navigate to="/study/not-authorize" replace />;
   }
