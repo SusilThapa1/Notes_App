@@ -4,7 +4,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { IoMenu, IoClose } from "react-icons/io5";
 import { IoIosArrowDropdown } from "react-icons/io";
 import { FiAlertTriangle } from "react-icons/fi";
-import { MdLockOutline, MdLogout } from "react-icons/md";
+import { MdLockOutline, MdLogout, MdOutlineDevices } from "react-icons/md";
 
 import { AuthContext } from "./Context/AuthContext";
 import Swal from "sweetalert2";
@@ -14,7 +14,7 @@ const Navbar = () => {
   const [isOpenAccountDetails, setIsOpenAccountDetails] = useState(false);
   const location = useLocation();
 
-  const { logOut, userDetails } = useContext(AuthContext);
+  const { logOut, userDetails, loading } = useContext(AuthContext);
   const openAccountMenu = () => setIsOpenAccountDetails(!isOpenAccountDetails);
 
   const toggleMenu = () => setMenuOpen(!menuOpen);
@@ -52,31 +52,31 @@ const Navbar = () => {
     { name: "Questions", link: "/study/questions" },
   ];
 
-  if (
-     
-    userDetails?.isAccountVerified &&
-    userDetails?.role === "admin"
-  ) {
+  if (userDetails?.isAccountVerified && userDetails?.role === "admin") {
     navlinks.push({ name: "Admin", link: "/study/admin/dashboard" });
+  }
+
+  if (loading) {
+    return;
   }
 
   return (
     <nav className="fixed top-0 z-50 w-full  bg-transparent  shadow-sm border  border-slate-100">
       <div className="relative backdrop-blur-sm flex items-center justify-between px-5 py-2 md:px-10 lg:px-20 z-20">
         <div className="flex justify-center gap-5 items-center w-28 md:w-auto">
-         {userDetails && (
-           <button
-            aria-label={menuOpen ? "Close menu" : "Open menu"}
-            onClick={toggleMenu}
-            className="absolute left-5 text-2xl text-gray-800 md:hidden "
-          >
-            {menuOpen ? (
-              <IoClose size={25} className="text-red-500 " />
-            ) : (
-              <IoMenu size={25} className=" text-[#5CAE59] " />
-            )}
-          </button>
-         )}
+          {userDetails && (
+            <button
+              aria-label={menuOpen ? "Close menu" : "Open menu"}
+              onClick={toggleMenu}
+              className="absolute left-5 text-2xl text-gray-800 md:hidden "
+            >
+              {menuOpen ? (
+                <IoClose size={25} className="text-red-500 " />
+              ) : (
+                <IoMenu size={25} className=" text-[#5CAE59] " />
+              )}
+            </button>
+          )}
           <div className="flex justify-between md:justify-center md:flex-col items-center gap-2 ml-7 md:ml-0">
             <Link
               to="/"
@@ -97,32 +97,32 @@ const Navbar = () => {
 
         {userDetails && (
           <ul className="hidden gap-5 font-semibold md:flex">
-          {navlinks.map((navlink, index) => {
-            const isActive =
-              location.pathname === navlink.link ||
-              (navlink.link !== "/" &&
-                location.pathname.startsWith(navlink.link));
+            {navlinks.map((navlink, index) => {
+              const isActive =
+                location.pathname === navlink.link ||
+                (navlink.link !== "/" &&
+                  location.pathname.startsWith(navlink.link));
 
-            return (
-              <li
-                onClick={() => window.scroll(0, 0)}
-                key={index}
-                className={`group relative cursor-pointer font-semibold  transition-all duration-500 ${
-                  isActive ? " text-[#5CAE59]" : "hover:text-green-500"
-                }`}
-              >
-                <Link to={navlink.link}>{navlink.name}</Link>
-                <span
-                  className={`absolute left-0 -bottom-1 h-[2px] bg-green-600 transition-all duration-500 ${
-                    isActive ? "w-full" : "w-0 group-hover:w-full"
+              return (
+                <li
+                  onClick={() => window.scroll(0, 0)}
+                  key={index}
+                  className={`group relative cursor-pointer font-semibold  transition-all duration-500 ${
+                    isActive ? " text-[#5CAE59]" : "hover:text-green-500"
                   }`}
-                ></span>
-              </li>
-            );
-          })}
-        </ul>
+                >
+                  <Link to={navlink.link}>{navlink.name}</Link>
+                  <span
+                    className={`absolute left-0 -bottom-1 h-[2px] bg-green-600 transition-all duration-500 ${
+                      isActive ? "w-full" : "w-0 group-hover:w-full"
+                    }`}
+                  ></span>
+                </li>
+              );
+            })}
+          </ul>
         )}
-        { !userDetails ? (
+        {!userDetails ? (
           <div className="flex items-center justify-between gap-5">
             <Link
               to="/study/signup"
@@ -152,7 +152,12 @@ const Navbar = () => {
                 userDetails?.profilepath ? "border-gray-300" : ""
               } relative z-30  shadow-lg`}
               src={
-                userDetails ? userDetails?.profilepath || "/prof.webp" : "/prof.webp"
+                userDetails
+                  ? `${
+                      import.meta.env.VITE_API_IMAGE_URL +
+                      userDetails?.profilepath
+                    }` || "/prof.webp"
+                  : "/prof.webp"
               }
               alt="profile"
               loading="lazy"
@@ -189,8 +194,16 @@ const Navbar = () => {
                       to="/study/user/change-password"
                       className="w-full hover-supported:hover:text-[#5CAE59] active:text-[#5CAE59] flex justify-center gap-2 items-center"
                     >
-                      <MdLockOutline title="sign out" />
+                      <MdLockOutline />
                       <p>Change Password</p>
+                    </Link>
+                    <Link
+                      onClick={openAccountMenu}
+                      to="/study/user/view-logins"
+                      className="w-full flex items-center gap-3 hover-supported:hover:text-[#5CAE59] active:text-[#5CAE59] focus:text-[#5CAE59]"
+                    >
+                      <MdOutlineDevices />
+                      <p>View All Logins</p>
                     </Link>
                     <Link
                       onClick={openAccountMenu}
@@ -198,7 +211,7 @@ const Navbar = () => {
                       className="w-full  hover-supported:hover:text-red-600 active:text-red-600 flex gap-2 items-center"
                     >
                       <FiAlertTriangle />
-                      <p>Delete My Account</p>
+                      <p>Delete Account</p>
                     </Link>
                     <button
                       aria-label="sign out"
