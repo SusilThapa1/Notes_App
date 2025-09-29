@@ -24,6 +24,7 @@ import CodeOfConduct from "./components/Footer/CodeOfConduct.jsx";
 import ScrollToTop from "./components/ScrollToTop.jsx";
 import NotAuthorized from "./components/NotAuthorized.jsx";
 import PublicRoute from "./components/PublicRoute.jsx";
+import ViewLogins from "./components/Auth/ViewLogins.jsx";
 
 function App() {
   return (
@@ -53,6 +54,10 @@ function App() {
             <Route
               path="/study/user/change-password"
               element={<ChangePass />}
+            />
+            <Route
+              path="/study/user/view-logins"
+              element={<ViewLogins />}
             />
             <Route
               path="/study/user/deletemyaccount"
