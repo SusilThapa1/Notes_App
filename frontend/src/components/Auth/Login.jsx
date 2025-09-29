@@ -28,17 +28,18 @@ const Login = () => {
     try {
       const res = await userLogin(formData);
       if (res?.success) {
-        setUserSession(res?.token, res?.user);
+        setUserSession(res?.user);
+        console.log(res?.user)
         if (res?.user?.isAccountVerified) {
           toast.success(res?.message);
-
           if (res?.user?.role === "admin") {
             navigate("/study/admin/dashboard");
           } else {
             navigate("/");
           }
         } else {
-          sendEmailVerifyOtp(formData.email);
+          setUserSession(res?.user);
+          await sendEmailVerifyOtp(formData.email); // navigation here
         }
       } else {
         toast.error(res.message || "Login failed");
