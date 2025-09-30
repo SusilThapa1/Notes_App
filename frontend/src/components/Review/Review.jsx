@@ -15,7 +15,7 @@ const Review = ({ existingReview }) => {
   const today = new Date().toISOString().slice(0, 10).replace(/-/g, "/");
   const navigate = useNavigate();
   const reviewFormRef = useRef(null);
-  const { userDetails, token } = useContext(AuthContext);
+  const { userDetails } = useContext(AuthContext);
   const [allReview, setAllReview] = useState([]);
   const [review, setReview] = useState({
     rating: existingReview?.rating || 0,
@@ -61,7 +61,7 @@ const Review = ({ existingReview }) => {
     if (!review.rating || !review.message) {
       return toast.error("Please rate first and write something before submit");
     }
-    if (!token && !userDetails?.isAccountVerified) {
+    if (!userDetails?.isAccountVerified) {
       navigate("/study/signin");
     }
     try {
