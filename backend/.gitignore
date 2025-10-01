@@ -14,6 +14,9 @@ logs/
 #uploads
 uploads/
 
+#profile images
+profiles/
+
 # System files
 .DS_Store        # macOS system file
 Thumbs.db        # Windows system file
