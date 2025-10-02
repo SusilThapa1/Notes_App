@@ -19,7 +19,7 @@ const Homepage = () => {
 
         <section
           id="home"
-          className=" parent relative  text-white flex flex-col gap-3 justify-center items-center h-[500px] mb-10 md:h-[750px] bg-[url(/images/mobile.png)] md:bg-[url(/images/desktop.png)]  bg-cover bg-center bg-no-repeat rounded-xl shadow-lg border-2 border-slate-100"
+          className=" parent relative  text-white flex flex-col gap-3 justify-center items-center h-[400px] mb-10 md:h-[750px] bg-[url(/images/mobile.png)] md:bg-[url(/images/desktop.png)]  bg-cover bg-center bg-no-repeat rounded-xl shadow-lg border-2 border-slate-100"
         >
           <h2 className="absolute top-3 child md:top-10 text-[3vw] text-center md:text-3xl text-[#2b352b] mx-0 font-semibold md:font-extrabold px-2 md:rotate-1">
             Purbanchal University Course Hub
