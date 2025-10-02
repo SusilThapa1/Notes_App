@@ -18,7 +18,7 @@ const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
   const today = new Date().toISOString().slice(0, 10).replace(/-/g, "/");
 
   const navigate = useNavigate();
-  const { userDetails, token } = useContext(AuthContext);
+  const { userDetails } = useContext(AuthContext);
   const isAdmin = userDetails?.role === "admin";
 
   // New states for editing admin reply
@@ -63,7 +63,7 @@ const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
     e.preventDefault();
     toast.dismiss();
     if (
-      !token ||
+       
       userDetails?.role !== "admin" ||
       !userDetails?.isAccountVerified
     ) {
@@ -215,7 +215,7 @@ const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
               <div className="flex justify-between items-center gap-3">
                 <div className="flex items-center gap-3">
                   <img
-                    src={ownReview?.userId?.profilepath || "/prof.webp"}
+                    src={`${import.meta.env.VITE_API_IMAGE_URL+ownReview?.userId?.profilepath}` || "/prof.webp"}
                     alt="profile"
                     className="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover"
                   />
@@ -223,7 +223,7 @@ const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
                     {ownReview?.userId?.username} (You)
                   </h3>
                 </div>
-                {token &&
+                {
                   userDetails?.isAccountVerified &&
                   (userDetails?._id === ownReview?.userId?._id || isAdmin) && (
                     <HiOutlineDotsVertical
@@ -333,7 +333,7 @@ const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
                     />
                     <h3 className="text-sm md:text-md font-semibold text-green-600">
                       Easy Study Zone{" "}
-                      {token &&
+                      {
                         userDetails?.isAccountVerified &&
                         isAdmin &&
                         `(${ownReview?.reply?.repliedBy?.name})`}
@@ -341,7 +341,7 @@ const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
                   </div>
                   <div className="flex justify-center items-center gap-3 text-sm text-gray-500">
                     <span>{ownReview?.reply?.repliedDate}</span>
-                    {token && userDetails?.isAccountVerified && isAdmin && (
+                    { userDetails?.isAccountVerified && isAdmin && (
                       <HiOutlineDotsVertical
                         size={15}
                         onClick={() => handleShowAdminAction(ownReview._id)}
@@ -423,7 +423,7 @@ const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
               <div className="flex justify-between items-center gap-3">
                 <div className="flex items-center gap-3">
                   <img
-                    src={singleReview?.userId?.profilepath || "/prof.webp"}
+                    src={`${import.meta.env.VITE_API_IMAGE_URL+singleReview?.userId?.profilepath}` || "/prof.webp"}
                     alt="profile"
                     className="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover"
                   />
@@ -431,7 +431,7 @@ const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
                     {singleReview?.userId?.username}
                   </h3>
                 </div>
-                {token &&
+                {
                   userDetails?.isAccountVerified &&
                   (userDetails?._id === singleReview?.userId?._id ||
                     isAdmin) && (
@@ -541,7 +541,7 @@ const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
                       />
                       <h3 className="text-sm md:text-md font-semibold text-green-600">
                         Easy Study Zone{" "}
-                        {token &&
+                        {
                           userDetails?.isAccountVerified &&
                           isAdmin &&
                           `(${singleReview?.reply?.repliedBy?.name})`}
@@ -549,7 +549,7 @@ const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
                     </div>
                     <div className="flex justify-center items-center gap-3 text-sm text-gray-500">
                       <span>{singleReview?.reply?.repliedDate}</span>
-                      {token && userDetails?.isAccountVerified && isAdmin && (
+                      { userDetails?.isAccountVerified && isAdmin && (
                         <HiOutlineDotsVertical
                           size={15}
                           onClick={() =>
