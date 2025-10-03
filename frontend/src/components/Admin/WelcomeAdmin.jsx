@@ -5,15 +5,15 @@ import Analytics from "./Analytics";
 import { FaGraduationCap, FaRegCalendarAlt } from "react-icons/fa";
 
 const WelcomeAdmin = () => {
-  const { user, greeting } = useContext(AuthContext);
+  const { userDetails, greeting } = useContext(AuthContext);
 
   return (
     <div className="flex flex-col items-center  scroll-container  w-full text-black pt-8 h-screen   overflow-y-scroll  bg-transparent mx-auto pb-10  px-5">
       <div className="flex flex-col justify-center items-center gap-2 text-justify md:text-center mb-8">
         <div className="flex flex-col gap-5 justify-center items-center text-[5vw] md:text-3xl text-center font-bold mb-4    text-[#5CAE59]">
           <h1>
-            {user?.username
-              ? `${greeting}, ${user.username.split(" ")[0]}!`
+            {userDetails?.username
+              ? `${greeting}, ${userDetails.username.split(" ")[0]}!`
               : ""}
           </h1>
           <p>Welcome to the Admin Panel</p>
