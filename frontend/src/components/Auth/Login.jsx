@@ -21,25 +21,22 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     toast.dismiss();
-    if (!formData.email || !formData.password) {
-      toast.error("Please fill all the fields");
-      return;
-    }
+
+    if (!formData.email || !formData.password)
+      return toast.error("Please fill all fields");
+
     try {
       const res = await userLogin(formData);
+
       if (res?.success) {
-        setUserSession(res?.user);
-        console.log(res?.user)
-        if (res?.user?.isAccountVerified) {
-          toast.success(res?.message);
-          if (res?.user?.role === "admin") {
-            navigate("/study/admin/dashboard");
-          } else {
-            navigate("/");
-          }
-        } else {
+        // set context first
+        
+        if (res.user.isAccountVerified) {
           setUserSession(res?.user);
-          await sendEmailVerifyOtp(formData.email); // navigation here
+          toast.success(res?.message);
+           
+        } else {
+          await sendEmailVerifyOtp(formData.email);
         }
       } else {
         toast.error(res.message || "Login failed");
