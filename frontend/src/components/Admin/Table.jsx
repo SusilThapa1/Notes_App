@@ -1,34 +1,20 @@
 import { useNavigate } from "react-router-dom";
 import { FaTrash } from "react-icons/fa";
-import Swal from "sweetalert2";
 import { toast } from "react-toastify";
 import { useContext } from "react";
 import { ProgrammesContext } from "../Context/ProgrammeContext";
 import { deleteUpload } from "../../../Services/uploadService";
+import { showConfirm } from "../../../Utils/alertHelper";
 
 const Table = ({ resource }) => {
   const navigate = useNavigate();
 
   const { setUploads } = useContext(ProgrammesContext);
   const handleDelete = async (id) => {
-    const response = await Swal.fire({
+    const response = await showConfirm({
       title: "Are you sure, you want to delete?",
       text: "You won't be able to revert this!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#49bb0f",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!",
-      background: "#E2E8F0",
-      scrollbarPadding: false,
-      customClass: {
-        popup: "text-base sm:text-lg md:text-xl",
-        title: "text-xl sm:text-2xl md:text-3xl font-semibold",
-        confirmButton:
-          "text-sm sm:text-base md:text-lg bg-blue-600 text-white px-4 py-2 rounded",
-        cancelButton:
-          "text-sm sm:text-base md:text-lg bg-gray-400 text-white px-4 py-2 rounded",
-      },
+       
     });
 
     if (!response.isConfirmed) return;
