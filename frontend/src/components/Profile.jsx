@@ -1,6 +1,5 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
-import Swal from "sweetalert2";
 import Loader from "./Loader";
 import {
   deleteProfile,
@@ -10,11 +9,10 @@ import {
 import { AuthContext } from "./Context/AuthContext";
 import { MdVerified } from "react-icons/md";
 import { emailRegex } from "../../Validator/validator";
+import { showConfirm } from "../../Utils/alertHelper";
 
 const Profile = () => {
   const {
-    user,
-    setUser,
     userDetails,
     setUserDetails,
     setUserSession,
@@ -34,8 +32,8 @@ const Profile = () => {
   });
 
   const fileInputRef = useRef(null);
-
   useEffect(() => {
+    console.log(userDetails);
     if (userDetails) {
       setUserData({
         _id: userDetails._id || "",
@@ -74,8 +72,7 @@ const Profile = () => {
         const { profilepath, profilename } = res.data;
 
         // Update context state
-        const updatedUser = { ...user, profilepath, profilename };
-        setUser(updatedUser);
+
         setUserDetails((prev) => ({ ...prev, profilepath, profilename }));
 
         toast.success("Profile image updated successfully!");
@@ -92,23 +89,10 @@ const Profile = () => {
 
   // ------------------ Delete Profile Image ------------------
   const handleProfileDelete = async () => {
-    const response = await Swal.fire({
-      title: "Are you sure you want to delete profile image?",
+    const response = await showConfirm({
+      title: "Are you sure, you want to delete profile image?",
       text: "You won't be able to revert this!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#49bb0f",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!",
-      cancelButtonText: "No, keep it",
-      customClass: {
-        popup: "text-base sm:text-lg md:text-xl",
-        title: "text-xl sm:text-2xl md:text-3xl font-semibold",
-        confirmButton:
-          "text-sm sm:text-base md:text-lg bg-blue-600 text-white px-4 py-2 rounded",
-        cancelButton:
-          "text-sm sm:text-base md:text-lg bg-gray-400 text-white px-4 py-2 rounded",
-      },
+       
     });
 
     if (!response.isConfirmed) return;
@@ -120,13 +104,12 @@ const Profile = () => {
     try {
       const res = await deleteProfile(userData._id);
       if (res?.success) {
-        const updatedUser = { ...user, profilepath: null, profilename: null };
-        setUser(updatedUser);
-        setUserDetails((prev) => ({
-          ...prev,
+        const updatedUser = {
+          ...userDetails,
           profilepath: null,
           profilename: null,
-        }));
+        };
+        setUserDetails(updatedUser);
         setUserSession(updatedUser);
         toast.success("Profile image deleted!");
       } else {
@@ -159,7 +142,6 @@ const Profile = () => {
       if (res.success) {
         // Update context state
         setUserDetails((prev) => ({ ...prev, ...res.data }));
-        setUser((prev) => ({ ...prev, ...res.data }));
 
         toast.success(res.message);
         setIsEditDetails(false);
@@ -202,7 +184,12 @@ const Profile = () => {
                 src={
                   profileImage
                     ? URL.createObjectURL(profileImage)
-                    : userDetails?.profilepath || "/prof.webp"
+                    : userDetails?.profilepath
+                    ? `${
+                        import.meta.env.VITE_API_IMAGE_URL +
+                        userDetails?.profilepath
+                      }`
+                    : "/prof.webp"
                 }
                 alt="Profile"
                 title="view profile image"
@@ -385,7 +372,10 @@ const Profile = () => {
                 profileImage
                   ? URL.createObjectURL(profileImage)
                   : userDetails?.profilepath
-                  ? `${userDetails.profilepath}?t=${Date.now()}`
+                  ? `${
+                      import.meta.env.VITE_API_IMAGE_URL +
+                      userDetails.profilepath
+                    }`
                   : "/prof.webp"
               }
               alt="Full Profile"
