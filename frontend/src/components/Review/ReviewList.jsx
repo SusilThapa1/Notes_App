@@ -10,9 +10,9 @@ import {
   editReplyReview, // <--- new import for editing reply
 } from "../../../Services/reviewService";
 import { AuthContext } from "../Context/AuthContext";
-import Swal from "sweetalert2";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { showConfirm, showError } from "../../../Utils/alertHelper";
 
 const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
   const today = new Date().toISOString().slice(0, 10).replace(/-/g, "/");
@@ -62,11 +62,7 @@ const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
   const handleReply = async (e, id) => {
     e.preventDefault();
     toast.dismiss();
-    if (
-       
-      userDetails?.role !== "admin" ||
-      !userDetails?.isAccountVerified
-    ) {
+    if (userDetails?.role !== "admin" || !userDetails?.isAccountVerified) {
       return toast.error("Only verified admins can reply to reviews!");
     }
 
@@ -124,25 +120,10 @@ const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
   };
 
   const handleReviewDelete = async (id) => {
-    const response = await Swal.fire({
-      title: "Are you sure, you want to delete your review?",
+    const response = await showConfirm({
       text: "You won't be able to revert this!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#49bb0f",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!",
-      background: "#E2E8F0",
-      scrollbarPadding: false,
-      customClass: {
-        popup: "text-base sm:text-lg md:text-xl",
-        title: "text-xl sm:text-2xl md:text-3xl font-semibold",
-        confirmButton:
-          "text-sm sm:text-base md:text-lg bg-blue-600 text-white px-4 py-2 rounded",
-        cancelButton:
-          "text-sm sm:text-base md:text-lg bg-gray-400 text-white px-4 py-2 rounded",
-      },
     });
+
 
     if (!response.isConfirmed) return;
 
@@ -153,9 +134,12 @@ const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
         setAllReview((prevReview) =>
           prevReview.filter((review) => review._id !== id)
         );
+      }else{showError({ text: deleteResponse?.message });
       }
     } catch (error) {
-      toast.error(error?.response?.data?.message || "Failed to delete review");
+      showError({
+        text: error?.response?.data?.message || "Failed to delete review",
+      });
       console.error(
         "Error deleting review:",
         error?.response?.data?.message || error.message
@@ -164,24 +148,8 @@ const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
   };
 
   const handleReviewReplyDelete = async (id) => {
-    const response = await Swal.fire({
-      title: "Are you sure, you want to delete reply?",
+    const response = await showConfirm({
       text: "You won't be able to revert this!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#49bb0f",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!",
-      background: "#E2E8F0",
-      scrollbarPadding: false,
-      customClass: {
-        popup: "text-base sm:text-lg md:text-xl",
-        title: "text-xl sm:text-2xl md:text-3xl font-semibold",
-        confirmButton:
-          "text-sm sm:text-base md:text-lg bg-blue-600 text-white px-4 py-2 rounded",
-        cancelButton:
-          "text-sm sm:text-base md:text-lg bg-gray-400 text-white px-4 py-2 rounded",
-      },
     });
 
     if (!response.isConfirmed) return;
@@ -192,10 +160,12 @@ const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
         toast.success(deleteResponse.message);
         getAllReview();
       } else {
-        toast.error(deleteResponse?.message);
+        showError({ text: deleteResponse?.message });
       }
     } catch (error) {
-      toast.error(error?.response?.data?.message || "Failed to delete review");
+      showError({
+        text: error?.response?.data?.message || "Failed to delete review",
+      });
       console.error(
         "Error deleting review:",
         error?.response?.data?.message || error.message
@@ -215,7 +185,14 @@ const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
               <div className="flex justify-between items-center gap-3">
                 <div className="flex items-center gap-3">
                   <img
-                    src={`${import.meta.env.VITE_API_IMAGE_URL+ownReview?.userId?.profilepath}` || "/prof.webp"}
+                    src={
+                      ownReview && ownReview?.userId?.profilepath
+                        ? `${
+                            import.meta.env.VITE_API_IMAGE_URL +
+                            ownReview?.userId?.profilepath
+                          }`
+                        : "/prof.webp"
+                    }
                     alt="profile"
                     className="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover"
                   />
@@ -223,8 +200,7 @@ const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
                     {ownReview?.userId?.username} (You)
                   </h3>
                 </div>
-                {
-                  userDetails?.isAccountVerified &&
+                {userDetails?.isAccountVerified &&
                   (userDetails?._id === ownReview?.userId?._id || isAdmin) && (
                     <HiOutlineDotsVertical
                       onClick={() => handleShowUserAction(ownReview._id)}
@@ -333,15 +309,14 @@ const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
                     />
                     <h3 className="text-sm md:text-md font-semibold text-green-600">
                       Easy Study Zone{" "}
-                      {
-                        userDetails?.isAccountVerified &&
+                      {userDetails?.isAccountVerified &&
                         isAdmin &&
                         `(${ownReview?.reply?.repliedBy?.name})`}
                     </h3>
                   </div>
                   <div className="flex justify-center items-center gap-3 text-sm text-gray-500">
                     <span>{ownReview?.reply?.repliedDate}</span>
-                    { userDetails?.isAccountVerified && isAdmin && (
+                    {userDetails?.isAccountVerified && isAdmin && (
                       <HiOutlineDotsVertical
                         size={15}
                         onClick={() => handleShowAdminAction(ownReview._id)}
@@ -423,7 +398,12 @@ const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
               <div className="flex justify-between items-center gap-3">
                 <div className="flex items-center gap-3">
                   <img
-                    src={`${import.meta.env.VITE_API_IMAGE_URL+singleReview?.userId?.profilepath}` || "/prof.webp"}
+                    src={
+                      `${
+                        import.meta.env.VITE_API_IMAGE_URL +
+                        singleReview?.userId?.profilepath
+                      }` || "/prof.webp"
+                    }
                     alt="profile"
                     className="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover"
                   />
@@ -431,8 +411,7 @@ const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
                     {singleReview?.userId?.username}
                   </h3>
                 </div>
-                {
-                  userDetails?.isAccountVerified &&
+                {userDetails?.isAccountVerified &&
                   (userDetails?._id === singleReview?.userId?._id ||
                     isAdmin) && (
                     <HiOutlineDotsVertical
@@ -541,15 +520,14 @@ const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
                       />
                       <h3 className="text-sm md:text-md font-semibold text-green-600">
                         Easy Study Zone{" "}
-                        {
-                          userDetails?.isAccountVerified &&
+                        {userDetails?.isAccountVerified &&
                           isAdmin &&
                           `(${singleReview?.reply?.repliedBy?.name})`}
                       </h3>
                     </div>
                     <div className="flex justify-center items-center gap-3 text-sm text-gray-500">
                       <span>{singleReview?.reply?.repliedDate}</span>
-                      { userDetails?.isAccountVerified && isAdmin && (
+                      {userDetails?.isAccountVerified && isAdmin && (
                         <HiOutlineDotsVertical
                           size={15}
                           onClick={() =>
