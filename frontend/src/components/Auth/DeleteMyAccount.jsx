@@ -2,8 +2,12 @@ import { useContext, useState } from "react";
 import { LuEye, LuEyeClosed } from "react-icons/lu";
 import { toast } from "react-toastify";
 import { deleteUserAccount } from "../../../Services/userService";
-import Swal from "sweetalert2";
 import { AuthContext } from "../Context/AuthContext";
+import {
+  showConfirm,
+  showError,
+  showSuccess,
+} from "../../../Utils/alertHelper";
 
 const DeleteMyAccount = () => {
   const { logOut } = useContext(AuthContext);
@@ -26,41 +30,23 @@ const DeleteMyAccount = () => {
       return toast.error("Password is required !");
     }
 
-    const response = await Swal.fire({
-      title: "Are you sure, you want to delete your account?",
+    const response = await showConfirm({
+      title: "Are you sure ?",
       text: "Your account will be deleted permanently !",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#49bb0f",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes",
-      cancelButtonText: "No",
-      width: "600px",
-      background: "#E2E8F0",
-      customClass: {
-        popup: "text-base sm:text-lg md:text-xl", // Tailwind font size classes
-        title: "text-xl sm:text-2xl md:text-3xl font-semibold",
-        confirmButton:
-          "text-sm sm:text-base md:text-lg bg-blue-600 text-white px-4 py-2 rounded",
-        cancelButton:
-          "text-sm sm:text-base md:text-lg bg-gray-400 text-white px-4 py-2 rounded",
-      },
     });
-
+console.log(response)
     if (!response.isConfirmed) return;
 
     try {
       const res = await deleteUserAccount(password);
-      if (res.success) {
-        toast.success("Account deleted successfully!");
-         
-        localStorage.removeItem("greet");
-        logOut();
+      console.log(res);
+      if (res?.success) {
+        showSuccess({ text: "Account deleted successfully!" });
       } else {
-        toast.error(res?.message);
+        showError({ text: res?.message });
       }
     } catch (error) {
-      toast.error(error?.response?.data?.message);
+      showError({text:error?.response?.data?.message});
       console.error(error);
     }
   };
