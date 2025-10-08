@@ -9,8 +9,8 @@ import { FaExchangeAlt } from "react-icons/fa";
 import { FcSearch } from "react-icons/fc";
 import { toast } from "react-toastify";
 import { AuthContext } from "../Context/AuthContext";
-import Swal from "sweetalert2";
 import Loader from "../Loader";
+import { showConfirm, showSuccess } from "../../../Utils/alertHelper";
 
 const ManageUsers = () => {
   const [users, setUsers] = useState([]);
@@ -36,24 +36,10 @@ const ManageUsers = () => {
   }, []);
 
   const handleRoleChange = async (id, role) => {
-    const response = await Swal.fire({
+    const response = await showConfirm({
       title: `Are you sure, you want to change role ?`,
       text: `Current role will be changed to ${role}`,
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#49bb0f",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, change it!",
-      background: "#E2E8F0",
-      scrollbarPadding: false,
-      customClass: {
-        popup: "text-base sm:text-lg md:text-xl",
-        title: "text-xl sm:text-2xl md:text-3xl font-semibold",
-        confirmButton:
-          "text-sm sm:text-base md:text-lg bg-blue-600 text-white px-4 py-2 rounded",
-        cancelButton:
-          "text-sm sm:text-base md:text-lg bg-gray-400 text-white px-4 py-2 rounded",
-      },
+      
     });
 
     if (!response.isConfirmed) return;
@@ -61,7 +47,7 @@ const ManageUsers = () => {
     try {
       const res = await changeRole(id, role);
       if (res.success) {
-        toast.success(res?.message);
+        showSuccess({title:`Role successfully changed to ${role}`})
         allUsers();
       } else {
         toast.error("Failed to change role");
@@ -72,31 +58,19 @@ const ManageUsers = () => {
     }
   };
 
-  const handleDelete = async (id, username) => {
-    const response = await Swal.fire({
+  const handleDelete = async (id, username,role) => {
+    const response = await showConfirm({
       title: `Are you sure, you want to delete (${username})?`,
       text: "You won't be able to revert this!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#49bb0f",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!",
-      scrollbarPadding: false,
-      customClass: {
-        popup: "text-base sm:text-lg md:text-xl",
-        title: "text-xl sm:text-2xl md:text-3xl font-semibold",
-        confirmButton:
-          "text-sm sm:text-base md:text-lg bg-blue-600 text-white px-4 py-2 rounded",
-        cancelButton:
-          "text-sm sm:text-base md:text-lg bg-gray-400 text-white px-4 py-2 rounded",
-      },
+      
+      confirmText: "Yes, delete it!",
     });
 
     if (!response.isConfirmed) return;
 
     try {
       const deleteResponse = await deleteUser(id);
-      if (deleteResponse.success) {
+      if (deleteResponse?.success) {
         toast.success(deleteResponse.message);
         setUsers((prevUsers) => prevUsers.filter((user) => user._id !== id));
       }
@@ -138,8 +112,8 @@ const ManageUsers = () => {
         <FcSearch size={30} />
       </div>
 
-      <div className="w-full overflow-x-auto scroll-container scroll-smooth ">
-        <table className="w-full bg-transparent shadow-lg text-center rounded-2xl">
+      <div className="w-full overflow-x-auto   scroll-smooth ">
+        <table className="w-full bg-transparent shadow-lg text-center rounded-2xl overflow-x-auto scrollbar-custom">
           <thead className="bg-[#5CAE59] text-white ">
             <tr className="border-b border-gray-400">
               <th className="p-2 w-[5%] border-r-2 border-gray-400 rounded-tl-lg">
@@ -168,9 +142,14 @@ const ManageUsers = () => {
                     </td>
                     <td className="p-2 border-r border-gray-400">
                       <img
-                        src={user?.profilepath || "/prof.webp"}
+                        src={user && user?.profilepath ?
+                          `${
+                            import.meta.env.VITE_API_IMAGE_URL +
+                            user?.profilepath
+                          }` : "/prof.webp"
+                        }
                         alt="profile"
-                        className="w-12 h-12 md:w-16 md:h-16 rounded-full mx-auto"
+                        className="w-12 h-12 md:w-16 md:h-16 rounded-full mx-auto object-cover"
                       />
                     </td>
                     <td className="p-2 border-r border-gray-400">
@@ -203,7 +182,7 @@ const ManageUsers = () => {
                           <FaExchangeAlt size={18} />
                         </button>
                         <button
-                          onClick={() => handleDelete(user._id, user?.username)}
+                          onClick={() => handleDelete(user._id, user?.username,user?.role)}
                           className="text-red-500 hover-supported:hover:text-red-700"
                           title="delete"
                         >
