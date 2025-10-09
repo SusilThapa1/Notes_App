@@ -39,8 +39,11 @@ const Table = ({ resource }) => {
   };
 
   const handleEdit = (upload) => {
-    navigate("/study/admin/dashboard/uploadresources", { state: { upload } });
-  };
+  console.log("Clicked edit!", upload);
+  navigate("/study/admin/uploadresources", { state: { upload } });
+  console.log("After navigate");
+};
+
 
   return (
     <table className="w-full bg-transparent shadow-lg text-center ">
