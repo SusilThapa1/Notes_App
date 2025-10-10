@@ -39,7 +39,6 @@ const ManageUsers = () => {
     const response = await showConfirm({
       title: `Are you sure, you want to change role ?`,
       text: `Current role will be changed to ${role}`,
-      
     });
 
     if (!response.isConfirmed) return;
@@ -47,7 +46,7 @@ const ManageUsers = () => {
     try {
       const res = await changeRole(id, role);
       if (res.success) {
-        showSuccess({title:`Role successfully changed to ${role}`})
+        showSuccess({ title: `Role successfully changed to ${role}` });
         allUsers();
       } else {
         toast.error("Failed to change role");
@@ -58,11 +57,11 @@ const ManageUsers = () => {
     }
   };
 
-  const handleDelete = async (id, username,role) => {
+  const handleDelete = async (id, username, role) => {
     const response = await showConfirm({
       title: `Are you sure, you want to delete (${username})?`,
       text: "You won't be able to revert this!",
-      
+
       confirmText: "Yes, delete it!",
     });
 
@@ -142,11 +141,13 @@ const ManageUsers = () => {
                     </td>
                     <td className="p-2 border-r border-gray-400">
                       <img
-                        src={user && user?.profilepath ?
-                          `${
-                            import.meta.env.VITE_API_IMAGE_URL +
-                            user?.profilepath
-                          }` : "/prof.webp"
+                        src={
+                          user && user?.profilepath
+                            ? `${
+                                import.meta.env.VITE_API_FILE_URL +
+                                user?.profilepath
+                              }`
+                            : "/prof.webp"
                         }
                         alt="profile"
                         className="w-12 h-12 md:w-16 md:h-16 rounded-full mx-auto object-cover"
@@ -182,7 +183,9 @@ const ManageUsers = () => {
                           <FaExchangeAlt size={18} />
                         </button>
                         <button
-                          onClick={() => handleDelete(user._id, user?.username,user?.role)}
+                          onClick={() =>
+                            handleDelete(user._id, user?.username, user?.role)
+                          }
                           className="text-red-500 hover-supported:hover:text-red-700"
                           title="delete"
                         >
