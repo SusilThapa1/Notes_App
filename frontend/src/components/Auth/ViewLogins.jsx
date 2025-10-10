@@ -68,13 +68,16 @@ const ViewLogins = () => {
       if (res.success) {
         showSuccess({ text: "Session removed successfully" });
         // Force UI update by refreshing userDetails
+        userDetails.sessions = userDetails.sessions.filter(
+          (s) => s.deviceId !== deviceId
+        );
         setTick((t) => t + 1);
       } else {
         showError({ text: res.message });
       }
     } catch (err) {
       console.log(err);
-      showError({text:err?.res?.data?.message});
+      showError({ text: err?.res?.data?.message });
     }
   };
 
@@ -96,26 +99,27 @@ const ViewLogins = () => {
   });
 
   return (
-    <div className="flex flex-col items-center my-20 px-5 w-full gap-5">
-      <h2 className="text-3xl font-semibold text-gray-900 mb-4">
+    <div className="flex flex-col  my-20 min-h-[calc(100vh-72px)] px-5 py-2 md:px-10 lg:px-20 w-full gap-5">
+      <h2 className="text-3xl font-semibold text-gray- ">
         Recent Login Sessions
       </h2>
+      <p className=" font-semibold text-gray-500">
+        See where you have been logged in:
+      </p>
 
       {sortedSessions.map((s) => {
         const { status, color } = getStatus(s);
 
         return (
           <div
-            key={s.deviceId}
+            key={s._id}
             className="w-full p-6 rounded-3xl shadow-lg border flex flex-col md:flex-row justify-between md:items-center bg-white gap-4"
           >
             <div className="flex items-center gap-4 flex-1">
               <div className={`${color}`}>{getDeviceIcon(s)}</div>
               <div>
-                <p className="font-medium">{s.device || "Unknown Device"}</p>
-                <p className="text-gray-500 text-sm">
-                  {s.browser || "Unknown Browser"}
-                </p>
+                <p className="font-medium">{s.device || "Unknown Device"} ({s.browser || "Unknown Browser"})</p>
+                 
               </div>
             </div>
 
