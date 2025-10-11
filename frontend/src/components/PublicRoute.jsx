@@ -4,13 +4,16 @@ import { AuthContext } from "./Context/AuthContext";
 import Loader from "./Loader";
 
 const PublicRoute = () => {
-  const { token, user, loading } = useContext(AuthContext);
+  const { userDetails, loading } = useContext(AuthContext);
 
-  if (loading) {
-    return <Loader />;
-  }
+  if (loading) return <Loader />;
 
-  if (token && user) {
+  if (userDetails) {
+    // redirect based on role
+    const role = userDetails.role?.toLowerCase();
+    if (role === "admin") {
+      return <Navigate to="/study/admin/dashboard" replace />;
+    }
     return <Navigate to="/" replace />;
   }
 
