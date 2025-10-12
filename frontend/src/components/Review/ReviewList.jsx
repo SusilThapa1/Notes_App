@@ -124,7 +124,6 @@ const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
       text: "You won't be able to revert this!",
     });
 
-
     if (!response.isConfirmed) return;
 
     try {
@@ -134,7 +133,8 @@ const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
         setAllReview((prevReview) =>
           prevReview.filter((review) => review._id !== id)
         );
-      }else{showError({ text: deleteResponse?.message });
+      } else {
+        showError({ text: deleteResponse?.message });
       }
     } catch (error) {
       showError({
@@ -188,7 +188,7 @@ const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
                     src={
                       ownReview && ownReview?.userId?.profilepath
                         ? `${
-                            import.meta.env.VITE_API_IMAGE_URL +
+                            import.meta.env.VITE_API_FILE_URL +
                             ownReview?.userId?.profilepath
                           }`
                         : "/prof.webp"
@@ -377,7 +377,7 @@ const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
                       />
                       <button
                         type="submit"
-                        className="bg-green-600 text-white p-2 rounded-full"
+                        className=" bg-[#5CAE59] text-white p-2 rounded-full"
                         title="Save edited reply"
                       >
                         <MdSend size={20} />
@@ -400,7 +400,7 @@ const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
                   <img
                     src={
                       `${
-                        import.meta.env.VITE_API_IMAGE_URL +
+                        import.meta.env.VITE_API_FILE_URL +
                         singleReview?.userId?.profilepath
                       }` || "/prof.webp"
                     }
@@ -592,7 +592,7 @@ const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
                         />
                         <button
                           type="submit"
-                          className="bg-green-600 text-white p-2 rounded-full"
+                          className=" bg-[#5CAE59] text-white p-2 rounded-full"
                           title="Save edited reply"
                         >
                           <MdSend size={20} />
