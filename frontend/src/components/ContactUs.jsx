@@ -122,7 +122,7 @@ const ContactUs = () => {
         </div>
         <button
           type="submit"
-          className="bg-transparent border  border-slate-100   px-6 py-2 rounded-full font-medium hover-supported: hover:bg-[#5CAE59] hover-supported:hover:text-gray-200 active:bg-green-600 shadow-lg transition-all duration-500"
+          className="bg-transparent border  border-slate-100   px-6 py-2 rounded-full font-medium hover-supported: hover:bg-[#5CAE59] hover-supported:hover:text-gray-200 active: bg-[#5CAE59] shadow-lg transition-all duration-500"
         >
           {urlSeg === ""
             ? "Send"
