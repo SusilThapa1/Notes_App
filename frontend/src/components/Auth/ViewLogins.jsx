@@ -32,25 +32,37 @@ const ViewLogins = () => {
     );
 
   // Determine device status
-  const getStatus = (session) => {
-    const now = Date.now();
-    const lastActive = new Date(session.lastActiveAt).getTime();
-    const diff = now - lastActive;
+const getStatus = (session) => {
+  const now = Date.now();
+  const lastActive = new Date(session.lastActiveAt).getTime();
+  const diff = now - lastActive;
 
-    if (session.deviceId === deviceId)
-      return { status: "This device", color: "text-green-600" };
-    if (diff < 2 * 60 * 1000)
-      return { status: "Active", color: "text-green-600" };
-    if (diff < 60 * 60 * 1000)
-      return {
-        status: `Offline (${Math.floor(diff / 60000)} min ago)`,
-        color: "text-gray-600",
-      };
-    return {
-      status: `Offline (${Math.floor(diff / 3600000)} hr ago)`,
-      color: "text-gray-600",
-    };
+  const minute = 60 * 1000;
+  const hour = 60 * minute;
+  const day = 24 * hour;
+  const week = 7 * day;
+  const year = 365 * day;
+
+  const formatTimeAgo = (ms) => {
+    if (ms < minute) return "just now";
+    if (ms < hour) return `${Math.floor(ms / minute)} min ago`;
+    if (ms < day) return `${Math.floor(ms / hour)} hr ago`;
+    if (ms < week) return `${Math.floor(ms / day)} days ago`;
+    if (ms < year) return `${Math.floor(ms / week)} weeks ago`;
+    return `${Math.floor(ms / year)} yr ago`;
   };
+
+  if (session.deviceId === deviceId)
+    return { status: "This device", color: "text-green-600" };
+  if (diff < 2 * minute)
+    return { status: "Active", color: "text-green-600" };
+
+  return {
+    status: `Offline (${formatTimeAgo(diff)})`,
+    color: "text-gray-600",
+  };
+};
+
 
   // Logout current device
   const removeRemoteSession = async (deviceId) => {
