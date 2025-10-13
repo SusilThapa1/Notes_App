@@ -92,7 +92,6 @@ const Profile = () => {
     const response = await showConfirm({
       title: "Are you sure, you want to delete profile image?",
       text: "You won't be able to revert this!",
-       
     });
 
     if (!response.isConfirmed) return;
@@ -186,7 +185,7 @@ const Profile = () => {
                     ? URL.createObjectURL(profileImage)
                     : userDetails?.profilepath
                     ? `${
-                        import.meta.env.VITE_API_IMAGE_URL +
+                        import.meta.env.VITE_API_FILE_URL +
                         userDetails?.profilepath
                       }`
                     : "/prof.webp"
@@ -346,7 +345,7 @@ const Profile = () => {
 
             <button
               onClick={() => setIsEditDetails(true)}
-              className="bg-[#6aaa4c] px-3 py-2 rounded-md text-center text-white hover-supported:hover:bg-green-600 mx-auto transition-colors duration-500 w-full"
+              className="bg-[#6aaa4c] px-3 py-2 rounded-md text-center text-white hover-supported:hover: bg-[#5CAE59] mx-auto transition-colors duration-500 w-full"
             >
               Edit details
             </button>
@@ -373,7 +372,7 @@ const Profile = () => {
                   ? URL.createObjectURL(profileImage)
                   : userDetails?.profilepath
                   ? `${
-                      import.meta.env.VITE_API_IMAGE_URL +
+                      import.meta.env.VITE_API_FILE_URL +
                       userDetails.profilepath
                     }`
                   : "/prof.webp"
