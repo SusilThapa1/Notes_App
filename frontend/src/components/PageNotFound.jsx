@@ -18,7 +18,7 @@ const PageNotFound = () => {
       </div>
       <Link
         to="/"
-        className="border-slate-100 bg-green-600 hover-supported:hover:bg-[#5CAE59]  shadow-lg rounded-lg px-3 py-2 text-white"
+        className="border-slate-100  bg-[#5CAE59] hover-supported:hover:bg-[#5CAE59]  shadow-lg rounded-lg px-3 py-2 text-white"
       >
         Go to home page
       </Link>
