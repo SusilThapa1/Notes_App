@@ -12,7 +12,8 @@ import { AuthContext } from "../Context/AuthContext";
 import { emailRegex, passwordRegex } from "../../../Validator/validator";
 
 const SignUp = () => {
-  const { setUserSession, sendEmailVerifyOtp } = useContext(AuthContext);
+  const { sendEmailVerifyOtp } = useContext(AuthContext);
+  const [loading,setLoading]= useState(false)
   const [showPass, setShowPass] = useState(false);
   const [formData, setFormData] = useState({
     username: "",
@@ -75,7 +76,7 @@ const SignUp = () => {
     e.preventDefault();
 
     toast.dismiss();
-
+    
     if (
       !formData.username ||
       !formData.email ||
@@ -86,13 +87,15 @@ const SignUp = () => {
       toast.error("Please fill all the required fields");
       return;
     }
-
+    
     try {
+      setLoading(true)
       const res = await registerUser(formData);
       console.log(res);
       if (res.success) {
         //  setUserSession(res?.user);
-       await sendEmailVerifyOtp(formData.email);
+        await sendEmailVerifyOtp(formData.email);
+        console.log(formData.email);
       } else {
         toast.error(res.message);
       }
@@ -102,6 +105,8 @@ const SignUp = () => {
         error?.response?.data?.message ||
           "Something went wrong. Please try again."
       );
+    }finally{
+      setLoading(false)
     }
   };
 
@@ -305,10 +310,13 @@ const SignUp = () => {
 
           {/* Submit Button */}
           <button
-            className="px-4 py-3 rounded-xl  shadow-lg text-white bg-[#6ac067]    hover-supported:hover:bg-[#13b858] w-full transition-colors duration-500 "
-            aria-label="sign up"
-          >
-            Sign Up
+            disabled={loading}
+             className={`px-4 py-3 rounded-xl font-medium shadow-lg text-white w-full transition-colors duration-500 ${
+              loading
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-[#6ac067] hover-supported:hover:bg-[#13b858]"
+            }`}>
+            {loading ? "Signing up..." : "Sign up"}
           </button>
         </form>
 
