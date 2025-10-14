@@ -2,7 +2,9 @@ const TermsConditions = () => {
   return (
     <div className="max-w-7xl mx-auto mt-20 px-6 pb-5  text-gray-800 leading-relaxed">
       <div className="flex flex-col justify-center items-center gap-2 w-full text-center  ">
-        <h1 className="text-lg font-bold text-[#5CAE59]">Terms & Conditions</h1>
+        <h1 className="text-lg font-bold text-lightGreen">
+          Terms & Conditions
+        </h1>
         <p className="font-medium">
           By using this website, you agree to the following terms and
           conditions.

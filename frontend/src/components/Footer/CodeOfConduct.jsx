@@ -62,7 +62,7 @@ const CodeOfConduct = () => {
 
   return (
     <div className="flex flex-col justify-center items-center gap-10 max-w-7xl mx-auto mt-20 px-6 pb-5  text-gray-800 leading-relaxed">
-      <h1 className="text-2xl font-bold  text-[#5CAE59] text-center">
+      <h1 className="text-2xl font-bold  text-lightGreen text-center">
         Code of Conduct
       </h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 justify-center  gap-8 text-justify  ">

@@ -34,7 +34,7 @@ const DeleteMyAccount = () => {
       title: "Are you sure ?",
       text: "Your account will be deleted permanently !",
     });
-console.log(response)
+    console.log(response);
     if (!response.isConfirmed) return;
 
     try {
@@ -46,7 +46,7 @@ console.log(response)
         showError({ text: res?.message });
       }
     } catch (error) {
-      showError({text:error?.response?.data?.message});
+      showError({ text: error?.response?.data?.message });
       console.error(error);
     }
   };
@@ -55,7 +55,7 @@ console.log(response)
     <div className="flex  justify-center items-center h-[calc(100vh-72px)] px-5 py-2 md:px-10 lg:px-20 w-full text-center">
       <div className="flex flex-col justify-center items-center w-full md:w-[80%] gap-10">
         <div className="flex flex-col justify-center items-center  gap-2 ">
-          <h1 className="text-lg font-bold    text-[#5CAE59]">
+          <h1 className="text-lg font-bold    text-lightGreen">
             Confirm Account Deletion
           </h1>
           <p>Please enter your password to confirm delete</p>
@@ -68,7 +68,7 @@ console.log(response)
             name="password"
             type={`${passShow ? "text" : "password"}`}
             placeholder="Enter your password"
-            className="bg-transparent w-full  outline-none "
+            className="bg-transparent w-full   "
           />
 
           <span onClick={passwordShow}>
