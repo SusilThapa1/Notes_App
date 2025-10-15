@@ -1,16 +1,9 @@
-import React, { useState } from "react";
-import { GrResources } from "react-icons/gr";
-import {
-  FaArrowCircleRight,
-  FaBook,
-  FaCalendarAlt,
-  FaGraduationCap,
-  FaRegCalendarAlt,
-} from "react-icons/fa";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { MdDashboard, MdFileUpload } from "react-icons/md";
-import { VscGraph } from "react-icons/vsc";
-import { FaUser } from "react-icons/fa6";
+import { FaUser, FaGraduationCap, FaCalendarAlt } from "react-icons/fa";
+import { FaArrowCircleRight } from "react-icons/fa";
+import { GrResources } from "react-icons/gr";
 
 const Sidebar = () => {
   const url = "/study/admin";
@@ -23,176 +16,94 @@ const Sidebar = () => {
     { name: "Manage Resources", link: `${url}/manageresources` },
   ];
 
+  const location = useLocation();
   const [activeLink, setActiveLink] = useState("");
   const [adminMenuOpen, setAdminMenuOpen] = useState(false);
 
+  useEffect(() => {
+    setActiveLink(location.pathname);
+  }, [location]);
+  console.log(location.pathname);
   const handleAdminMenu = () => {
     setAdminMenuOpen(!adminMenuOpen);
-  };
-
-  const handleClick = (link) => {
-    setActiveLink(link);
   };
 
   return (
     <div className="relative w-full md:h-screen">
       {/* Desktop Admin menu */}
-      <div className=" hidden  h-screen  md:flex flex-col justify-center md:justify-start text-center gap-5 border-r-gray-400 border-b-gray-400  border-2 mt-5 py-5 px-2 z-0">
-        {menus.map((menu) => (
-          <Link
-            to={menu.link}
-            key={menu.name}
-            className={`flex gap-2 items-center w-full px-2 py-3 rounded-2xl shadow-lg   bg-transparent border  border-slate-100 hover-supported:hover:text-green-600 ${
-              activeLink === menu.link ? "bg-blue-200 text-[#5CAE59]" : ""
-            }`}
-            onClick={() => handleClick(menu.link)}
-          >
-            {/* Choose icon based on the menu */}
-            {menu.name === "Dashboard" && (
-              <MdDashboard
-                size={20}
-                className={`${
-                  activeLink === menu.link
-                    ? " text-[#5CAE59]"
-                    : "text-indigo-500"
+      <div className="hidden h-screen md:flex flex-col justify-center md:justify-start text-center gap-5 border-r-gray-300 border-b-gray-400 border-2 mt-5 py-5 px-2">
+        {menus.map((menu) => {
+          const isActive = activeLink === menu.link;
+          return (
+            <Link
+              to={menu.link}
+              key={menu.name}
+              className={`bg-transparent flex gap-2 items-center w-full px-3 py-3 rounded-2xl transition-all duration-300 shadow-xl border border-yellow-50 hover-supported:hover:text-darkGreen
+                ${
+                  isActive
+                    ? "  text-lightGreen border-transparent "
+                    : "text-gray-700"
                 }`}
-              />
-            )}
-            {menu.name === "Manage Users" && (
-              <FaUser
-                size={20}
-                className={`${
-                  activeLink === menu.link ? " text-[#5CAE59]" : "text-sky-500"
-                }`}
-              />
-            )}
-            {menu.name === "Manage Programme" && (
-              <FaGraduationCap
-                size={20}
-                className={`${
-                  activeLink === menu.link ? " text-[#5CAE59]" : "text-blue-800"
-                }`}
-              />
-            )}
-            {menu.name === "Manage Semesters" && (
-              <FaCalendarAlt
-                size={20}
-                className={`${
-                  activeLink === menu.link
-                    ? " text-[#5CAE59]"
-                    : "text-yellow-600"
-                }`}
-              />
-            )}
-            {menu.name === "Upload Resources" && (
-              <MdFileUpload
-                size={20}
-                className={`${
-                  activeLink === menu.link ? " text-[#5CAE59]" : "text-red-600"
-                }`}
-              />
-            )}
-            {menu.name === "Manage Resources" && (
-              <GrResources
-                size={20}
-                className={`${
-                  activeLink === menu.link
-                    ? " text-[#5CAE59]"
-                    : "text-orange-600"
-                }`}
-              />
-            )}
-            <h1>{menu.name}</h1>
-          </Link>
-        ))}
+            >
+              {/* Choose icon based on the menu */}
+              {menu.name === "Dashboard" && <MdDashboard size={20} />}
+              {menu.name === "Manage Users" && <FaUser size={20} />}
+              {menu.name === "Manage Programme" && (
+                <FaGraduationCap size={20} />
+              )}
+              {menu.name === "Manage Semesters" && <FaCalendarAlt size={20} />}
+              {menu.name === "Upload Resources" && <MdFileUpload size={20} />}
+              {menu.name === "Manage Resources" && <GrResources size={20} />}
+              <h1 className="font-medium">{menu.name}</h1>
+            </Link>
+          );
+        })}
       </div>
 
-      {/* //Mobile admin menu*/}
-
+      {/* Mobile Admin Menu Toggle */}
       <FaArrowCircleRight
-        size={20}
+        size={22}
         onClick={handleAdminMenu}
         title="Admin menu"
-        className={` md:hidden fixed top-16  z-50 ${
+        className={`md:hidden fixed top-16 z-50 cursor-pointer transition-all duration-500 ${
           adminMenuOpen
-            ? "rotate-180 left-48 text-red-600"
-            : "left-5 text-[#5CAE59]"
-        } transition-all duration-500 `}
+            ? "rotate-180 left-48 text-red-600 hover-supported:hover:text-red-700"
+            : "left-5 text-lightGreen hover-supported:hover:text-darkGreen"
+        }`}
       />
+
+      {/* Mobile Admin Menu */}
       <div
-        className={`fixed left-0 top-14 border border-r-yellow-50 h-screen backdrop-blur-sm flex  w-max flex-col items-start justify-start gap-10 px-2 py-10  shadow-lg transition-transform duration-500 md:hidden ${
-          adminMenuOpen ? "-translate-x-0" : "-translate-x-full"
+        className={`fixed left-0 top-14 border border-gray-200 h-screen backdrop-blur-sm flex  flex-col items-start justify-start gap-5 px-2 py-10 shadow-lg transition-transform duration-500 md:hidden w-1/2 ${
+          adminMenuOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        {menus.map((menu) => (
-          <Link
-            to={menu.link}
-            key={menu.name}
-            className={`flex gap-2 items-center w-full  px-2 py-3 rounded-2xl shadow-lg   bg-transparent border  border-slate-100 hover-supported:hover:text-green-600 ${
-              activeLink === menu.link ? "bg-blue-200 text-[#5CAE59]" : ""
-            }`}
-            onClick={() => {
-              handleClick(menu.link), setAdminMenuOpen(false);
-            }}
-          >
-            {/* Choose icon based on the menu */}
-            {menu.name === "Dashboard" && (
-              <MdDashboard
-                size={15}
-                className={`${
-                  activeLink === menu.link
-                    ? " text-[#5CAE59]"
-                    : "text-indigo-500"
+        {menus.map((menu) => {
+          const isActive = activeLink === menu.link;
+          return (
+            <Link
+              to={menu.link}
+              key={menu.name}
+              onClick={() => setAdminMenuOpen(false)}
+              className={`flex gap-2 items-center w-full px-3 py-2 rounded-xl transition-all duration-300 shadow-sm border 
+                ${
+                  isActive
+                    ? "  text-lightGreen border-transparent "
+                    : "text-gray-700"
                 }`}
-              />
-            )}
-            {menu.name === "Manage Users" && (
-              <FaUser
-                size={15}
-                className={`${
-                  activeLink === menu.link ? " text-[#5CAE59]" : "text-sky-500"
-                }`}
-              />
-            )}
-            {menu.name === "Manage Programme" && (
-              <FaGraduationCap
-                size={15}
-                className={`${
-                  activeLink === menu.link ? " text-[#5CAE59]" : "text-blue-800"
-                }`}
-              />
-            )}
-            {menu.name === "Manage Semesters" && (
-              <FaRegCalendarAlt
-                size={15}
-                className={`${
-                  activeLink === menu.link
-                    ? " text-[#5CAE59]"
-                    : "text-yellow-600"
-                }`}
-              />
-            )}
-            {menu.name === "Upload Resources" && (
-              <MdFileUpload
-                size={15}
-                className={`${
-                  activeLink === menu.link ? " text-[#5CAE59]" : "text-red-600"
-                }`}
-              />
-            )}
-            {menu.name === "Manage Resources" && (
-              <GrResources
-                size={15}
-                className={`${
-                  activeLink === menu.link
-                    ? " text-[#5CAE59]"
-                    : "text-orange-600"
-                }`}
-              />
-            )}
-            <h1>{menu.name}</h1>
-          </Link>
-        ))}
+            >
+              {menu.name === "Dashboard" && <MdDashboard size={18} />}
+              {menu.name === "Manage Users" && <FaUser size={18} />}
+              {menu.name === "Manage Programme" && (
+                <FaGraduationCap size={18} />
+              )}
+              {menu.name === "Manage Semesters" && <FaCalendarAlt size={18} />}
+              {menu.name === "Upload Resources" && <MdFileUpload size={18} />}
+              {menu.name === "Manage Resources" && <GrResources size={18} />}
+              <h1 className="font-medium">{menu.name}</h1>
+            </Link>
+          );
+        })}
       </div>
     </div>
   );

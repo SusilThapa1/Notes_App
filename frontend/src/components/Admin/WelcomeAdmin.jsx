@@ -10,7 +10,7 @@ const WelcomeAdmin = () => {
   return (
     <div className="flex flex-col items-center  scroll-container  w-full text-black pt-8 h-screen   overflow-y-scroll  bg-transparent mx-auto pb-10  px-5">
       <div className="flex flex-col justify-center items-center gap-2 text-justify md:text-center mb-8">
-        <div className="flex flex-col gap-5 justify-center items-center text-[5vw] md:text-3xl text-center font-bold mb-4    text-[#5CAE59]">
+        <div className="flex flex-col gap-5 justify-center items-center text-[5vw] md:text-3xl text-center font-bold mb-4    text-lightGreen">
           <h1>
             {userDetails?.username
               ? `${greeting}, ${userDetails.username.split(" ")[0]}!`
@@ -35,7 +35,7 @@ const WelcomeAdmin = () => {
         {/* Add Course Card */}
         <div className="bg-transparent p-6 rounded-2xl shadow-[rgba(0,_0,_0,_0.24)_0px_3px_8px] flex flex-col items-center justify-center text-center ">
           <FaGraduationCap className="text-blue-500 w-12 h-12 mb-4 " />
-          <h3 className="text-xl font-semibold mb-2 text-[#5CAE59]">
+          <h3 className="text-xl font-semibold mb-2 text-lightGreen">
             Add Programmes
           </h3>
           <p className="text-gray-600">
@@ -46,7 +46,7 @@ const WelcomeAdmin = () => {
         {/* Add Semester Card */}
         <div className="bg-transparent p-6 rounded-2xl shadow-[rgba(0,_0,_0,_0.24)_0px_3px_8px] flex flex-col items-center justify-center text-center ">
           <FaRegCalendarAlt className="text-yellow-500 w-12 h-12 mb-4 " />
-          <h3 className="text-xl font-semibold mb-2 text-[#5CAE59]">
+          <h3 className="text-xl font-semibold mb-2 text-lightGreen">
             Add Semester
           </h3>
           <p className="text-gray-600">Set up semesters or academic terms.</p>
@@ -55,7 +55,7 @@ const WelcomeAdmin = () => {
         {/* Upload Resources Card */}
         <div className=" bg-transparent p-6 rounded-2xl shadow-[rgba(0,_0,_0,_0.24)_0px_3px_8px]   flex flex-col items-center justify-center text-center ">
           <AiOutlineUpload className="text-red-500 w-12 h-12 mb-4 " />
-          <h3 className="text-xl font-semibold mb-2 text-[#5CAE59]">
+          <h3 className="text-xl font-semibold mb-2 text-lightGreen">
             Upload Resources Link
           </h3>
           <p className="text-gray-600">
