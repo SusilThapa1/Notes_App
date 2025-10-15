@@ -1,34 +1,32 @@
 import { useState, useContext } from "react";
-import { FaRegUser } from "react-icons/fa";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { IoMenu, IoClose } from "react-icons/io5";
-import { IoIosArrowDropdown } from "react-icons/io";
+import { FaRegUser } from "react-icons/fa";
 import { FiAlertTriangle } from "react-icons/fi";
 import { MdLockOutline, MdLogout, MdOutlineDevices } from "react-icons/md";
-
+import { HiOutlineUpload } from "react-icons/hi";
 import { AuthContext } from "./Context/AuthContext";
 import { showConfirm } from "../../Utils/alertHelper";
+import { IoIosArrowDropdown } from "react-icons/io";
 
 const Navbar = () => {
+  const { logOut, userDetails, loading } = useContext(AuthContext);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [isOpenAccountDetails, setIsOpenAccountDetails] = useState(false);
+  const [accountMenuOpen, setAccountMenuOpen] = useState(false);
   const location = useLocation();
 
-  const { logOut, userDetails, loading } = useContext(AuthContext);
-  const openAccountMenu = () => setIsOpenAccountDetails(!isOpenAccountDetails);
+  if (loading) return null;
 
-  const toggleMenu = () => setMenuOpen(!menuOpen);
+  const toggleMenu = () => setMenuOpen((prev) => !prev);
+  const toggleAccountMenu = () => setAccountMenuOpen((prev) => !prev);
 
   const logout = async () => {
-    const response = await showConfirm({
-      text: "You will be logged out",
-    });
-
-    if (!response.isConfirmed) return;
-    logOut(false, "Logged out successfully");
+    const response = await showConfirm({ text: "You will be logged out" });
+    if (response.isConfirmed) logOut(false, "Logged out successfully");
   };
 
-  const navlinks = [
+  // Define links based on role
+  const baseLinks = [
     { name: "Home", link: "/" },
     { name: "Syllabus", link: "/study/syllabus" },
     { name: "Notes", link: "/study/notes" },
@@ -36,217 +34,188 @@ const Navbar = () => {
   ];
 
   if (userDetails?.isAccountVerified && userDetails?.role === "admin") {
-    navlinks.push({ name: "Admin", link: "/study/admin/dashboard" });
+    baseLinks.push({ name: "Admin", link: "/study/admin/dashboard" });
   }
 
-  if (loading) {
-    return;
-  }
+  const isActive = (path) =>
+    location.pathname === path ||
+    (path !== "/" && location.pathname.startsWith(path));
 
   return (
-    <nav className="fixed top-0 z-50 w-full  bg-transparent  shadow-sm border  border-slate-100">
-      <div className="relative backdrop-blur-sm flex items-center justify-between px-5 py-2 md:px-10 lg:px-20 z-20">
+    <nav className="fixed top-0 z-50 w-full bg-transparent shadow-sm border border-slate-100">
+      <div className="relative backdrop-blur-sm flex items-center justify-between px-5 py-2 md:px-10 lg:px-20">
+        {/* Logo and Mobile Menu Button */}
         <div className="flex justify-center gap-5 items-center w-28 md:w-auto">
           {userDetails && (
             <button
-              aria-label={menuOpen ? "Close menu" : "Open menu"}
               onClick={toggleMenu}
-              className="absolute left-5 text-2xl text-gray-800 md:hidden "
+              className="md:hidden text-2xl absolute left-5 text-gray-800"
+              aria-label="Toggle menu"
             >
               {menuOpen ? (
-                <IoClose size={25} className="text-red-500 " />
+                <IoClose size={25} className="text-red-500" />
               ) : (
-                <IoMenu size={25} className=" text-[#5CAE59] " />
+                <IoMenu size={25} className="text-lightGreen" />
               )}
             </button>
           )}
-          <div className="flex justify-between md:justify-center md:flex-col items-center gap-2 ml-7 md:ml-0">
-            <Link
-              to="/"
-              className="flex flex-col md:flex-row w-fit items-center md:gap-2"
-            >
-              <img
-                onClick={() => window.scroll(0, 0)}
-                className="w-12 md:w-20 rounded-lg  shadow-xl bg-transparent border-2 border-gray-200"
-                src="/images/study3D21Copy.png"
-                alt="logo"
-                loading="lazy"
-              />
-            </Link>
-          </div>
+
+          <Link
+            to="/"
+            onClick={() => window.scrollTo(0, 0)}
+            className="flex flex-col md:flex-row items-center gap-2 ml-7 md:ml-0"
+          >
+            <img
+              src="/images/study3D21Copy.png"
+              alt="logo"
+              loading="lazy"
+              className="w-12 md:w-20 rounded-lg border-2 border-gray-200 shadow-xl"
+            />
+          </Link>
         </div>
 
         {/* Desktop Navigation */}
-
         {userDetails && (
-          <ul className="hidden gap-5 font-semibold md:flex">
-            {navlinks.map((navlink, index) => {
-              const isActive =
-                location.pathname === navlink.link ||
-                (navlink.link !== "/" &&
-                  location.pathname.startsWith(navlink.link));
-
-              return (
-                <li
-                  onClick={() => window.scroll(0, 0)}
-                  key={index}
-                  className={`group relative cursor-pointer font-semibold  transition-all duration-500 ${
-                    isActive ? " text-[#5CAE59]" : "hover:text-green-500"
+          <ul className="hidden md:flex gap-5 font-semibold">
+            {baseLinks.map((navlink) => (
+              <li
+                key={navlink.link}
+                className={`relative cursor-pointer transition-all duration-500 ${
+                  isActive(navlink.link)
+                    ? "text-lightGreen"
+                    : "hover:text-green-500"
+                }`}
+              >
+                <Link to={navlink.link}>{navlink.name}</Link>
+                <span
+                  className={`absolute left-0 -bottom-1 h-[2px] bg-lightGreen transition-all duration-500 ${
+                    isActive(navlink.link) ? "w-full" : "w-0 group-hover:w-full"
                   }`}
-                >
-                  <Link to={navlink.link}>{navlink.name}</Link>
-                  <span
-                    className={`absolute left-0 -bottom-1 h-[2px] bg-green-600 transition-all duration-500 ${
-                      isActive ? "w-full" : "w-0 group-hover:w-full"
-                    }`}
-                  ></span>
-                </li>
-              );
-            })}
+                ></span>
+              </li>
+            ))}
           </ul>
         )}
-        {!userDetails ? (
-          <div className="flex items-center justify-between gap-5">
-            <Link
-              to="/study/signup"
-              className="relative group border   border-slate-100 hover-supported:hover:border-transparent  text-center shadow-lg rounded-full px-3 py-1 min-w-max overflow-hidden transition-colors duration-500"
-            >
-              <span className="absolute bottom-0 left-0 h-0 bg-[#5CAE59]   w-full hover-supported:group-hover:h-full transition-all duration-500 ease-in-out z-0"></span>
 
-              <span className="relative z-10 hover-supported:group-hover:text-white">
-                Sign up
-              </span>
-            </Link>
-            <Link
-              to="/study/signin"
-              className="relative group border border-slate-100   hover-supported:hover:border-transparent  text-center shadow-lg rounded-full px-3 py-1 min-w-max overflow-hidden transition-colors duration-500"
-            >
-              <span className="absolute bottom-0 left-0 h-0 bg-[#5CAE59] w-full hover-supported:group-hover:h-full transition-all duration-500 ease-in-out z-0"></span>
-
-              <span className="relative z-10 hover-supported:group-hover:text-white">
-                Sign in
-              </span>
-            </Link>
-          </div>
-        ) : (
-          <div className=" flex items-center justify-between gap-5">
+        {/* Right side - Profile or Auth */}
+        {userDetails ? (
+          <div className="flex items-center gap-4">
             <img
-              className={`rounded-full object-cover h-10 w-10 md:w-12 md:h-12 border-2 ${
-                userDetails?.profilepath ? "border-gray-300" : ""
-              } relative z-30  shadow-lg`}
               src={
-                userDetails && userDetails?.profilepath
-                  ? `${
-                      import.meta.env.VITE_API_FILE_URL +
-                      userDetails?.profilepath
+                userDetails?.profilepath
+                  ? `${import.meta.env.VITE_API_FILE_URL}${
+                      userDetails.profilepath
                     }`
                   : "/prof.webp"
               }
               alt="profile"
-              loading="lazy"
-              width="40"
-              height="40"
+              className="rounded-full object-cover h-10 w-10 md:h-12 md:w-12 border-2 border-gray-300 shadow-lg"
             />
-            <div>
-              <IoIosArrowDropdown
-                onClick={openAccountMenu}
-                size={25}
-                className={`relative cursor-pointer  text-[#5CAE59]      ${
-                  isOpenAccountDetails ? " text-[#5CAE59]" : ""
-                } z-30`}
-              />
+            <IoIosArrowDropdown
+              size={25}
+              onClick={toggleAccountMenu}
+              className={`cursor-pointer text-lightGreen transition-transform ${
+                accountMenuOpen ? "rotate-180" : ""
+              }`}
+            />
 
-              {/* Dropdown Menu */}
-              <div
-                className={`${
-                  isOpenAccountDetails ? "flex" : "hidden"
-                } absolute top-14 md:top-[62px]    right-0 font-medium rounded-b-2xl border  bg-gray-200  flex-col min-w-max p-5 gap-3 justify-center items-center z-40 transition-all duration-500  shadow-lg text-sm  `}
-              >
-                <Link
-                  onClick={openAccountMenu}
+            {/* Account Dropdown */}
+            {accountMenuOpen && (
+              <div className="absolute top-14 md:top-[62px] right-0 flex flex-col gap-3 items-start bg-gray-200 rounded-b-2xl border shadow-lg p-5 text-sm font-medium min-w-max z-40">
+                <DropdownLink
                   to="/study/userprofile"
-                  className="w-full flex items-center gap-3 hover-supported:hover:text-[#5CAE59] active:text-[#5CAE59] focus:text-[#5CAE59]"
+                  icon={<FaRegUser />}
+                  text="My Profile"
+                />
+                <DropdownLink
+                  to="/study/myuploads"
+                  icon={<HiOutlineUpload />}
+                  text="My Uploads"
+                />
+                <DropdownLink
+                  to="/study/user/change-password"
+                  icon={<MdLockOutline />}
+                  text="Change Password"
+                />
+                <DropdownLink
+                  to="/study/user/view-logins"
+                  icon={<MdOutlineDevices />}
+                  text="View All Logins"
+                />
+                <DropdownLink
+                  to="/study/user/deletemyaccount"
+                  icon={<FiAlertTriangle />}
+                  text="Delete Account"
+                  danger
+                />
+                <button
+                  onClick={() => {
+                    toggleAccountMenu();
+                    logout();
+                  }}
+                  className="flex items-center gap-2 text-red-600 hover:opacity-80 transition-all"
                 >
-                  <FaRegUser />
-                  <p>View Profile</p>
-                </Link>
-                {userDetails && (
-                  <div className="flex flex-col justify-center items-center gap-3">
-                    <Link
-                      onClick={openAccountMenu}
-                      to="/study/user/change-password"
-                      className="w-full hover-supported:hover:text-[#5CAE59] active:text-[#5CAE59] flex justify-center gap-2 items-center"
-                    >
-                      <MdLockOutline />
-                      <p>Change Password</p>
-                    </Link>
-                    <Link
-                      onClick={openAccountMenu}
-                      to="/study/user/view-logins"
-                      className="w-full flex items-center gap-3 hover-supported:hover:text-[#5CAE59] active:text-[#5CAE59] focus:text-[#5CAE59]"
-                    >
-                      <MdOutlineDevices />
-                      <p>View All Logins</p>
-                    </Link>
-                    <Link
-                      onClick={openAccountMenu}
-                      to="/study/user/deletemyaccount"
-                      className="w-full  hover-supported:hover:text-red-600 active:text-red-600 flex gap-2 items-center"
-                    >
-                      <FiAlertTriangle />
-                      <p>Delete Account</p>
-                    </Link>
-                    <button
-                      aria-label="sign out"
-                      onClick={() => {
-                        openAccountMenu();
-                        logout();
-                      }}
-                      className="w-full text-red-600 flex gap-2 items-center"
-                    >
-                      <MdLogout />
-                      <p>Sign out</p>
-                    </button>
-                  </div>
-                )}
+                  <MdLogout /> <p>Sign out</p>
+                </button>
               </div>
-            </div>
+            )}
+          </div>
+        ) : (
+          <div className="flex gap-4">
+            <AuthButton to="/study/signup" text="Sign up" />
+            <AuthButton to="/study/signin" text="Sign in" />
           </div>
         )}
       </div>
 
-      {/* Mobile Menu */}
-      <ul
-        className={`absolute left-0 top-14 border border-r-yellow-50   backdrop-blur-sm flex h-screen-minus-50 w-1/2 flex-col items-start justify-start gap-10 px-10 py-5  shadow-lg transition-transform duration-500 md:hidden ${
-          menuOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
-      >
-        {navlinks.map((navlink, index) => {
-          const isActive =
-            location.pathname === navlink.link ||
-            (navlink.link !== "/" &&
-              location.pathname.startsWith(navlink.link));
-
-          return (
+      {/* Mobile Navigation */}
+      {userDetails && (
+        <ul
+          className={`absolute left-0 top-14 border border-r-yellow-50 backdrop-blur-sm flex flex-col items-start gap-8 px-10 py-5 shadow-lg transition-transform duration-500 md:hidden h-screen w-1/2 ${
+            menuOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
+        >
+          {baseLinks.map((navlink) => (
             <li
+              key={navlink.link}
               onClick={() => setMenuOpen(false)}
-              key={index}
-              className={`group relative active:text-green-500 font-semibold text-gray-800 transition-all duration-500 ${
-                isActive ? " text-[#5CAE59]" : " "
+              className={`font-semibold text-gray-800 ${
+                isActive(navlink.link) ? "text-lightGreen" : ""
               }`}
             >
               <Link to={navlink.link}>{navlink.name}</Link>
-              <span
-                className={`absolute left-0 -bottom-1 h-[2px] bg-green-600 transition-all duration-500 ${
-                  isActive ? "w-full" : "w-0 "
-                }`}
-              ></span>
             </li>
-          );
-        })}
-      </ul>
+          ))}
+        </ul>
+      )}
     </nav>
   );
 };
+
+// 🔹 Small helper for account dropdown
+const DropdownLink = ({ to, icon, text, danger }) => (
+  <Link
+    to={to}
+    className={`flex items-center gap-2 w-full ${
+      danger
+        ? "hover-supported:hover:text-red-700"
+        : "hover-supported:hover:text-lightGreen text-gray-800"
+    } transition-all`}
+  >
+    {icon}
+    <p>{text}</p>
+  </Link>
+);
+
+// 🔹 Small helper for Auth buttons (Sign up / Sign in)
+const AuthButton = ({ to, text }) => (
+  <Link
+    to={to}
+    className="relative group border border-slate-100 text-center shadow-lg rounded-full px-3 py-1 min-w-max overflow-hidden transition-all duration-500"
+  >
+    <span className="absolute bottom-0 left-0 h-0 bg-lightGreen w-full group-hover:h-full transition-all duration-500 ease-in-out z-0"></span>
+    <span className="relative z-10 group-hover:text-white">{text}</span>
+  </Link>
+);
 
 export default Navbar;
