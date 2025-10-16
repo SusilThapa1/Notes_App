@@ -62,7 +62,7 @@ const ContactUs = () => {
   };
   return (
     <div className="max-w-5xl  py-20 mx-auto text-center px-5 md:px-10 lg:px-20">
-      <h2 className="text-xl md:text-2xl text-[#5CAE59] font-bold mb-6">
+      <h2 className="text-xl md:text-2xl text-lightGreen font-bold mb-6">
         {urlSeg === ""
           ? "Contact Us or Send Feedback"
           : urlSeg === "contact-us"
@@ -86,7 +86,7 @@ const ContactUs = () => {
             type="text"
             name="name"
             placeholder="Your Name"
-            className="w-full px-4 py-3 rounded-2xl shadow-lg focus: outline-slate-200 focus:ring-2 focus:ring-gray-200 bg-transparent border  border-slate-100  placeholder:font-medium"
+            className="w-full px-4 py-3 rounded-2xl shadow-lg   outline-slate-200 focus:ring-2 focus:ring-gray-200 bg-transparent border  border-slate-100  placeholder:font-medium"
             autoComplete="on"
             onChange={handleChange}
           />
@@ -99,7 +99,7 @@ const ContactUs = () => {
             type="email"
             name="email"
             placeholder="Your Email"
-            className="w-full px-4 py-3 rounded-2xl shadow-lg focus: outline-slate-200 focus:ring-2 focus:ring-gray-200 bg-transparent  border  border-slate-100 placeholder:font-medium"
+            className="w-full px-4 py-3 rounded-2xl shadow-lg   outline-slate-200 focus:ring-2 focus:ring-gray-200 bg-transparent  border  border-slate-100 placeholder:font-medium"
             autoComplete="on"
             onChange={handleChange}
             required
@@ -113,7 +113,7 @@ const ContactUs = () => {
             name="message"
             placeholder="Your Message"
             rows="8"
-            className="w-full px-4 py-3 rounded-2xl shadow-lg focus: outline-slate-200 focus:ring-2 focus:ring-gray-200 bg-transparent border  border-slate-100  placeholder:font-medium"
+            className="w-full px-4 py-3 rounded-2xl shadow-lg  outline-slate-200 focus:ring-2 focus:ring-gray-200 bg-transparent border  border-slate-100  placeholder:font-medium"
             onChange={handleChange}
           />
           {errors.message && (
@@ -122,7 +122,7 @@ const ContactUs = () => {
         </div>
         <button
           type="submit"
-          className="bg-transparent border  border-slate-100   px-6 py-2 rounded-full font-medium hover-supported: hover:bg-[#5CAE59] hover-supported:hover:text-gray-200 active: bg-[#5CAE59] shadow-lg transition-all duration-500"
+          className="bg-transparent border  border-slate-100   px-6 py-2 rounded-full font-medium hover-supported:hover:bg-lightGreen hover-supported:hover:text-gray-200 active: bg-lightGreen shadow-lg transition-all duration-500"
         >
           {urlSeg === ""
             ? "Send"
