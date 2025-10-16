@@ -18,12 +18,11 @@ const fetchAllUsers = async () => {
 // Fetch a single user (requires token)
 const fetchSingleUser = async () => {
   try {
-    const res = await axios.get(`${API_URL}/userprofile`, {
+    const res = await axios.get(`${API_URL}/me`, {
       withCredentials: true,
     });
     return res.data;
   } catch (error) {
-    console.error("fetchSinglelUser error:", error);
     throw error;
   }
 };
@@ -47,7 +46,7 @@ const registerUser = async (userData) => {
       headers: {
         "Content-Type": "application/json",
       },
-      withCredentials: true,
+      // withCredentials: true,
     });
     return response.data;
   } catch (error) {
@@ -80,8 +79,10 @@ const userLogin = async (data) => {
     const response = await axios.post(`${API_URL}/login`, data, {
       withCredentials: true,
     });
+    console.log("resdata:", response.data);
     return response.data;
   } catch (error) {
+    console.log("first", error);
     throw error;
   }
 };
@@ -166,13 +167,9 @@ const logoutUser = async () => {
 //send email verification-otp
 const sendVerifyOtp = async (email) => {
   try {
-    const response = await axios.post(
-      `${API_URL}/send-emailverify-otp`,
-      { email },
-      {
-        withCredentials: true,
-      }
-    );
+    const response = await axios.post(`${API_URL}/send-emailverify-otp`, {
+      email,
+    });
     return response.data;
   } catch (err) {
     throw err;
@@ -184,7 +181,10 @@ const verifyEmail = async (otp, userId) => {
   try {
     const response = await axios.post(
       `${API_URL}/verify-email`,
-      { otp, userId },
+      {
+        otp,
+        userId,
+      },
       {
         withCredentials: true,
       }
@@ -299,6 +299,36 @@ const changeRole = async (id, role) => {
   }
 };
 
+const heartbeat = async () => {
+  try {
+    const response = await axios.put(`${API_URL}/heartbeat`, null, {
+      withCredentials: true,
+    });
+    console.log("response heart:", response?.data);
+    return response.data;
+  } catch (err) {
+    if (
+      err.response &&
+      (err.response.status === 401 || err.response.status === 404)
+    ) {
+      throw new Error("SESSION_EXPIRED");
+    }
+
+    throw err;
+  }
+};
+
+const removeSession = async (deviceId) => {
+  try {
+    const res = await axios.delete(`${API_URL}/session/${deviceId}`, {
+      withCredentials: true,
+    });
+    return res.data;
+  } catch (err) {
+    throw err;
+  }
+};
+
 //  Export all functions
 export {
   registerUser,
@@ -322,4 +352,6 @@ export {
   otpResend,
   resetOtpResend,
   changeRole,
+  heartbeat,
+  removeSession,
 };
