@@ -1,13 +1,17 @@
 import { useContext, useRef, useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { otpResend, verifyEmail, verifyEmailChange } from "../../../Services/userService";
+import {
+  otpResend,
+  verifyEmail,
+  verifyEmailChange,
+} from "../../../Services/userService";
 import { AuthContext } from "../Context/AuthContext";
 
 const OTPVerify = () => {
   const location = useLocation();
   const lastSeg = decodeURIComponent(location.pathname.split("/")[3] || "");
-
+  const { userId } = location.state || {};
   const [otp, setOtp] = useState(new Array(6).fill(""));
   const [error, setError] = useState("");
   const [countdown, setCountdown] = useState(0);
@@ -15,7 +19,7 @@ const OTPVerify = () => {
 
   const inputRefs = useRef([]);
   const navigate = useNavigate();
-  const { setUserSession,user } = useContext(AuthContext);
+  const { setUserSession, userDetails } = useContext(AuthContext);
 
   const handleChange = (e, index) => {
     const value = e.target.value;
@@ -44,14 +48,14 @@ const OTPVerify = () => {
       return toast.error("OTP must be 6 digits.");
     }
 
-    const userId = user?.id;
+    const userid = userId;
     try {
-      const res = await verifyEmail(enteredOtp, userId); // backend sets cookie
-      if (res.success) {
-        setUserSession(res.user); // frontend UI only
-        toast.success(res.message);
-        navigate("/");
-      } else toast.error(res.message);
+      const res = await verifyEmail(enteredOtp, userid);
+      if (res?.success) {
+        setUserSession(res?.user); // frontend UI only
+        toast.success(res?.message);
+        // navigate("/study/signin");
+      } else toast.error(res?.message);
     } catch (err) {
       toast.error(err?.response?.data?.message || "Something went wrong");
       console.error(err.message);
@@ -102,7 +106,7 @@ const OTPVerify = () => {
   useEffect(() => {
     let timer;
     if (countdown > 0) {
-      timer = setTimeout(() => setCountdown(prev => prev - 1), 1000);
+      timer = setTimeout(() => setCountdown((prev) => prev - 1), 1000);
     } else {
       setDisabled(false);
     }
@@ -112,8 +116,10 @@ const OTPVerify = () => {
   return (
     <div className="mt-24 flex h-[calc(100vh-100px)] justify-start items-center flex-col w-full px-5">
       <div className="flex flex-col justify-center items-center gap-10">
-        <h1 className="text-lg font-bold text-[#5CAE59]">
-          {lastSeg === "email-verify-OTP" ? "Email Verification OTP" : "Email Change Verification OTP"}
+        <h1 className="text-lg font-bold text-lightGreen">
+          {lastSeg === "email-verify-OTP"
+            ? "Email Verification OTP"
+            : "Email Change Verification OTP"}
         </h1>
         <div className="flex flex-col justify-center items-center gap-5">
           <h1 className="text-center font-semibold">
@@ -123,7 +129,9 @@ const OTPVerify = () => {
           </h1>
 
           <form
-            onSubmit={lastSeg === "email-verify-OTP" ? handleVerify : handleChangeVerify}
+            onSubmit={
+              lastSeg === "email-verify-OTP" ? handleVerify : handleChangeVerify
+            }
             className="flex flex-col sm:flex-row items-center gap-3 w-full justify-center"
           >
             <div className="flex justify-center gap-2">
@@ -143,7 +151,9 @@ const OTPVerify = () => {
             <button
               type="submit"
               className={`${
-                error || otp.some(d => d === "") ? "bg-red-600" : "bg-green-600"
+                error || otp.some((d) => d === "")
+                  ? "bg-red-600"
+                  : " bg-lightGreen"
               } text-white px-4 sm:px-6 py-1 sm:py-2 shadow-lg font-medium rounded-lg`}
             >
               Verify
@@ -154,7 +164,7 @@ const OTPVerify = () => {
             onClick={handleResendOtp}
             disabled={disabled}
             type="button"
-            className="hover:bg-[#5CAE59] hover-supported:hover:border-transparent hover-supported:hover:text-white border-2 border-slate-100 px-4 sm:px-6 py-1 sm:py-2 shadow-lg rounded-2xl transition-all duration-500"
+            className="hover:bg-lightGreen hover-supported:hover:border-transparent hover-supported:hover:text-white border-2 border-slate-100 px-4 sm:px-6 py-1 sm:py-2 shadow-lg rounded-2xl transition-all duration-500"
           >
             {disabled ? `Try again in ${countdown}s` : "Resend OTP"}
           </button>
