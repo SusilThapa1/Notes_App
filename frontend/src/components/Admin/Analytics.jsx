@@ -11,7 +11,7 @@ import { fetchAllUsers } from "../../../Services/userService";
 import { useEffect } from "react";
 import { useContext } from "react";
 import { ProgrammesContext } from "../Context/ProgrammeContext";
-import Loader from "../Loader";
+import Loader from "../Loader/Loader";
 
 const Analytics = () => {
   const [users, setUsers] = useState(null);
