@@ -3,7 +3,7 @@ import { FaGithub, FaFacebook, FaWhatsapp } from "react-icons/fa";
 
 const Footer = () => {
   return (
-    <footer className="flex flex-col justify-center items-center gap-5 w-full mx-auto text-center bg-[#6aaa4c] text-white py-3 overflow-x-hidden border-t-2 border-slate-100 shadow-xl">
+    <footer className="flex flex-col justify-center items-center gap-5 w-full mx-auto text-center bg-lightGreen text-white py-3 overflow-x-hidden border-t-2 border-slate-100 shadow-xl">
       <div className="animate-marquee text-nowrap pb-2">
         This website is currently under development! Stay focused and keep learning 😊
       </div>

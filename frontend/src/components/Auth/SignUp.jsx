@@ -13,7 +13,7 @@ import { emailRegex, passwordRegex } from "../../../Validator/validator";
 
 const SignUp = () => {
   const { sendEmailVerifyOtp } = useContext(AuthContext);
-  const [loading,setLoading]= useState(false)
+  const [loading, setLoading] = useState(false);
   const [showPass, setShowPass] = useState(false);
   const [formData, setFormData] = useState({
     username: "",
@@ -76,7 +76,7 @@ const SignUp = () => {
     e.preventDefault();
 
     toast.dismiss();
-    
+
     if (
       !formData.username ||
       !formData.email ||
@@ -87,9 +87,9 @@ const SignUp = () => {
       toast.error("Please fill all the required fields");
       return;
     }
-    
+
     try {
-      setLoading(true)
+      setLoading(true);
       const res = await registerUser(formData);
       console.log(res);
       if (res.success) {
@@ -105,8 +105,8 @@ const SignUp = () => {
         error?.response?.data?.message ||
           "Something went wrong. Please try again."
       );
-    }finally{
-      setLoading(false)
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -120,13 +120,13 @@ const SignUp = () => {
           alt="logo"
           loading="lazy"
         />
-        <h1 className=" text-[#5CAE59] text-center font-bold">
+        <h1 className=" text-lightGreen text-center font-bold">
           Create a new account
         </h1>
         <form onSubmit={handleSubmit} className="flex flex-col gap-7 w-full  ">
           {/* Username */}
           <div
-            className={`flex items-center bg-transparent border border-slate-100 outline-none  px-4 py-3 rounded-full    shadow-lg transition-all duration-500 ${
+            className={`flex items-center bg-transparent border border-slate-100 px-4 py-3 rounded-full    shadow-lg transition-all duration-500 ${
               errors.username ? "border-red-500" : ""
             }`}
           >
@@ -137,7 +137,7 @@ const SignUp = () => {
               value={formData.username}
               onChange={handleChange}
               placeholder="Enter name"
-              className="w-full  outline-none bg-transparent"
+              className="w-full bg-transparent"
               aria-label="Username"
             />
           </div>
@@ -149,7 +149,7 @@ const SignUp = () => {
 
           {/* Email */}
           <div
-            className={`flex items-center bg-transparent border  border-slate-100 outline-none  px-4 py-3 rounded-full    shadow-lg transition-all duration-500 ${
+            className={`flex items-center bg-transparent border  border-slate-100 px-4 py-3 rounded-full    shadow-lg transition-all duration-500 ${
               errors.email ? "border-red-500" : ""
             }`}
           >
@@ -160,7 +160,7 @@ const SignUp = () => {
               value={formData.email}
               onChange={handleChange}
               placeholder="Enter email"
-              className="w-full  outline-none bg-transparent"
+              className="w-full bg-transparent"
               aria-label="Email"
             />
           </div>
@@ -170,7 +170,7 @@ const SignUp = () => {
 
           {/* Password */}
           <div
-            className={`flex items-center bg-transparent border  border-slate-100 outline-none  px-4 py-3 rounded-full    shadow-lg transition-all duration-500 ${
+            className={`flex items-center bg-transparent border  border-slate-100 px-4 py-3 rounded-full shadow-lg transition-all duration-500 ${
               errors.password ? "border-red-500" : ""
             }`}
           >
@@ -181,13 +181,13 @@ const SignUp = () => {
               value={formData.password}
               onChange={handleChange}
               placeholder="Password"
-              className="border-none  outline-none w-full bg-transparent"
+              className="border-none w-full bg-transparent"
               aria-label="Password"
             />
             <button
               type="button"
               onClick={passShow}
-              className="ml-2 focus:outline-none text-gray-600"
+              className="ml-2  text-gray-600"
             >
               {showPass ? <LuEye title="hide" /> : <LuEyeClosed title="show" />}
             </button>
@@ -200,7 +200,7 @@ const SignUp = () => {
 
           {/* Confirm Password */}
           <div
-            className={`flex items-center bg-transparent border  border-slate-100 outline-none  px-4 py-3 rounded-full    shadow-lg transition-all duration-500 ${
+            className={`flex items-center bg-transparent border  border-slate-100 px-4 py-3 rounded-full shadow-lg transition-all duration-500 ${
               errors.confirmPassword ? "border-red-500" : ""
             }`}
           >
@@ -211,7 +211,7 @@ const SignUp = () => {
               value={formData.confirmPassword}
               onChange={handleChange}
               placeholder="Confirm password"
-              className="rounded-lg border-none  outline-none bg-transparent w-full"
+              className="rounded-lg border-none bg-transparent w-full"
               aria-label="Confirm Password"
             />
           </div>
@@ -222,7 +222,7 @@ const SignUp = () => {
           )}
 
           {/* Gender */}
-          <div className="flex  items-center gap-1 sm:gap-2 md:gap-8 bg-transparent border border-slate-100 outline-none px-2 sm:px-3 md:px-4 py-3 rounded-full  shadow-lg transition-all duration-500">
+          <div className="flex  items-center gap-1 sm:gap-2 md:gap-8 bg-transparent border border-slate-100 px-2 sm:px-3 md:px-4 py-3 rounded-full shadow-lg transition-all duration-500">
             <p>Gender : </p>
             <div className="flex items-center justify-center gap-2">
               <input
@@ -311,11 +311,12 @@ const SignUp = () => {
           {/* Submit Button */}
           <button
             disabled={loading}
-             className={`px-4 py-3 rounded-xl font-medium shadow-lg text-white w-full transition-colors duration-500 ${
+            className={`px-4 py-3 rounded-xl font-medium shadow-lg text-white w-full transition-colors duration-500 ${
               loading
                 ? "bg-gray-400 cursor-not-allowed"
-                : "bg-[#6ac067] hover-supported:hover:bg-[#13b858]"
-            }`}>
+                : "bg-lightGreen hover-supported:hover:bg-darkGreen"
+            }`}
+          >
             {loading ? "Signing up..." : "Sign up"}
           </button>
         </form>

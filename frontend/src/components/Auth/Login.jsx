@@ -65,7 +65,7 @@ const Login = () => {
           alt="logo"
           loading="lazy"
         />
-        <h1 className="text-[#5CAE59] text-center font-bold">Welcome Back!</h1>
+        <h1 className="text-lightGreen text-center font-bold">Welcome Back!</h1>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-7 w-full">
           {/* Email Field */}
@@ -77,7 +77,7 @@ const Login = () => {
               value={formData.email}
               onChange={handleChange}
               placeholder="Enter email"
-              className="w-full outline-none bg-transparent"
+              className="w-full  bg-transparent"
               aria-label="Email"
             />
           </div>
@@ -91,13 +91,13 @@ const Login = () => {
               value={formData.password}
               onChange={handleChange}
               placeholder="Password"
-              className="w-full border-none outline-none bg-transparent"
+              className="w-full border-none  bg-transparent"
               aria-label="Password"
             />
             <button
               type="button"
               onClick={passShow}
-              className="ml-2 focus:outline-none text-gray-600"
+              className="ml-2 text-gray-600"
             >
               {showPass ? <LuEye title="Hide" /> : <LuEyeClosed title="Show" />}
             </button>
@@ -109,7 +109,7 @@ const Login = () => {
             className={`px-4 py-3 rounded-xl font-medium shadow-lg text-white w-full transition-colors duration-500 ${
               loading
                 ? "bg-gray-400 cursor-not-allowed"
-                : "bg-[#6ac067] hover-supported:hover:bg-[#13b858]"
+                : "bg-lightGreen hover-supported:hover:bg-darkGreen"
             }`}
             aria-label="Sign in"
           >
