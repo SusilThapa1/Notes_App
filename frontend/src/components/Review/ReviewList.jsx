@@ -220,7 +220,7 @@ const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
                       setSelectedUserReviewId(null);
                       handleEdit(ownReview);
                     }}
-                    className="hover-supported:hover:text-[#5CAE59] active:text-[#5CAE59]"
+                    className="hover-supported:hover:text-lightGreen active:text-lightGreen"
                   >
                     Edit your review
                   </button>
@@ -262,7 +262,7 @@ const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
                   <div className="flex flex-col justify-between items-center gap-2 py-5">
                     <div
                       onClick={() => handleReplyBox(ownReview?._id)}
-                      className="flex justify-center items-center gap-2 cursor-pointer text-green-600"
+                      className="flex justify-center items-center gap-2 cursor-pointer text-lightGreen"
                     >
                       <IoArrowRedoSharp />
                       <p>reply</p>
@@ -282,11 +282,11 @@ const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
                             placeholder="Write review reply here..."
                             value={replyReview.replyText}
                             onChange={handleReplyChange}
-                            className="bg-transparent outline-none w-full resize-none text-sm text-gray-700"
+                            className="bg-transparent  w-full resize-none text-sm text-gray-700"
                           />
                           <button
                             title="Submit Review Reply"
-                            className="text-white bg-[#5CAE59] p-2 rounded-full hover:bg-[#4e9e4e] transition duration-200"
+                            className="text-white bg-lightGreen p-2 rounded-full hover-supported:hover:bg-darkGreen transition duration-200"
                           >
                             <MdSend size={20} />
                           </button>
@@ -307,7 +307,7 @@ const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
                       alt="profile"
                       className="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover"
                     />
-                    <h3 className="text-sm md:text-md font-semibold text-green-600">
+                    <h3 className="text-sm md:text-md font-semibold text-lightGreen">
                       Easy Study Zone{" "}
                       {userDetails?.isAccountVerified &&
                         isAdmin &&
@@ -336,7 +336,7 @@ const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
                           setSelectedAdminReplyId(null);
                           setEditingReplyId(ownReview._id);
                         }}
-                        className="hover-supported:hover:text-[#5CAE59] active:text-[#5CAE59]"
+                        className="hover-supported:hover:text-lightGreen active:text-lightGreen"
                       >
                         Edit reply
                       </button>
@@ -373,11 +373,11 @@ const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
                         value={editReplyText}
                         onChange={(e) => setEditReplyText(e.target.value)}
                         maxLength={200}
-                        className="w-full resize-none outline-none bg-transparent text-sm text-gray-700"
+                        className="w-full resize-none  bg-transparent text-sm text-gray-700"
                       />
                       <button
                         type="submit"
-                        className=" bg-[#5CAE59] text-white p-2 rounded-full"
+                        className=" bg-lightGreen text-white p-2 rounded-full"
                         title="Save edited reply"
                       >
                         <MdSend size={20} />
@@ -432,7 +432,7 @@ const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
                       setSelectedUserReviewId(null);
                       handleEdit(singleReview);
                     }}
-                    className="hover-supported:hover:text-[#5CAE59] active:text-[#5CAE59]"
+                    className="hover-supported:hover:text-lightGreen active:text-lightGreen"
                   >
                     Edit review
                   </button>
@@ -474,7 +474,7 @@ const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
                   <div className="flex flex-col justify-between items-center gap-2 py-5">
                     <div
                       onClick={() => handleReplyBox(singleReview?._id)}
-                      className="flex justify-center items-center gap-2 cursor-pointer text-green-600"
+                      className="flex justify-center items-center gap-2 cursor-pointer text-lightGreen"
                     >
                       <IoArrowRedoSharp />
                       <p>reply</p>
@@ -494,11 +494,11 @@ const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
                             placeholder="Write review reply here..."
                             value={replyReview.replyText}
                             onChange={handleReplyChange}
-                            className="bg-transparent outline-none w-full resize-none text-sm text-gray-700"
+                            className="bg-transparent  w-full resize-none text-sm text-gray-700"
                           />
                           <button
                             title="Submit Review Reply"
-                            className="text-white bg-[#5CAE59] p-2 rounded-full hover:bg-[#4e9e4e] transition duration-200"
+                            className="text-white bg-lightGreen p-2 rounded-full hover-supported:hover:bg-darkGreen transition duration-200"
                           >
                             <MdSend size={20} />
                           </button>
@@ -518,7 +518,7 @@ const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
                         alt="profile"
                         className="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover"
                       />
-                      <h3 className="text-sm md:text-md font-semibold text-green-600">
+                      <h3 className="text-sm md:text-md font-semibold text-lightGreen">
                         Easy Study Zone{" "}
                         {userDetails?.isAccountVerified &&
                           isAdmin &&
@@ -551,7 +551,7 @@ const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
                             setSelectedAdminReplyId(null);
                             setEditingReplyId(singleReview._id);
                           }}
-                          className="hover-supported:hover:text-[#5CAE59] active:text-[#5CAE59]"
+                          className="hover-supported:hover:text-lightGreen active:text-lightGreen"
                         >
                           Edit reply
                         </button>
@@ -588,11 +588,11 @@ const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
                           value={editReplyText}
                           onChange={(e) => setEditReplyText(e.target.value)}
                           maxLength={200}
-                          className="w-full resize-none outline-none bg-transparent text-sm text-gray-700"
+                          className="w-full resize-none  bg-transparent text-sm text-gray-700"
                         />
                         <button
                           type="submit"
-                          className=" bg-[#5CAE59] text-white p-2 rounded-full"
+                          className=" bg-lightGreen text-white p-2 rounded-full"
                           title="Save edited reply"
                         >
                           <MdSend size={20} />

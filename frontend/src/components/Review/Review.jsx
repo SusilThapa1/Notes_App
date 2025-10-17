@@ -119,7 +119,7 @@ const Review = ({ existingReview }) => {
   return (
     <div ref={reviewFormRef} className="w-full bg-transparent text-center">
       <div className="flex flex-col gap-6 py-10 mx-auto max-w-4xl">
-        <h1 className="text-2xl md:text-3xl text-[#5CAE59] font-bold">
+        <h1 className="text-2xl md:text-3xl text-lightGreen font-bold">
           Share Your Thoughts and Experience
         </h1>
         <p className="text-gray-600 text-sm md:text-base">
@@ -161,7 +161,7 @@ const Review = ({ existingReview }) => {
                 placeholder="Write your review here..."
                 value={review.message}
                 onChange={handleChange}
-                className="bg-transparent outline-none w-full resize-none scroll-container text-sm text-gray-700"
+                className="bg-transparent  w-full resize-none scroll-container text-sm text-gray-700"
               />
               <button
                 title="Submit Review"
@@ -169,7 +169,7 @@ const Review = ({ existingReview }) => {
                 className={`text-white p-2 rounded-full transition duration-200 ${
                   isReviewUnchanged
                     ? "bg-gray-400 cursor-not-allowed"
-                    : "bg-[#5CAE59] hover:bg-[#4e9e4e]"
+                    : "bg-lightGreen hover-supported:hover:bg-darkGreen"
                 }`}
               >
                 <MdSend className="text-sm md:text-lg" />
