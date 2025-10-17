@@ -71,7 +71,7 @@ const CodeOfConduct = () => {
             key={idx}
             className="flex flex-col gap-1 p-6 rounded-3xl md:rounded-2xl  shadow-lg   bg-transparent border  border-slate-100 md:hover:scale-105 transition-all duration-500"
           >
-            <h2 className="font-bold  text-green-600">{item.title}</h2>
+            <h2 className="font-bold  text-lightGreen">{item.title}</h2>
             <ul className="list-disc ml-5 mt-2 text-gray-700 space-y-5">
               {item.subContent.map((point, subIdx) => (
                 <li key={subIdx}>{point}</li>
