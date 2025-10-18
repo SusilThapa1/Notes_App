@@ -49,7 +49,7 @@ const PrivacyPolicy = () => {
 
   return (
     <div className="flex flex-col justify-center items-center gap-10 max-w-7xl mx-auto mt-20 px-6 pb-5  text-gray-800 leading-relaxed">
-      <h1 className="text-2xl font-bold  text-[#5CAE59] text-center">
+      <h1 className="text-2xl font-bold  text-lightGreen text-center">
         Pricacy & Policy
       </h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 justify-center  gap-8 text-justify  ">
@@ -58,7 +58,7 @@ const PrivacyPolicy = () => {
             key={index}
             className="flex flex-col gap-1 p-6 rounded-3xl md:rounded-2xl  shadow-lg   bg-transparent border  border-slate-100 md:hover:scale-105 transition-all duration-500"
           >
-            <h2 className="font-bold  text-green-600"> {section.heading}</h2>
+            <h2 className="font-bold  text-lightGreen"> {section.heading}</h2>
             <ul className="list-disc ml-5 mt-2 text-gray-700 space-y-5">
               {section.subContent.map((point, idx) => (
                 <li key={idx}>{point}</li>
