@@ -91,11 +91,9 @@ const SignUp = () => {
     try {
       setLoading(true);
       const res = await registerUser(formData);
-      console.log(res);
       if (res.success) {
         //  setUserSession(res?.user);
         await sendEmailVerifyOtp(formData.email);
-        console.log(formData.email);
       } else {
         toast.error(res.message);
       }
