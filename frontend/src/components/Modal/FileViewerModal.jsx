@@ -1,11 +1,22 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { IoClose } from "react-icons/io5";
 import { HiOutlineExternalLink } from "react-icons/hi";
-import { useNavigate } from "react-router-dom";
+
+import { Worker, Viewer } from "@react-pdf-viewer/core";
+import { defaultLayoutPlugin } from "@react-pdf-viewer/default-layout";
+import "@react-pdf-viewer/core/lib/styles/index.css";
+import "@react-pdf-viewer/default-layout/lib/styles/index.css";
 
 const FileViewerModal = ({ isOpen, onClose, fileUrl, fileName, fileId }) => {
   const navigate = useNavigate();
   if (!isOpen) return null;
+
+  const workerUrl =
+    "https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js";
+    
+  // Call plugin at top-level
+  const defaultLayoutPluginInstance = defaultLayoutPlugin();
 
   const fileType = fileUrl?.split(".").pop()?.toLowerCase();
 
@@ -15,50 +26,42 @@ const FileViewerModal = ({ isOpen, onClose, fileUrl, fileName, fileId }) => {
         <img
           src={fileUrl}
           alt={fileName}
-          className="max-h-[75vh] mx-auto rounded-lg object-contain"
+          className="max-h-[60vh] mx-auto rounded-lg object-contain"
         />
       );
-    } else if (fileType === "pdf") {
+    }
+
+    if (fileType === "pdf") {
       return (
-        <iframe
-          src={fileUrl}
-          title={fileName}
-          allowFullScreen
-          className="w-full h-[75vh] rounded-lg"
-        />
-      );
-    } else {
-      return (
-        <div className="text-center py-10 text-gray-700">
-          <p className="mb-4">Preview not available for this file type.</p>
-          <a
-            href={fileUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-600 underline hover:text-blue-800"
-          >
-            Open in new tab
-          </a>
+        <div className="h-[80vh] overflow-y-auto bg-gray-50 p-3 rounded-lg">
+          <Worker workerUrl={workerUrl}>
+            <Viewer fileUrl={fileUrl} plugins={[defaultLayoutPluginInstance]} />
+          </Worker>
         </div>
       );
     }
+
+    return (
+      <p className="text-center text-gray-500 py-10">
+        Preview not available for this file type.
+      </p>
+    );
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-lg w-[95%] md:w-[80%] max-w-4xl relative">
-        {/* Close button */}
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 overflow-y-auto">
+      <div className="bg-white rounded-lg shadow-lg w-[95%] md:w-[80%] max-w-4xl relative flex flex-col">
         <button
           onClick={onClose}
-          className="absolute top-1 right-2 text-gray-700 hover:text-red-600"
+          className="absolute top-0 right-1 text-gray-700 hover-supported:hover:text-red-600 z-40"
         >
           <IoClose size={26} />
         </button>
 
-        {/* Header */}
-        <div className="px-5 pt-5 border-b border-gray-200 flex justify-between items-center">
-          <h2 className="text-lg font-semibold text-gray-800">{fileName}</h2>
-
+        <div className="px-5 pt-5 border-b border-gray-200 flex justify-between items-center sticky top-0 bg-white z-20">
+          <h2 className="text-lg font-semibold text-gray-800 truncate">
+            {fileName}
+          </h2>
           <button
             onClick={() => navigate(`/study/view/${fileId}`)}
             className="flex items-center gap-2 text-blue-600 hover:text-blue-800 transition text-sm font-medium"
@@ -67,8 +70,7 @@ const FileViewerModal = ({ isOpen, onClose, fileUrl, fileName, fileId }) => {
           </button>
         </div>
 
-        {/* Preview */}
-        <div className="p-5">{renderPreview()}</div>
+        <div className="p-5 overflow-y-auto">{renderPreview()}</div>
       </div>
     </div>
   );
