@@ -1,16 +1,29 @@
+import React, { useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { IoArrowBack } from "react-icons/io5";
-import { useContext } from "react";
 import { ProgrammesContext } from "../components/Context/ProgrammeContext";
+import Loader from "./Loader/Loader";
+
+import { Worker, Viewer } from "@react-pdf-viewer/core";
+import { defaultLayoutPlugin } from "@react-pdf-viewer/default-layout";
+import "@react-pdf-viewer/core/lib/styles/index.css";
+import "@react-pdf-viewer/default-layout/lib/styles/index.css";
 
 const FileViewer = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { uploads } = useContext(ProgrammesContext);
+  const { uploads, loading } = useContext(ProgrammesContext);
 
   const file = uploads.find((u) => u._id === id);
 
-  if (!file) {
+  const workerUrl =
+    "https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js";
+
+  // Call plugin at top-level
+  const defaultLayoutPluginInstance = defaultLayoutPlugin();
+
+  if (loading) return <Loader />;
+
+  if (!file)
     return (
       <div className="flex flex-col items-center justify-center h-screen text-gray-600">
         <p className="text-lg">File not found 😢</p>
@@ -22,50 +35,16 @@ const FileViewer = () => {
         </button>
       </div>
     );
-  }
 
   const fileUrl = import.meta.env.VITE_API_FILE_URL + file.filepath;
-  const fileType = file.filename.split(".").pop().toLowerCase();
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 flex flex-col">
-      <div className="flex justify-between items-center mb-4">
-        <button
-          onClick={() => navigate(-1)}
-          className="flex items-center gap-2 text-gray-700 hover:text-lightGreen"
-        >
-          <IoArrowBack size={22} /> Back
-        </button>
-        <h1 className="text-lg font-semibold text-gray-800">{file.filename}</h1>
-      </div>
-
-      <div className="flex-1 bg-white rounded-lg shadow-md p-3">
-        {["png", "jpg", "jpeg", "gif", "webp"].includes(fileType) ? (
-          <img
-            src={fileUrl}
-            alt={file.filename}
-            className="mx-auto max-h-[80vh] object-contain"
-          />
-        ) : fileType === "pdf" ? (
-          <iframe
-            src={fileUrl}
-            title={file.filename}
-            allowFullScreen
-            className="w-full h-[85vh] rounded-lg"
-          />
-        ) : (
-          <div className="text-center py-20 text-gray-700">
-            <p>Preview not available for this file type.</p>
-            <a
-              href={fileUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-600 underline hover:text-blue-800"
-            >
-              Open in new tab
-            </a>
-          </div>
-        )}
+    <div className="flex flex-col mt-20  md:px-10 lg:px-20">
+      {/* PDF Viewer */}
+      <div className="h-[calc(100vh-72px)] overflow-y-auto flex justify-center bg-gray-50 rounded-lg shadow-inner border-none">
+        <Worker workerUrl={workerUrl}>
+          <Viewer fileUrl={fileUrl} plugins={[defaultLayoutPluginInstance]} />
+        </Worker>
       </div>
     </div>
   );
