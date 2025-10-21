@@ -3,7 +3,7 @@ const UAParser = require("ua-parser-js");
 const Users = require("../models/userModel");
 const crypto = require("crypto");
 
-// 🔹 1. Get Public IP (handles local IPs too)
+//  1. Get Public IP (handles local IPs too)
 const getPublicIP = async (req) => {
   let ip = req.ip;
   if (["::1", "127.0.0.1"].includes(ip) || ip.startsWith("192.168.") || ip.startsWith("10.")) {
@@ -17,7 +17,7 @@ const getPublicIP = async (req) => {
   return ip;
 };
 
-// 🔹 2. Get Device & Browser Info
+//  2. Get Device & Browser Info
 const parseDeviceInfo = (userAgent) => {
   const parser = new UAParser(userAgent);
   return {
@@ -26,25 +26,30 @@ const parseDeviceInfo = (userAgent) => {
   };
 };
 
-// 🔹 3. Get Geo Location (optional)
+//  3. Get Geo Location (optional)
 const getGeoLocation = async (ip) => {
   try {
     const { data } = await axios.get(
-      `https://api.findip.net/${ip}/?token=${process.env.LOCATION_API_KEY}`
+      // `https://api.findip.net/${ip}/?token=${process.env.LOCATION_API_KEY}`
+      `http://ip-api.com/json/${ip}`
     );
+    console.log("ip data:",data)
     return {
-      country: data?.country?.names?.en || "unknown",
-      province: data?.subdivisions?.[0]?.iso_code || "unknown",
-      city: data?.city?.names?.en || "unknown",
-      lat: data?.location?.latitude || "unknown",
-      lon: data?.location?.longitude || "unknown",
+      country: data?.country|| "unknown",
+      countryCode: data?.countryCode || "unknown",
+      province: data?.region|| "unknown",
+      provinceName:data?.regionName ||"unknown",
+      city: data?.city  || "unknown",
+      lat: data?.lat || null,
+      lon: data?.lon || null,
+      isp:data?.isp || "unknown"
     };
   } catch {
     return null;
   }
 };
 
-// 🔹 4. Generate or Reuse Device ID (ensure not reused across users)
+//  4. Generate or Reuse Device ID (ensure not reused across users)
 const getOrCreateDeviceId = async (req, userId) => {
   let deviceId = req.cookies.deviceId;
   const existingOwner = deviceId ? await Users.findOne({ "sessions.deviceId": deviceId }) : null;
@@ -56,7 +61,7 @@ const getOrCreateDeviceId = async (req, userId) => {
   return deviceId;
 };
 
-// 🔹 5. Create or Update Session for this device
+//  5. Create or Update Session for this device
 const updateUserSession = (user, deviceId, sessionData) => {
   const existingSession = user.sessions.find((s) => s.deviceId === deviceId);
 
