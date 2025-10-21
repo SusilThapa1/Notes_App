@@ -2,37 +2,27 @@ const mongoose = require("mongoose");
 
 const uploadSchema = new mongoose.Schema(
   {
-    userID: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "users",
+    userID: { type: mongoose.Schema.Types.ObjectId, ref: "users", required: true },
+    universityID: { type: mongoose.Schema.Types.ObjectId, ref: "universities", required: true },
+    resources: { type: String, enum: ["syllabus", "notes", "questions"], required: true },
+    programmeID: { type: mongoose.Schema.Types.ObjectId, ref: "programmes", required: true },
+    courseCode: { type: String, required: true },
+    courseName: { type: String, required: true },
+    semyear: {
+      type: String,
+      enum: [
+        "1st Semester","2nd Semester","3rd Semester","4th Semester",
+        "5th Semester","6th Semester","7th Semester","8th Semester",
+        "1st Year","2nd Year","3rd Year","4th Year",
+      ],
       required: true,
     },
-    resources: {
-      type: String,
-      enum: ["syllabus", "notes", "questions"],
-      required: true,
-    },
-    programmename: {
-      type: String,
-      required: true,
-    },
-    academicstructure: {
-      type: String,
-    },
-    semestername: {
-      type: String,
-    },
-
-    year: {
-      type: String,
-    },
-
-    link: {
-      type: String,
-      required: true,
-    },
+    filename: { type: String, required: true },
+    filepath: { type: String, required: true },
+    isVerified: { type: Boolean, default: false },
   },
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Upload", uploadSchema);
+
+module.exports = mongoose.model("Uploads", uploadSchema);
