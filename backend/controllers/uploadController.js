@@ -1,59 +1,76 @@
 const Uploads = require("../models/uploadModel");
-// const fs = require("fs");
-// const path = require("path");
+const { deleteFile } = require("../Utils/fileHelper");
 
+// Insert new upload
 let uploadInsert = async (req, res) => {
   try {
     const {
+      university,
       resources,
-      programmename,
-      academicstructure,
-      semestername,
-      year,
-      link,
+      programme,
+      courseCode,
+      courseName,
+      semyear,
+      filename,
+      filepath,
+      isVerified,
     } = req.body;
 
-    // Check for duplicates based on the 4 fields
-    const duplicate = await Uploads.findOne({
-      resources,
-      programmename,
-      semestername,
-      year,
-    });
-
-    if (duplicate) {
-      return res.status(409).json({
-        success: 0,
-        message: "Duplicate entry detected. Same data already exists.",
-      });
+    if (
+      !university ||
+      !resources ||
+      !programme ||
+      !courseCode ||
+      !courseName ||
+      !semyear
+    ) {
+      return res
+        .status(400)
+        .json({ success: 0, message: "All required fields must be filled" });
     }
 
-    let newUpload = new Uploads({
+    if (!filename || !filepath) {
+      return res
+        .status(400)
+        .json({ success: 0, message: "File details are missing." });
+    }
+
+    const newUpload = new Uploads({
       userID: req.userid,
+      universityID: university,
       resources,
-      programmename,
-      academicstructure,
-      semestername,
-      year,
-      link,
+      programmeID: programme,
+      courseCode,
+      courseName,
+      semyear,
+      filename,
+      filepath,
+      isVerified,
     });
 
     await newUpload.save();
+
     res.status(201).json({
       success: 1,
       message: "Data uploaded successfully",
       data: newUpload,
     });
   } catch (err) {
-    res
-      .status(500)
-      .json({ message: "Failed to upload data", error: err.message });
+    res.status(500).json({
+      success: 0,
+      message: "Failed to upload data",
+      error: err.message,
+    });
   }
 };
 
+// List all uploads
 let uploadList = async (req, res) => {
   try {
-    let allUpload = await Uploads.find().populate("userID", "username email");
+    const allUpload = await Uploads.find()
+      .populate("userID", "username email profilepath")
+      .populate("programmeID")
+      .populate("universityID");
     res
       .status(200)
       .json({ success: 1, message: "Upload List", data: allUpload });
@@ -66,33 +83,43 @@ let uploadList = async (req, res) => {
   }
 };
 
+// Delete a specific upload
 let uploadDelete = async (req, res) => {
   try {
     const upload = await Uploads.findById(req.params.id);
     if (!upload) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Upload not found" });
+      return res.status(404).json({ success: 0, message: "Upload not found" });
     }
 
-    // Remove from database
+    if (upload.filepath) {
+      const relativePath = `uploads/${upload.resources}/${upload.filepath
+        .split("/")
+        .pop()}`;
+      deleteFile(relativePath);
+    }
+
     await Uploads.deleteOne({ _id: req.params.id });
 
-    res.json({ success: true, message: "Deleted successfully" });
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    res.json({ success: 1, message: "Deleted successfully" });
+  } catch (err) {
+    res.status(500).json({ success: 0, message: err.message });
   }
 };
 
+// Get a single upload
 let getSingleUpload = async (req, res) => {
+  console.log(req.userid);
   try {
-    let userid = req.params.id;
-    let upload = await Uploads.findOne({ _id: userid });
-    res.status(200).json({
-      success: 1,
-      message: "Data fetched successfully.",
-      data: upload,
-    });
+    const upload = await Uploads.find({ userID: req.userid })
+      .populate("userID", "username email profilepath")
+      .populate("programmeID");
+    console.log(upload);
+    if (!upload)
+      return res.status(404).json({ success: 0, message: "Upload not found" });
+
+    res
+      .status(200)
+      .json({ success: 1, message: "Data fetched successfully", data: upload });
   } catch (err) {
     res.status(500).json({
       success: 0,
@@ -102,32 +129,63 @@ let getSingleUpload = async (req, res) => {
   }
 };
 
+// Update an upload
 let uploadUpdate = async (req, res) => {
   try {
-    let uploadid = req.params.id;
-    let {
+    const uploadid = req.params.id;
+    const {
+      university,
       resources,
-      programmename,
-      academicstructure,
-      semestername,
-      year,
-      link,
+      programme,
+      courseCode,
+      courseName,
+      semyear,
+      filename,
+      filepath,
+      isVerified,
     } = req.body;
-    let update = {
+
+    const update = {
+      universityID: university,
       resources,
-      programmename,
-      academicstructure,
-      semestername,
-      year,
-      link,
+      programmeID: programme,
+      courseCode,
+      courseName,
+      semyear,
+      filename,
+      filepath,
+      isVerified,
     };
-    let upload = await Uploads.updateOne({ _id: uploadid }, update);
-    res
-      .status(200)
-      .json({ success: 1, message: "Data updated successfully", data: upload });
+
+    const existingUpload = await Uploads.findById(uploadid);
+    if (!existingUpload) {
+      return res.status(404).json({ success: 0, message: "Upload not found" });
+    }
+
+    // Step 2: Delete old file if new one is uploaded
+    if (filepath && filename) {
+      if (existingUpload.filepath) {
+        const oldFilename = existingUpload.filepath.split("/").pop();
+        const relativePath = `uploads/resources/${oldFilename}`;
+        deleteFile(relativePath);
+      }
+    }
+
+    const updatedUpload = await Uploads.findByIdAndUpdate(uploadid, update, {
+      new: true,
+    });
+
+    if (!updatedUpload)
+      return res.status(404).json({ success: 0, message: "Upload not found" });
+
+    res.status(200).json({
+      success: 1,
+      message: "Data updated successfully",
+      data: updatedUpload,
+    });
   } catch (err) {
     res.status(500).json({
-      ssuccess: 0,
+      success: 0,
       message: "Failed to update data",
       error: err.message,
     });
