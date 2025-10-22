@@ -56,34 +56,38 @@ const Login = () => {
   };
 
   return (
-    <div className="mx-auto h-screen flex justify-center items-center w-full">
-      <div className="flex flex-col justify-center items-center gap-5 px-5 py-8 w-[85%] md:w-[600px] rounded-xl bg-transparent shadow-lg border border-slate-100">
+    <div className="h-screen flex justify-center items-center w-full bg-light dark:bg-dark text-gray-800 dark:text-gray-100 transition-colors duration-300">
+      <div className="flex flex-col justify-center items-center gap-5 px-5 py-8 w-[85%] md:w-[600px] rounded-xl backdrop-blur-md shadow-lg border border-slate-100 dark:bg-gray-900 dark:border-gray-700 transition-all duration-300">
+        {/* Logo */}
         <img
+          loading="lazy"
           onClick={() => window.scroll(0, 0)}
-          className="w-12 rounded-lg shadow-xl bg-transparent border-2 border-gray-200 cursor-pointer"
+          className="w-12 rounded-lg shadow-xl bg-transparent border-2 border-gray-200 dark:border-gray-700 cursor-pointer"
           src="/images/study3D21Copy.png"
           alt="logo"
-          loading="lazy"
         />
-        <h1 className="text-lightGreen text-center font-bold">Welcome Back!</h1>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-7 w-full">
+        <h1 className="text-lightGreen text-center font-bold text-2xl">
+          Welcome Back!
+        </h1>
+
+        <form onSubmit={handleSubmit} className="flex flex-col gap-7 w-full ">
           {/* Email Field */}
-          <div className="flex items-center bg-transparent border border-slate-100 px-4 py-3 rounded-full shadow-lg">
-            <MdEmail className="text-gray-700 mr-2" />
+          <div className="flex items-center bg-transparent border border-slate-100 dark:border-gray-700 px-4 py-3 rounded-full shadow-lg">
+            <MdEmail className="text-gray-700 dark:text-gray-300 mr-2" />
             <input
               type="email"
               name="email"
               value={formData.email}
               onChange={handleChange}
               placeholder="Enter email"
-              className="w-full  bg-transparent"
+              className="w-full bg-transparent focus:outline-none placeholder-gray-400 dark:placeholder-gray-500"
               aria-label="Email"
             />
           </div>
 
           {/* Password Field */}
-          <div className="flex items-center bg-transparent border border-slate-100 px-4 py-3 rounded-full shadow-lg">
+          <div className="flex items-center bg-transparent border border-slate-100 dark:border-gray-700 px-4 py-3 rounded-full shadow-lg">
             <TbLockPassword className="text-red-500 mr-2" />
             <input
               type={showPass ? "text" : "password"}
@@ -91,18 +95,19 @@ const Login = () => {
               value={formData.password}
               onChange={handleChange}
               placeholder="Password"
-              className="w-full border-none  bg-transparent"
+              className="w-full bg-transparent focus:outline-none placeholder-gray-400 dark:placeholder-gray-500"
               aria-label="Password"
             />
             <button
               type="button"
               onClick={passShow}
-              className="ml-2 text-gray-600"
+              className="ml-2 text-gray-600 dark:text-gray-300"
             >
               {showPass ? <LuEye title="Hide" /> : <LuEyeClosed title="Show" />}
             </button>
           </div>
 
+          {/* Submit Button */}
           <button
             type="submit"
             disabled={loading}
@@ -117,10 +122,11 @@ const Login = () => {
           </button>
         </form>
 
+        {/* Links */}
         <div className="flex flex-col justify-center items-center gap-2">
           <Link
             to="/study/forgot-password"
-            className="text-blue-500 hover-supported:hover:underline"
+            className="text-blue-500 dark:text-blue-400 hover-supported:hover:underline"
           >
             Forgot password?
           </Link>

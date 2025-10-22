@@ -4,8 +4,7 @@ import { FaUser } from "react-icons/fa";
 import { MdEmail } from "react-icons/md";
 import { TbLockPassword } from "react-icons/tb";
 import { GiConfirmed } from "react-icons/gi";
-import { LuEyeClosed } from "react-icons/lu";
-import { LuEye } from "react-icons/lu";
+import { LuEyeClosed, LuEye } from "react-icons/lu";
 import { registerUser } from "../../../Services/userService";
 import { toast } from "react-toastify";
 import { AuthContext } from "../Context/AuthContext";
@@ -31,13 +30,10 @@ const SignUp = () => {
     gender: "",
   });
 
-  const passShow = () => {
-    setShowPass(!showPass);
-  };
+  const passShow = () => setShowPass(!showPass);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-
     setFormData((prev) => ({ ...prev, [name]: value }));
 
     let formErrors = { ...errors };
@@ -74,7 +70,6 @@ const SignUp = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     toast.dismiss();
 
     if (
@@ -92,7 +87,6 @@ const SignUp = () => {
       setLoading(true);
       const res = await registerUser(formData);
       if (res.success) {
-        //  setUserSession(res?.user);
         await sendEmailVerifyOtp(formData.email);
       } else {
         toast.error(res.message);
@@ -109,33 +103,34 @@ const SignUp = () => {
   };
 
   return (
-    <div className="mx-auto mb-10 h-auto  w-full flex justify-center items-center ">
-      <div className="flex flex-col justify-center items-center gap-5 px-5 py-10 mt-24  w-[85%] border  border-slate-100 md:w-[600px] rounded-xl bg-transparent  shadow-lg ">
+    <div className="mx-auto mb-10 h-auto w-full flex justify-center items-center transition-colors duration-300">
+      <div className="flex flex-col justify-center items-center gap-5 p-5 mt-24 w-[85%] md:w-[600px] border border-slate-100 dark:border-gray-700 rounded-xl dark:bg-gray-900 backdrop-blur-md shadow-lg transition-all duration-300">
         <img
+          loading="lazy"
           onClick={() => window.scroll(0, 0)}
-          className="w-12   rounded-lg  shadow-xl bg-transparent border-2 border-gray-200"
+          className="w-12 rounded-lg shadow-xl bg-transparent border-2 border-gray-200 dark:border-gray-700"
           src="/images/study3D21Copy.png"
           alt="logo"
-          loading="lazy"
         />
-        <h1 className=" text-lightGreen text-center font-bold">
+        <h1 className="text-lightGreen text-center font-bold">
           Create a new account
         </h1>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-7 w-full  ">
+
+        <form onSubmit={handleSubmit} className="flex flex-col gap-7 w-full">
           {/* Username */}
           <div
-            className={`flex items-center bg-transparent border border-slate-100 px-4 py-3 rounded-full    shadow-lg transition-all duration-500 ${
+            className={`flex items-center bg-transparent border border-slate-100 dark:border-gray-700 px-4 py-3 rounded-full shadow-lg transition-all duration-500 ${
               errors.username ? "border-red-500" : ""
             }`}
           >
-            <FaUser size={15} className="text-gray-600 mr-2" />
+            <FaUser size={15} className="text-gray-600 dark:text-gray-300 mr-2" />
             <input
               type="text"
               name="username"
               value={formData.username}
               onChange={handleChange}
               placeholder="Enter name"
-              className="w-full bg-transparent"
+              className="w-full bg-transparent placeholder-gray-400   focus:outline-none"
               aria-label="Username"
             />
           </div>
@@ -147,7 +142,7 @@ const SignUp = () => {
 
           {/* Email */}
           <div
-            className={`flex items-center bg-transparent border  border-slate-100 px-4 py-3 rounded-full    shadow-lg transition-all duration-500 ${
+            className={`flex items-center bg-transparent border border-slate-100 dark:border-gray-700 px-4 py-3 rounded-full shadow-lg transition-all duration-500 ${
               errors.email ? "border-red-500" : ""
             }`}
           >
@@ -158,7 +153,7 @@ const SignUp = () => {
               value={formData.email}
               onChange={handleChange}
               placeholder="Enter email"
-              className="w-full bg-transparent"
+              className="w-full bg-transparent placeholder-gray-400 text-textLight dark:text-textDark focus:outline-none"
               aria-label="Email"
             />
           </div>
@@ -168,24 +163,24 @@ const SignUp = () => {
 
           {/* Password */}
           <div
-            className={`flex items-center bg-transparent border  border-slate-100 px-4 py-3 rounded-full shadow-lg transition-all duration-500 ${
+            className={`flex items-center bg-transparent border border-slate-100 dark:border-gray-700 px-4 py-3 rounded-full shadow-lg transition-all duration-500 ${
               errors.password ? "border-red-500" : ""
             }`}
           >
             <TbLockPassword size={15} className="text-red-500 mr-2" />
             <input
-              type={`${showPass ? "text" : "password"}`}
+              type={showPass ? "text" : "password"}
               name="password"
               value={formData.password}
               onChange={handleChange}
               placeholder="Password"
-              className="border-none w-full bg-transparent"
+              className="w-full bg-transparent placeholder-gray-400 text-textLight dark:text-textDark focus:outline-none"
               aria-label="Password"
             />
             <button
               type="button"
               onClick={passShow}
-              className="ml-2  text-gray-600"
+              className="ml-2 text-gray-600 dark:text-gray-300"
             >
               {showPass ? <LuEye title="hide" /> : <LuEyeClosed title="show" />}
             </button>
@@ -198,18 +193,18 @@ const SignUp = () => {
 
           {/* Confirm Password */}
           <div
-            className={`flex items-center bg-transparent border  border-slate-100 px-4 py-3 rounded-full shadow-lg transition-all duration-500 ${
+            className={`flex items-center bg-transparent border border-slate-100 dark:border-gray-700 px-4 py-3 rounded-full shadow-lg transition-all duration-500 ${
               errors.confirmPassword ? "border-red-500" : ""
             }`}
           >
             <GiConfirmed size={15} className="text-green-500 mr-2" />
             <input
-              type={`${showPass ? "text" : "password"}`}
+              type={showPass ? "text" : "password"}
               name="confirmPassword"
               value={formData.confirmPassword}
               onChange={handleChange}
               placeholder="Confirm password"
-              className="rounded-lg border-none bg-transparent w-full"
+              className="w-full bg-transparent placeholder-gray-400 text-textLight dark:text-textDark focus:outline-none"
               aria-label="Confirm Password"
             />
           </div>
@@ -220,62 +215,29 @@ const SignUp = () => {
           )}
 
           {/* Gender */}
-          <div className="flex  items-center gap-1 sm:gap-2 md:gap-8 bg-transparent border border-slate-100 px-2 sm:px-3 md:px-4 py-3 rounded-full shadow-lg transition-all duration-500">
-            <p>Gender : </p>
-            <div className="flex items-center justify-center gap-2">
-              <input
-                type="radio"
-                name="gender"
-                value="male"
-                id="male"
-                checked={formData.gender === "male"}
-                onChange={handleChange}
-                className="cursor-pointer"
-                aria-label="Male"
-              />
-              <label htmlFor="male" className="cursor-pointer">
-                Male
+          <div className="flex items-center gap-2 sm:gap-3 md:gap-8 bg-transparent text-textLight dark:text-textDark border border-slate-100 dark:border-gray-700 px-2 sm:px-3 md:px-4 py-3 rounded-full shadow-lg transition-all duration-500">
+            <p>Gender:</p>
+            {["male", "female", "others"].map((g) => (
+              <label key={g} className="flex items-center gap-1 cursor-pointer">
+                <input
+                  type="radio"
+                  name="gender"
+                  value={g}
+                  checked={formData.gender === g}
+                  onChange={handleChange}
+                  className="cursor-pointer accent-green-600 text-textLight dark:text-textDark"
+                />
+                <span className="capitalize text-textLight dark:text-textDark">{g}</span>
               </label>
-            </div>
-
-            <div className="flex items-center justify-center gap-1">
-              <input
-                type="radio"
-                name="gender"
-                value="female"
-                id="female"
-                checked={formData.gender === "female"}
-                onChange={handleChange}
-                className="cursor-pointer"
-                aria-label="Female"
-              />
-              <label htmlFor="female" className="cursor-pointer">
-                Female
-              </label>
-            </div>
-
-            <div className="flex items-center justify-center gap-1">
-              <input
-                type="radio"
-                name="gender"
-                value="others"
-                id="others"
-                checked={formData.gender === "others"}
-                onChange={handleChange}
-                className="cursor-pointer"
-                aria-label="Other"
-              />
-              <label htmlFor="others" className="cursor-pointer">
-                Others
-              </label>
-            </div>
+            ))}
           </div>
           {errors.gender && (
             <p className="text-red-500 text-sm text-center">{errors.gender}</p>
           )}
 
-          <div className=" text-sm md:w-max">
-            <label className="flex  space-x-2 pl-2">
+          {/* Agreement */}
+          <div className="text-sm md:w-max text-textLight dark:text-textDark">
+            <label className="flex space-x-2 pl-2">
               <input
                 name="agree"
                 type="checkbox"
@@ -284,7 +246,7 @@ const SignUp = () => {
                 onChange={(e) =>
                   setFormData((prev) => ({ ...prev, agree: e.target.checked }))
                 }
-                className="w-4 h-5 accent-green-600"
+                className="w-4 h-5 accent-green-600 "
                 required
               />
               <span>
@@ -319,8 +281,8 @@ const SignUp = () => {
           </button>
         </form>
 
-        <p className="w-full text-center  ">
-          Already have an account ?{" "}
+        <p className="w-full text-center text-textLight dark:text-textDark">
+          Already have an account?{" "}
           <Link to="/study/signin" className="cursor-pointer text-red-500">
             Click here
           </Link>

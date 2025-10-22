@@ -16,6 +16,7 @@ const Review = ({ existingReview }) => {
   const navigate = useNavigate();
   const reviewFormRef = useRef(null);
   const { userDetails } = useContext(AuthContext);
+
   const [allReview, setAllReview] = useState([]);
   const [review, setReview] = useState({
     rating: existingReview?.rating || 0,
@@ -46,91 +47,63 @@ const Review = ({ existingReview }) => {
     }
   }, [existingReview]);
 
-  const handleRating = (star) => {
+  const handleRating = (star) =>
     setReview((prev) => ({ ...prev, rating: star }));
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setReview((prev) => ({ ...prev, [name]: value }));
-  };
+  const handleChange = (e) =>
+    setReview((prev) => ({ ...prev, [e.target.name]: e.target.value }));
 
   const handleReview = async (e) => {
     e.preventDefault();
     toast.dismiss();
-    if (!review.rating || !review.message) {
-      return toast.error("Please rate first and write something before submit");
-    }
-    if (!userDetails?.isAccountVerified) {
-      navigate("/study/signin");
-    }
+    if (!review.rating || !review.message)
+      return toast.error("Please rate and write something!");
+    if (!userDetails?.isAccountVerified) navigate("/study/signin");
+
     try {
-      if (review._id) {
-        const res = await updateReview(review._id, review);
-        if (res.success) {
-          navigate("/", { replace: true });
-          toast.success(res?.message);
-          setReview({ rating: 0, message: "", date: today, _id: "" });
-          setInitialReview({ rating: 0, message: "" });
-          getAllReview();
-        } else {
-          toast.error(res?.message);
-        }
-      } else {
-        const res = await addReview(review);
-        if (res.success) {
-          toast.success(res?.message);
-          setReview({ rating: 0, message: "", date: today });
-          setInitialReview({ rating: 0, message: "" });
-          getAllReview();
-        } else {
-          toast.error(res?.message);
-        }
-      }
+      const res = review._id
+        ? await updateReview(review._id, review)
+        : await addReview(review);
+      if (res.success) {
+        toast.success(res.message);
+        setReview({ rating: 0, message: "", date: today, _id: "" });
+        setInitialReview({ rating: 0, message: "" });
+        getAllReview();
+      } else toast.error(res.message);
     } catch (err) {
-      console.log(err.message);
-      toast.error(err.response?.data?.message);
+      toast.error(err.response?.data?.message || err.message);
     }
   };
 
   const getAllReview = async () => {
     try {
       const res = await viewReview();
-      if (res.success) {
-        setAllReview(res?.data);
-      } else {
-        toast.error(res?.message);
-      }
+      if (res.success) setAllReview(res.data);
+      else toast.error(res.message);
     } catch (err) {
-      console.log(err.message);
-      toast.error(err.response?.data?.message);
+      toast.error(err.response?.data?.message || err.message);
     }
   };
 
   useEffect(() => {
     getAllReview();
   }, []);
-
-  // Compare current review with initial to disable button if unchanged
   const isReviewUnchanged =
     review.rating === initialReview.rating &&
     review.message === initialReview.message;
 
   return (
     <div ref={reviewFormRef} className="w-full bg-transparent text-center">
-      <div className="flex flex-col gap-6 py-10 mx-auto max-w-4xl">
-        <h1 className="text-2xl md:text-3xl text-lightGreen font-bold">
+      <div className="flex flex-col gap-6 py-10 mx-auto max-w-4xl ">
+        <h1 className="text-2xl md:text-3xl text-lightGreen font-bold ">
           Share Your Thoughts and Experience
         </h1>
-        <p className="text-gray-600 text-sm md:text-base">
+        <p className="text-gray-600 dark:text-gray-300 text-sm md:text-base">
           Drop a review and let others know what you think about this website!
         </p>
 
-        {/* Review Input Form */}
-
-        <form onSubmit={handleReview} className="w-full">
-          <div className="flex flex-col gap-2 items-start p-4 border-2 border-slate-100 shadow-md rounded-3xl">
-            <h1 className="text-gray-600 text-sm font-medium">
+        <form onSubmit={handleReview} className="w-full dark:bg-gray-900">
+          <div className="flex flex-col gap-2 items-start p-4 border-2 border-slate-100 dark:border-gray-600 shadow-md rounded-3xl">
+            <h1 className="text-gray-600 dark:text-gray-300 text-sm font-medium">
               Rate this website
             </h1>
             <div className="flex gap-1 text-yellow-500">
@@ -152,7 +125,6 @@ const Review = ({ existingReview }) => {
                 )
               )}
             </div>
-
             <div className="flex justify-between items-start gap-4 w-full">
               <textarea
                 maxLength={200}
@@ -161,7 +133,7 @@ const Review = ({ existingReview }) => {
                 placeholder="Write your review here..."
                 value={review.message}
                 onChange={handleChange}
-                className="bg-transparent  w-full resize-none scroll-container text-sm text-gray-700"
+                className="bg-transparent w-full resize-none scroll-container text-sm text-gray-700 dark:text-gray-200"
               />
               <button
                 title="Submit Review"
@@ -178,7 +150,6 @@ const Review = ({ existingReview }) => {
           </div>
         </form>
 
-        {/* Reviews Display */}
         <ReviewList
           allReview={allReview}
           setAllReview={setAllReview}
