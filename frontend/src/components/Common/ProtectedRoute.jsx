@@ -1,7 +1,7 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useContext } from "react";
-import Loader from "./Loader";
-import { AuthContext } from "./Context/AuthContext";
+import Loader from "../Loader/Loader";
+import { AuthContext } from "../Context/AuthContext";
 
 const ProtectedRoute = ({ roleRequired }) => {
   const { userDetails, loading } = useContext(AuthContext);
@@ -9,13 +9,15 @@ const ProtectedRoute = ({ roleRequired }) => {
   if (loading) return <Loader />;
 
   // User not logged in
-  if (!userDetails) return <Navigate to="/study/signin" replace />;
+  if (!userDetails) return <Navigate to="/" replace />;
 
   // Role-based access control
-  if (roleRequired && userDetails?.role?.toLowerCase() !== roleRequired.toLowerCase()) {
-  return <Navigate to="/study/not-authorize" replace />;
-}
-
+  if (
+    roleRequired &&
+    userDetails?.role?.toLowerCase() !== roleRequired.toLowerCase()
+  ) {
+    return <Navigate to="/study/not-authorize" replace />;
+  }
 
   return <Outlet />;
 };

@@ -5,16 +5,16 @@ import {
   emailRegex,
   otpRegex,
   passwordRegex,
-} from "../../Validator/validator.js";
+} from "../../../Validator/validator.js";
 import { LuEye, LuEyeClosed } from "react-icons/lu";
 import {
   passResetOtp,
   passResetOtpVerify,
   passResetSuccess,
   resetOtpResend,
-} from "../../Services/userService.js";
+} from "../../../Services/authService.js";
 import { useContext } from "react";
-import { AuthContext } from "./Context/AuthContext.jsx";
+import { AuthContext } from "../Context/AuthContext.jsx";
 import { useEffect } from "react";
 
 const ForgotPassword = () => {
@@ -58,7 +58,6 @@ const ForgotPassword = () => {
     try {
       const res = await passResetOtp(email);
       if (res.success) {
-        console.log(res.data);
         toast.success(res.message);
         setEmailVerify(true);
       } else {
@@ -174,13 +173,13 @@ const ForgotPassword = () => {
   return (
     <div className="flex flex-col  justify-center items-center w-full px-5 ">
       <div className="flex flex-col justify-center items-center gap-5 mt-14 pb-24 pt-12  w-full md:w-[70%] lg:w-[60%] min-h-[65vh] scroll-container  overflow-scroll  ">
-        <h1 className="font-semibold text-lg text-center    text-[#5CAE59]">
+        <h1 className="font-semibold text-lg text-center  text-lightGreen dark:text-darkGreen">
           Follow the steps below to reset your password
         </h1>
 
-        <div className="px-4 py-2 rounded-xl shadow-lg    bg-transparent border  border-slate-100  placeholder:font-medium w-full ">
+        <div className="px-4 py-2 rounded-xl shadow-lg    bg-transparent dark:bg-gray-900 border border-yellow-50 dark:border-gray-800  placeholder:font-medium w-full ">
           <div className="flex flex-col justify-center items-start gap-10">
-            <h1 className="   text-[#5CAE59] font-semibold">
+            <h1 className="   text-lightGreen dark:text-darkGreen font-semibold">
               Step 1: {""}Enter your email
             </h1>
             <form
@@ -192,13 +191,13 @@ const ForgotPassword = () => {
                 name="email"
                 value={email}
                 onChange={handleEmailChange}
-                placeholder="Your email..."
-                className="  w-full border-2 p-3 rounded-full shadow-lg    bg-transparent  border-slate-100  placeholder:font-medium  outline-none"
+                placeholder="Enter your email..."
+                className="  w-full border-2 p-3 rounded-full shadow-lg    bg-transparent   text-textLight dark:text-textDark  border-slate-100 dark:border-gray-600  placeholder:font-medium    outline-none"
               />
 
               <button
                 hidden={emailVerify ? true : false}
-                className={`  hover-supported: hover:bg-[#5CAE59] hover-supported:hover:border-transparent transition-colors duration-500 border-2  border-slate-100 hover-supported:hover:text-white   px-3 py-2 rounded-3xl shadow-lg    bg-transparent     placeholder:font-medium min-w-max`}
+                className={`  hover-supported: hover:bg-lightGreen dark:hover-supported:hover:bg-darkGreen hover-supported:hover:border-transparent transition-colors duration-500 border-2  border-slate-100 dark:border-gray-600 hover-supported:hover:text-white text-textLight dark:text-textDark   px-3 py-2 rounded-3xl shadow-lg    bg-transparent     placeholder:font-medium min-w-max`}
               >
                 Send OTP
               </button>
@@ -206,9 +205,9 @@ const ForgotPassword = () => {
           </div>
           {emailVerify && (
             <div className="flex flex-col justify-center items-start gap-5 w-full">
-              <hr className="w-full mt-10  border-gray-300 border-[1px]" />
+              <hr className="w-full mt-10  border-gray-300 dark:border-gray-600 border-[1px]" />
               <div className="flex flex-col justify-center items-start gap-10 w-full">
-                <h1 className="   text-[#5CAE59] font-semibold">
+                <h1 className="   text-lightGreen dark:text-darkGreen font-semibold">
                   Step 2: {""}Enter OTP sent to your email
                 </h1>
                 <form
@@ -224,7 +223,7 @@ const ForgotPassword = () => {
                     value={otp}
                     readOnly={otpVerify ? true : false}
                     placeholder="Enter otp here"
-                    className=" w-full p-3  shadow-lg border-2  border-slate-100 rounded-full  appearance-none   outline-none bg-transparent  "
+                    className=" w-full p-3  shadow-lg border-2  border-slate-100 dark:border-gray-600 rounded-full  appearance-none    bg-transparent dark:bg-gray-900 text-textLight dark:text-textDark dark:placeholder:text-gray-400  "
                   />
 
                   <div
@@ -236,11 +235,11 @@ const ForgotPassword = () => {
                       onClick={handleResendOtp}
                       disabled={disabled}
                       type="button"
-                      className="hover:bg-[#5CAE59] hover-supported:hover:border-transparent hover-supported:hover:text-white border-2  border-slate-100 px-3 py-2  shadow-lg rounded-2xl transition-all duration-500"
+                      className="hover-supported:hover:bg-lightGreen dark:hover-supported:hover:bg-darkGreen hover-supported:hover:border-transparent hover-supported:hover:text-white text-textLight dark:text-textDark border-2  border-slate-100 dark:border-gray-600 px-3 py-2  shadow-lg rounded-2xl transition-all duration-500"
                     >
                       {disabled ? `Try again in ${countdown}s` : "Resend OTP"}
                     </button>
-                    <button className="bg-transparent hover-supported: hover:bg-[#5CAE59] hover-supported:hover:border-transparent transition-colors duration-500 border-2  border-slate-100 hover-supported:hover:text-white px-5 py-2  shadow-lg rounded-2xl">
+                    <button className="bg-transparent hover-supported:hover:bg-lightGreen dark:hover-supported:hover:bg-darkGreen hover-supported:hover:border-transparent transition-colors duration-500 border-2  border-slate-100 dark:border-gray-600 hover-supported:hover:text-white text-textLight dark:text-textDark px-5 py-2  shadow-lg rounded-2xl">
                       Next
                     </button>
                   </div>
@@ -251,23 +250,23 @@ const ForgotPassword = () => {
 
           {emailVerify && otpVerify && (
             <div className="flex flex-col justify-center items-start gap-5 w-full">
-              <hr className="w-full mt-10  border-gray-300 border-[1px]" />
+              <hr className="w-full mt-10  border-gray-300 dark:border-gray-600 border-[1px]" />
               <div className="flex flex-col justify-center items-start gap-10 w-full">
-                <h1 className="   text-[#5CAE59] font-semibold">
+                <h1 className="   text-lightGreen dark:text-darkGreen font-semibold">
                   Step 3 : {""} Enter new password
                 </h1>
                 <form
                   onSubmit={handlePassSubmit}
                   className="flex flex-col justify-center items-start gap-5 w-full"
                 >
-                  <div className=" flex items-center justify-between w-full p-3 shadow-lg border-2  border-slate-100 rounded-3xl  appearance-none   outline-none bg-transparent ">
+                  <div className=" flex items-center justify-between w-full p-3 shadow-lg border-2  border-slate-100 dark:border-gray-600 rounded-3xl appearance-none bg-transparent dark:bg-gray-900 dark:text-gray-200 ">
                     <input
                       type={isPasswordVisible ? "text" : "password"}
                       name="newpassword"
                       onChange={handlePassChange}
                       value={formData.newpassword}
                       placeholder="New password here"
-                      className="bg-transparent w-full  outline-none"
+                      className="bg-transparent w-full  outline-none text-textLight dark:text-textDark dark:placeholder:text-gray-400"
                     />
 
                     <button type="button" onClick={showPass}>
@@ -285,10 +284,10 @@ const ForgotPassword = () => {
                     disabled={!formData.newpassword ? true : false}
                     onChange={handlePassChange}
                     value={formData.confirmpassword}
-                    placeholder="New password first to confirm here..."
-                    className="w-full p-3  shadow-lg border-2  border-slate-100 rounded-2xl  appearance-none bg-transparent   outline-none"
+                    placeholder="Confirm new password..."
+                    className="w-full p-3  shadow-lg border-2  border-slate-100 dark:border-gray-600 rounded-2xl  appearance-none bg-transparent dark:bg-gray-900 text-textLight dark:text-textDark dark:placeholder:text-gray-400   outline-none"
                   />
-                  <button className="bg-transparent hover-supported: hover:bg-[#5CAE59] hover-supported:hover:border-transparent transition-colors duration-500 border-2  border-slate-100 hover-supported:hover:text-white px-6 py-2   shadow-lg rounded-2xl self-end">
+                  <button className="bg-transparent hover-supported:hover:bg-lightGreen dark:hover-supported:hover:bg-darkGreen hover-supported:hover:border-transparent transition-colors duration-500 border-2  border-slate-100 dark:border-gray-600 hover-supported:hover:text-white text-textLight dark:text-textDark px-6 py-2   shadow-lg rounded-2xl self-end">
                     Done
                   </button>
                 </form>

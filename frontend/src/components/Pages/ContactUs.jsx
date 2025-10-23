@@ -62,7 +62,7 @@ const ContactUs = () => {
   };
   return (
     <div className="max-w-5xl  py-20 mx-auto text-center px-5 md:px-10 lg:px-20">
-      <h2 className="text-xl md:text-2xl text-lightGreen font-bold mb-6">
+      <h2 className="text-xl md:text-2xl text-lightGreen dark:text-darkGreen font-bold mb-6">
         {urlSeg === ""
           ? "Contact Us or Send Feedback"
           : urlSeg === "contact-us"
@@ -71,7 +71,7 @@ const ContactUs = () => {
           ? "Send us Feedback"
           : ""}
       </h2>
-      <p className="text-sm md:text-lg text-center  mb-6 ">
+      <p className="text-sm md:text-lg text-center text-subTextLight dark:text-subTextDark mb-6 ">
         {urlSeg === ""
           ? "Have any questions or feedback ? Reach out to us — we're happy to help!"
           : urlSeg === "contact-us"
@@ -80,18 +80,20 @@ const ContactUs = () => {
           ? "Got feedback? We'd love to hear it and take it positively!"
           : ""}
       </p>
-      <form onSubmit={onSubmit} className="max-w-5xl mx-auto  ">
+      <form onSubmit={onSubmit} className="max-w-5xl mx-auto rounded-2xl ">
         <div className="mb-4">
           <input
             type="text"
             name="name"
             placeholder="Your Name"
-            className="w-full px-4 py-3 rounded-2xl shadow-lg   outline-slate-200 focus:ring-2 focus:ring-gray-200 bg-transparent border  border-slate-100  placeholder:font-medium"
+            className="w-full px-4 py-3 rounded-2xl shadow-lg   border border-yellow-50 dark:border-gray-800 bg-transparent dark:bg-gray-900 dark:text-gray-200 placeholder:font-medium "
             autoComplete="on"
             onChange={handleChange}
           />
           {errors.name && (
-            <span className="text-sm text-red-500">{errors.name}</span>
+            <span className="text-sm text-red-500 dark:text-red-400">
+              {errors.name}
+            </span>
           )}
         </div>
         <div className="mb-4">
@@ -99,13 +101,15 @@ const ContactUs = () => {
             type="email"
             name="email"
             placeholder="Your Email"
-            className="w-full px-4 py-3 rounded-2xl shadow-lg   outline-slate-200 focus:ring-2 focus:ring-gray-200 bg-transparent  border  border-slate-100 placeholder:font-medium"
+            className="w-full px-4 py-3 rounded-2xl shadow-lg bg-transparent dark:bg-gray-900 border border-yellow-50 dark:border-gray-600 dark:text-gray-200 placeholder:font-medium "
             autoComplete="on"
             onChange={handleChange}
             required
           />
           {errors.email && (
-            <span className="text-sm text-red-500">{errors.email}</span>
+            <span className="text-sm text-red-500 dark:text-red-400">
+              {errors.email}
+            </span>
           )}
         </div>
         <div className="mb-4">
@@ -113,16 +117,18 @@ const ContactUs = () => {
             name="message"
             placeholder="Your Message"
             rows="8"
-            className="w-full px-4 py-3 rounded-2xl shadow-lg  outline-slate-200 focus:ring-2 focus:ring-gray-200 bg-transparent border  border-slate-100  placeholder:font-medium"
+            className="w-full px-4 py-3 rounded-2xl shadow-lg bg-transparent dark:bg-gray-900 border border-yellow-50 dark:border-gray-600 dark:text-gray-200 placeholder:font-medium "
             onChange={handleChange}
           />
           {errors.message && (
-            <span className="text-sm text-red-500">{errors.message}</span>
+            <span className="text-sm text-red-500 dark:text-red-400">
+              {errors.message}
+            </span>
           )}
         </div>
         <button
           type="submit"
-          className="bg-transparent border  border-slate-100   px-6 py-2 rounded-full font-medium hover-supported:hover:bg-lightGreen hover-supported:hover:text-gray-200 active: bg-lightGreen shadow-lg transition-all duration-500"
+          className="bg-transparent dark:bg-gray-900 border border-yellow-50 dark:border-gray-600  px-6 py-2 rounded-full font-medium text-textLight dark:text-textDark hover-supported:hover:bg-lightGreen dark:hover-supported:hover:bg-darkGreen hover-supported:hover:text-white active: bg-lightGreen shadow-lg transition-all duration-500"
         >
           {urlSeg === ""
             ? "Send"

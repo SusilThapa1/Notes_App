@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { Navigate, Outlet } from "react-router-dom";
-import { AuthContext } from "./Context/AuthContext";
-import Loader from "./Loader";
+import { AuthContext } from "../Context/AuthContext";
+import Loader from "../Loader/Loader";
 
 const PublicRoute = () => {
   const { userDetails, loading } = useContext(AuthContext);
@@ -14,7 +14,9 @@ const PublicRoute = () => {
     if (role === "admin") {
       return <Navigate to="/study/admin/dashboard" replace />;
     }
-    return <Navigate to="/" replace />;
+    if (role === "user") {
+      return <Navigate to="/" replace />;
+    }
   }
 
   return <Outlet />;

@@ -1,15 +1,22 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
-import Loader from "./Loader";
 import {
   deleteProfile,
   updateUser,
   uploadProfile,
-} from "../../Services/userService";
-import { AuthContext } from "./Context/AuthContext";
-import { MdVerified } from "react-icons/md";
-import { emailRegex } from "../../Validator/validator";
-import { showConfirm } from "../../Utils/alertHelper";
+} from "../../../Services/userService";
+import { AuthContext } from "../Context/AuthContext";
+import {
+  MdOutlineChangeCircle,
+  MdOutlineDelete,
+  MdVerified,
+} from "react-icons/md";
+import { emailRegex } from "../../../Validator/validator";
+import { showConfirm } from "../../../Utils/alertHelper";
+import Loader from "../Loader/Loader";
+import { HiOutlineTrash } from "react-icons/hi";
+import { IoSaveOutline } from "react-icons/io5";
+import { HiOutlinePencilSquare } from "react-icons/hi2";
 
 const Profile = () => {
   const {
@@ -33,7 +40,6 @@ const Profile = () => {
 
   const fileInputRef = useRef(null);
   useEffect(() => {
-    console.log(userDetails);
     if (userDetails) {
       setUserData({
         _id: userDetails._id || "",
@@ -165,21 +171,24 @@ const Profile = () => {
 
   return (
     <div className="flex flex-col h-screen justify-center items-center gap-5 px-5 md:px-10 lg:px-20 w-full">
-      <h1 className="text-xl font-medium">Your Profile</h1>
+      <h1 className="text-xl font-medium text-textLight dark:text-textDark">
+        Your Profile
+      </h1>
 
-      <div className="flex flex-col md:flex-row min-h-max justify-center items-center gap-5 md:gap-20 w-[85vw] md:w-[90%] lg:w-[80%] border-2 border-slate-100 shadow-lg p-2 md:py-10 lg:py-14 rounded-2xl">
+      <div className="flex flex-col md:flex-row min-h-max justify-center items-center gap-5 md:gap-20 w-[75vw] md:w-[90%] lg:w-[60%] border border-yellow-50 dark:border-gray-800 dark:bg-gray-900 shadow-lg p-2 md:py-10 lg:py-14 rounded-2xl">
         {/* ------------------ Profile Image ------------------ */}
-        <div className="flex flex-col justify-center items-center md:border-r-2 border-gray-300 md:pr-[-20px] md:w-[60%] lg:w-[45%]">
+        <div className="flex flex-col justify-center items-center md:border-r-2 border-gray-300 dark:border-gray-600 md:pr-[-20px] md:w-[60%] lg:w-[45%]">
           <div className="flex flex-col justify-center items-center gap-5 font-medium">
             <div
               onClick={() => setShowImageModal(true)}
               className={`cursor-pointer rounded-full border-[4px] transition-all duration-500 ${
                 profileImage || userDetails?.profilepath
-                  ? "shadow-lg border-[#6aaa4c] border-dotted"
+                  ? "shadow-lg border-[#6aaa4c] dark:border-darkGreen border-dotted"
                   : ""
               }`}
             >
               <img
+                loading="lazy"
                 src={
                   profileImage
                     ? URL.createObjectURL(profileImage)
@@ -188,7 +197,7 @@ const Profile = () => {
                         import.meta.env.VITE_API_FILE_URL +
                         userDetails?.profilepath
                       }`
-                    : "/prof.webp"
+                    : "/profile.png"
                 }
                 alt="Profile"
                 title="view profile image"
@@ -200,11 +209,20 @@ const Profile = () => {
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
-                className="px-3 py-2 bg-blue-500 text-white rounded hover-supported:hover:bg-blue-600 transition-colors duration-500"
+                className="flex items-center gap-1 border border-editOutlineText text-editOutlineText px-2 py-1 rounded-md text-sm hover-supported:hover:bg-editNormal hover-supported:hover:text-white hover-supported:hover:border-editNormal transition"
               >
-                {profileImage || userDetails?.profilepath
-                  ? "Change Profile"
-                  : "Upload Profile"}
+                {profileImage || userDetails?.profilepath ? (
+                  <>
+                    {" "}
+                    <MdOutlineChangeCircle /> Change Profile
+                  </>
+                ) : (
+                  <>
+                    {" "}
+                    <MdOutlineDelete />
+                    Upload Profile
+                  </>
+                )}
               </button>
 
               <input
@@ -219,9 +237,9 @@ const Profile = () => {
                 <button
                   onClick={handleProfileUpload}
                   disabled={!profileImage}
-                  className="px-3 py-2 bg-green-500 hover-supported:hover:bg-[#5CAE59] disabled:opacity-50 shadow-lg rounded transition-colors duration-500"
+                  className="flex items-center gap-1 border border-lightGreen dark:border-darkGreen text-lightGreen dark:text-darkGreen px-2 py-1 rounded-md text-sm hover-supported:hover:bg-lightGreen dark:hover-supported:hover:bg-darkGreen hover-supported:hover:text-white transition"
                 >
-                  Save Profile
+                  <IoSaveOutline /> Save profile
                 </button>
               ) : (
                 <button
@@ -231,9 +249,9 @@ const Profile = () => {
                     !(profileImage || userDetails?.profilepath)
                   }
                   onClick={handleProfileDelete}
-                  className="px-3 py-2 bg-red-500 text-white rounded hover-supported:hover:bg-red-600 transition-colors duration-500"
+                  className="flex items-center gap-1 border border-deleteOutlineText text-deleteOutlineText px-2 py-1 rounded-md text-sm hover-supported:hover:bg-deleteNormal hover-supported:hover:text-white hover-supported:hover:border-deleteNormal transition"
                 >
-                  Delete Profile
+                  <HiOutlineTrash /> Delete Profile
                 </button>
               )}
             </div>
@@ -247,8 +265,11 @@ const Profile = () => {
             className="flex text-sm items-start flex-col gap-3 font-medium md:text-[1.5vw] lg:text-[1.1vw] w-full md:w-[50%] md:p-2"
           >
             <div className="flex justify-center items-center gap-2 w-full">
-              <label htmlFor="username" className="text-gray-800 font-medium">
-                Username:
+              <label
+                htmlFor="username"
+                className="text-textLight dark:text-textDark font-medium"
+              >
+                Name:
               </label>
               <input
                 type="text"
@@ -256,12 +277,15 @@ const Profile = () => {
                 id="username"
                 value={userData.username}
                 onChange={handleChange}
-                className="rounded-md border-2 border-gray-400 p-2 w-full bg-transparent"
+                className="rounded-md border-2 border-gray-400 dark:border-gray-600 p-2 w-full bg-transparent dark:bg-gray-700 dark:text-gray-200"
               />
             </div>
 
             <div className="flex items-center gap-2 w-full">
-              <label htmlFor="email" className="text-gray-800 font-medium">
+              <label
+                htmlFor="email"
+                className="text-textLight dark:text-textDark font-medium"
+              >
                 Email:
               </label>
               <input
@@ -270,12 +294,14 @@ const Profile = () => {
                 id="email"
                 value={userData.email}
                 onChange={handleChange}
-                className="rounded-md border-2 border-gray-400 px-1 py-2 w-full bg-transparent"
+                className="rounded-md border-2 border-gray-400 dark:border-gray-600 px-1 py-2 w-full bg-transparent dark:bg-gray-700 dark:text-gray-200"
               />
             </div>
 
             <div className="flex items-center w-full gap-1 py-2 md:gap-5">
-              <h1 className="text-gray-800 font-medium min-w-max">Gender:</h1>
+              <h1 className="text-textLight dark:text-textDark font-medium min-w-max">
+                Gender:
+              </h1>
               {["male", "female", "others"].map((g) => (
                 <div key={g} className="flex justify-center items-center">
                   <input
@@ -287,7 +313,10 @@ const Profile = () => {
                     onChange={handleChange}
                     className="cursor-pointer"
                   />
-                  <label htmlFor={g} className="cursor-pointer capitalize">
+                  <label
+                    htmlFor={g}
+                    className="cursor-pointer capitalize text-textLight dark:text-textDark"
+                  >
                     {g}
                   </label>
                 </div>
@@ -297,13 +326,13 @@ const Profile = () => {
             <div className="mx-auto flex justify-between items-center w-full text-white">
               <button
                 onClick={() => setIsEditDetails(false)}
-                className="bg-red-500 px-5 py-2 rounded-md hover-supported:hover:bg-red-600"
+                className="bg-deleteNormal hover-supported:hover:bg-deleteHover px-5 py-2 rounded-md transition-colors"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="bg-[#6aaa4c] px-3 py-2 rounded-md hover-supported:hover:bg-green-500"
+                className="bg-lightGreen hover-supported:hover:bg-darkGreen px-3 py-2 rounded-md transition-colors"
               >
                 Update
               </button>
@@ -312,26 +341,38 @@ const Profile = () => {
         ) : (
           <div className="flex items-start md:justify-center flex-col gap-5 font-medium text-[12px] md:text-[1.5vw] lg:text-[1.1vw] md:p-2 w-full md:w-auto px-5">
             <div className="flex gap-2">
-              <h1 className="text-gray-800 font-medium">Username:</h1>
-              <p className="text-gray-700">{userDetails?.username}</p>
+              <h1 className="text-textLight dark:text-textDark font-medium">
+                Name:
+              </h1>
+              <p className="text-subTextLight dark:text-subTextDark">
+                {userDetails?.username}
+              </p>
             </div>
             <div className="flex gap-2">
-              <h1 className="text-gray-800 font-medium">Email:</h1>
-              <p className="text-gray-700">{userDetails?.email}</p>
+              <h1 className="text-textLight dark:text-textDark font-medium">
+                Email:
+              </h1>
+              <p className="text-subTextLight dark:text-subTextDark">
+                {userDetails?.email}
+              </p>
             </div>
             <div className="flex gap-2">
-              <h1 className="text-gray-800 font-medium">Gender:</h1>
-              <p className="capitalize text-gray-700">
+              <h1 className="text-textLight dark:text-textDark font-medium">
+                Gender:
+              </h1>
+              <p className="capitalize text-subTextLight dark:text-subTextDark">
                 {userDetails?.gender || "Not specified"}
               </p>
             </div>
             <div className="flex gap-2">
-              <h1 className="text-gray-800 font-medium">Account status:</h1>
-              <div className="text-gray-700">
+              <h1 className="text-textLight dark:text-textDark font-medium">
+                Account status:
+              </h1>
+              <div className="text-subTextLight dark:text-subTextDark">
                 {userDetails?.isAccountVerified ? (
                   <p className="flex justify-center items-center gap-3">
                     <span>Verified</span>
-                    <MdVerified className="text-[#6aaa4c] md:text-[20px]" />
+                    <MdVerified className="text-lightGreen dark:text-darkGreen md:text-[20px]" />
                   </p>
                 ) : (
                   "Not verified"
@@ -339,15 +380,20 @@ const Profile = () => {
               </div>
             </div>
             <div className="flex gap-2">
-              <h1 className="text-gray-800 font-medium">Role:</h1>
-              <p className="text-gray-700 capitalize">{userDetails?.role}</p>
+              <h1 className="text-textLight dark:text-textDark font-medium">
+                Role:
+              </h1>
+              <p className="text-subTextLight dark:text-subTextDark capitalize">
+                {userDetails?.role}
+              </p>
             </div>
 
             <button
               onClick={() => setIsEditDetails(true)}
-              className="bg-[#6aaa4c] px-3 py-2 rounded-md text-center text-white hover-supported:hover: bg-[#5CAE59] mx-auto transition-colors duration-500 w-full"
+              className="flex justify-center items-center gap-1 border border-editOutlineText text-editOutlineText px-2 py-1 rounded-md text-sm hover-supported:hover:bg-editNormal hover-supported:hover:text-white hover-supported:hover:border-editNormal transition w-full mx-auto"
             >
-              Edit details
+              <HiOutlinePencilSquare />
+              Edit
             </button>
           </div>
         )}
@@ -362,11 +408,12 @@ const Profile = () => {
           <div className="relative rounded-lg p-1 flex h-screen justify-center items-center w-full">
             <button
               onClick={() => setShowImageModal(false)}
-              className="absolute top-1 right-1 bg-red-600 px-2 text-white z-50 rounded"
+              className="absolute top-1 right-1 bg-deleteNormal hover:bg-deleteHover px-2 text-white z-50 rounded transition-colors"
             >
               X
             </button>
             <img
+              loading="lazy"
               src={
                 profileImage
                   ? URL.createObjectURL(profileImage)
@@ -375,7 +422,7 @@ const Profile = () => {
                       import.meta.env.VITE_API_FILE_URL +
                       userDetails.profilepath
                     }`
-                  : "/prof.webp"
+                  : "/profile.png"
               }
               alt="Full Profile"
               className="object-contain w-auto h-[90%] rounded-lg"
