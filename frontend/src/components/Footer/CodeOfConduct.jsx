@@ -61,7 +61,7 @@ const CodeOfConduct = () => {
   ];
 
   return (
-    <div className="flex flex-col justify-center items-center gap-10 max-w-7xl mx-auto mt-20 px-6 pb-5  text-gray-800 leading-relaxed">
+    <div className="flex flex-col justify-center items-center gap-10 max-w-7xl mx-auto mt-20 px-6 pb-5  text-textLight dark:text-textDark leading-relaxed">
       <h1 className="text-2xl font-bold  text-lightGreen text-center">
         Code of Conduct
       </h1>
@@ -69,10 +69,10 @@ const CodeOfConduct = () => {
         {codeOfConduct.map((item, idx) => (
           <div
             key={idx}
-            className="flex flex-col gap-1 p-6 rounded-3xl md:rounded-2xl  shadow-lg   bg-transparent border  border-slate-100 md:hover:scale-105 transition-all duration-500"
+            className="flex flex-col gap-1 p-6 rounded-3xl md:rounded-2xl  shadow-lg bg-transparent dark:bg-gray-900 border  border-slate-100 dark:border-gray-700 md:hover:scale-105 transition-all duration-500"
           >
             <h2 className="font-bold  text-lightGreen">{item.title}</h2>
-            <ul className="list-disc ml-5 mt-2 text-gray-700 space-y-5">
+            <ul className="list-disc ml-5 mt-2 text-subTextLight dark:text-subTextDark space-y-5">
               {item.subContent.map((point, subIdx) => (
                 <li key={subIdx}>{point}</li>
               ))}
@@ -80,7 +80,9 @@ const CodeOfConduct = () => {
           </div>
         ))}
       </div>
-      <p className="mt-4 text-sm text-gray-500">Last updated: May 2025</p>
+      <p className="mt-4 text-sm text-subTextLight dark:text-subTextDark">
+        Last updated: May 2025
+      </p>
     </div>
   );
 };

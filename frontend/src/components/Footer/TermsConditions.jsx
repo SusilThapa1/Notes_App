@@ -1,6 +1,6 @@
 const TermsConditions = () => {
   return (
-    <div className="max-w-7xl mx-auto mt-20 px-6 pb-5  text-gray-800 leading-relaxed">
+    <div className="max-w-7xl mx-auto mt-20 px-6 pb-5  text-textLight dark:text-textDark leading-relaxed">
       <div className="flex flex-col justify-center items-center gap-2 w-full text-center  ">
         <h1 className="text-lg font-bold text-lightGreen">
           Terms & Conditions
@@ -48,7 +48,7 @@ const TermsConditions = () => {
         </p>
       </div>
 
-      <p className="mt-6 text-sm text-gray-500 text-center">
+      <p className="mt-6 text-sm text-subTextLight dark:text-subTextDark text-center">
         Last updated: May 2025
       </p>
     </div>

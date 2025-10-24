@@ -262,7 +262,7 @@ const Profile = () => {
         {userDetails && isEditDetails ? (
           <form
             onSubmit={handleSubmit}
-            className="flex text-sm items-start flex-col gap-3 font-medium md:text-[1.5vw] lg:text-[1.1vw] w-full md:w-[50%] md:p-2"
+            className="flex flex-col items-start gap-3 font-medium text-sm w-full md:w-[50%] md:p-2"
           >
             <div className="flex justify-center items-center gap-2 w-full">
               <label
@@ -323,23 +323,29 @@ const Profile = () => {
               ))}
             </div>
 
-            <div className="mx-auto flex justify-between items-center w-full text-white">
+            <div className="mx-auto flex justify-between items-center w-full gap-3">
+              {/* Back Button */}
               <button
                 onClick={() => setIsEditDetails(false)}
-                className="bg-deleteNormal hover-supported:hover:bg-deleteHover px-5 py-2 rounded-md transition-colors"
+                className="  dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-2 py-1 rounded-md 
+               border border-gray-300 dark:border-gray-600 
+               hover:bg-gray-400 hover:text-textDark dark:hover:bg-gray-600 
+               transition-colors shadow-sm"
               >
-                Cancel
+                Back
               </button>
+
+              {/* Update Button */}
               <button
                 type="submit"
-                className="bg-lightGreen hover-supported:hover:bg-darkGreen px-3 py-2 rounded-md transition-colors"
+                className="border border-editOutlineText text-editOutlineText px-2 py-1 rounded-md hover-supported:hover:bg-editNormal hover-supported:hover:text-white hover-supported:hover:border-editNormal transition-colors "
               >
                 Update
               </button>
             </div>
           </form>
         ) : (
-          <div className="flex items-start md:justify-center flex-col gap-5 font-medium text-[12px] md:text-[1.5vw] lg:text-[1.1vw] md:p-2 w-full md:w-auto px-5">
+          <div className="flex items-start md:justify-center flex-col gap-5 font-medium text-sm  md:p-2 w-full md:w-auto px-5">
             <div className="flex gap-2">
               <h1 className="text-textLight dark:text-textDark font-medium">
                 Name:
