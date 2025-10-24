@@ -1,23 +1,25 @@
 const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
 
-const sessionSchema = new mongoose.Schema(
-  {
-    ip: String,
-    userAgent: String,
-    loginAt: { type: Date, default: Date.now },
-    lastActiveAt: { type: Date, default: Date.now },
-    isActive: { type: Boolean, default: true },
-    location: {
-      country: String,
-      region: String,
-      city: String,
-      lat: Number,
-      lon: Number,
-    },
+const sessionSchema = new mongoose.Schema({
+  deviceId: { type: String, required: true },  
+  ip: String,
+  userAgent: String,
+  device: String,  
+  browser: String,  
+  loginAt: { type: Date, default: Date.now },
+  lastActiveAt: { type: Date, default: Date.now },
+  location: {
+    country: String,
+     countryCode: String,
+    province: String,
+    city: String,
+    lat: Number,
+    lon: Number,
+    isp:String
   },
-
-);
+  isActive: { type: Boolean, default: true },  
+});
 
 const userSchema = new mongoose.Schema(
   {
@@ -37,7 +39,7 @@ const userSchema = new mongoose.Schema(
     newEmail: { type: String },
     role: {
       type: String,
-      enum: ["user", "admin"],
+      enum: ["user", "admin","superadmin"],
       default: "user",
     },
     otp: { type: String, default: "" },
@@ -48,15 +50,15 @@ const userSchema = new mongoose.Schema(
     isAccountVerified: { type: Boolean, default: false },
     sessions: [sessionSchema],
   },
-
   { timestamps: true }
 );
 
-// Generate JWT Token
+// 🔹 Generate JWT Token
 userSchema.methods.generateJWT = function () {
   return jwt.sign({ id: this._id }, process.env.Jwt_Secret_Key, {
     expiresIn: "7d",
   });
 };
+ 
 
 module.exports = mongoose.model.users || mongoose.model("users", userSchema);

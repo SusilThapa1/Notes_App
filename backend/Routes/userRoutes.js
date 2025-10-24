@@ -3,34 +3,19 @@ const {
   userList,
   userDelete,
   userUpdate,
-  register,
-  login,
-  logout,
   userUploadProfile,
   userProfile,
   deleteProfileImage,
   userAccountDelete,
-  changePassword,
-  sendVerifyOtp,
-  verifyEmail,
-  sendEmailChangeVerifyOtp,
-  verifyEmailChange,
-  sendPassResetOtp,
-  verifyPassResetOtp,
-  passResetSuccess,
-  // resendOtp,
-  resetOtpResend,
-  otpResend,
   changeRole,
 } = require("../controllers/userController");
 const { profile } = require("../middlewares/file");
 const { verifyToken, verifyAdmin } = require("../middlewares/authMiddleware");
 
 const userRouter = express.Router();
-userRouter.post("/register", register);
-userRouter.post("/login", login);
-userRouter.get("/view", verifyToken, verifyAdmin, userList);
-userRouter.get("/userprofile", verifyToken, userProfile);
+
+// User profile routes (protected)
+userRouter.get("/me", verifyToken, userProfile);
 userRouter.patch("/update/:id", verifyToken, userUpdate);
 userRouter.patch(
   "/profile/:id",
@@ -38,24 +23,12 @@ userRouter.patch(
   profile.single("image"),
   userUploadProfile
 );
-userRouter.patch("/change-password", verifyToken, changePassword);
 userRouter.delete("/profileimageDelete/:id", verifyToken, deleteProfileImage);
 userRouter.post("/delete", verifyToken, userAccountDelete);
+
+// Admin routes
+userRouter.get("/view", verifyToken, verifyAdmin, userList);
 userRouter.delete("/delete/:id", verifyToken, verifyAdmin, userDelete);
-userRouter.delete("/logout",verifyToken, logout);
-userRouter.post("/send-emailverify-otp", sendVerifyOtp);
-userRouter.post("/verify-email", verifyEmail);
-userRouter.post(
-  "/send-email-change-verify-otp",
-  verifyToken,
-  sendEmailChangeVerifyOtp
-);
-userRouter.post("/verify-email-change", verifyToken, verifyEmailChange);
-userRouter.post("/pass-reset-otp", sendPassResetOtp);
-userRouter.post("/pass-reset-otp-verify", verifyPassResetOtp);
-userRouter.post("/pass-reset-success", passResetSuccess);
-userRouter.post("/reset-otp-resend", resetOtpResend);
-userRouter.post("/otp-resend", otpResend);
 userRouter.post("/change-role", verifyToken, verifyAdmin, changeRole);
 
 module.exports = userRouter;
