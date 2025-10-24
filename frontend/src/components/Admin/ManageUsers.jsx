@@ -9,13 +9,12 @@ import { FaExchangeAlt } from "react-icons/fa";
 import { FcSearch } from "react-icons/fc";
 import { toast } from "react-toastify";
 import { AuthContext } from "../Context/AuthContext";
-import Loader from "../Loader";
+import Loader from "../Loader/Loader";
 import { showConfirm, showSuccess } from "../../../Utils/alertHelper";
 
 const ManageUsers = () => {
   const [users, setUsers] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-
   const { loading } = useContext(AuthContext);
 
   const allUsers = async () => {
@@ -37,7 +36,7 @@ const ManageUsers = () => {
 
   const handleRoleChange = async (id, role) => {
     const response = await showConfirm({
-      title: `Are you sure, you want to change role ?`,
+      title: `Are you sure, you want to change role?`,
       text: `Current role will be changed to ${role}`,
     });
 
@@ -61,7 +60,6 @@ const ManageUsers = () => {
     const response = await showConfirm({
       title: `Are you sure, you want to delete (${username})?`,
       text: "You won't be able to revert this!",
-
       confirmText: "Yes, delete it!",
     });
 
@@ -94,37 +92,38 @@ const ManageUsers = () => {
   }
 
   return (
-    <div className="flex flex-col items-center w-full overflow-none   gap-5 bg-transparent shadow-sm mx-auto px-2 py-10 h-screen">
-      <h1 className="text-[#5CAE59] text-center font-bold text-lg w-full">
+    <div className="flex flex-col items-center w-full gap-5 bg-light dark:bg-dark text-textLight dark:text-textDark mx-auto px-2 py-10 h-screen">
+      <h1 className="text-lightGreen dark:text-darkGreen text-center font-bold text-lg w-full">
         Total Users : {users.length}
       </h1>
 
       {/* Search Input */}
-      <div className="flex justify-between items-center w-full px-3 py-2 bg-transparent border-2 border-slate-100 shadow-md rounded-full">
+      <div className="flex justify-between items-center w-full px-3 py-2 bg-light dark:bg-gray-900 border-2 border-slate-100 dark:border-gray-700 shadow-md rounded-xl">
+        <FcSearch size={25} />
         <input
           type="text"
-          className="outline-none w-full bg-transparent"
+          className="w-full bg-transparent   text-textLight dark:text-textDark focus:outline-none"
           placeholder="Search users by name or email..."
           onChange={handleChange}
           value={searchTerm}
         />
-        <FcSearch size={30} />
       </div>
 
-      <div className="w-full overflow-x-auto   scroll-smooth ">
-        <table className="w-full bg-transparent shadow-lg text-center rounded-2xl overflow-x-auto scrollbar-custom">
-          <thead className="bg-[#5CAE59] text-white ">
-            <tr className="border-b border-gray-400">
-              <th className="p-2 w-[5%] border-r-2 border-gray-400 rounded-tl-lg">
-                S.N.
+      <div className="w-full overflow-x-auto scroll-smooth border-2 rounded-t-xl">
+        <table className="w-full bg-light dark:bg-dark shadow-lg text-center rounded-t-2xl overflow-x-auto scrollbar-custom border-collapse">
+          <thead className="bg-lightGreen dark:bg-darkGreen text-white">
+            <tr>
+              <th className="p-2 w-[5%] border border-gray-400">S.N.</th>
+              <th className="p-2 border border-gray-400">User ID</th>
+              <th className="p-2 border border-gray-400">Profile</th>
+              <th className="p-2 border border-gray-400">Name</th>
+              <th className="p-2 border border-gray-400">Email</th>
+              <th className="p-2 border border-gray-400">Gender</th>
+              <th className="p-2 border border-gray-400">Account Status</th>
+              <th className="p-2 border border-gray-400">Role</th>
+              <th className="p-2 text-center w-[20%] border border-gray-400">
+                Actions
               </th>
-              <th className="p-2 border-r border-gray-400">Profile</th>
-              <th className="p-2 border-r border-gray-400">Name</th>
-              <th className="p-2 border-r border-gray-400">Email</th>
-              <th className="p-2 border-r border-gray-400">Gender</th>
-              <th className="p-2 border-r border-gray-400">Account Status</th>
-              <th className="p-2 border-r border-gray-400">Role</th>
-              <th className="p-2 text-center w-[20%] rounded-tr-lg">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -134,41 +133,41 @@ const ManageUsers = () => {
                 .map((user, index) => (
                   <tr
                     key={user._id}
-                    className="   border-b-2 border-gray-300 hover-supported:hover:bg-gray-300 transition-all duration-500"
+                    className="hover-supported:hover:bg-gray-300 dark:bg-gray-900 dark:hover:bg-gray-700 transition-all duration-500"
                   >
-                    <td className="p-2 border-r border-gray-400">
-                      {index + 1}.
-                    </td>
-                    <td className="p-2 border-r border-gray-400">
+                    <td className="p-2 border border-gray-400">{index + 1}.</td>
+                    <td className="p-2 border border-gray-400">{user?._id}</td>
+                    <td className="p-2 border border-gray-400">
                       <img
+                        loading="lazy"
                         src={
                           user && user?.profilepath
                             ? `${
                                 import.meta.env.VITE_API_FILE_URL +
                                 user?.profilepath
                               }`
-                            : "/prof.webp"
+                            : "/profile.png"
                         }
                         alt="profile"
                         className="w-12 h-12 md:w-16 md:h-16 rounded-full mx-auto object-cover"
                       />
                     </td>
-                    <td className="p-2 border-r border-gray-400">
+                    <td className="p-2 border border-gray-400">
                       {user?.username}
                     </td>
-                    <td className="p-2 border-r border-gray-400">
+                    <td className="p-2 border border-gray-400">
                       {user?.email}
                     </td>
-                    <td className="p-2 border-r border-gray-400 capitalize">
+                    <td className="p-2 border border-gray-400 capitalize">
                       {user?.gender}
                     </td>
-                    <td className="p-2 border-r border-gray-400">
+                    <td className="p-2 border border-gray-400">
                       {user?.isAccountVerified ? "Verified" : "Not verified"}
                     </td>
-                    <td className="p-2 border-r border-gray-400 capitalize">
+                    <td className="p-2 border border-gray-400 capitalize">
                       {user?.role}
                     </td>
-                    <td className="p-2">
+                    <td className="p-2 border border-gray-400">
                       <div className="flex justify-center items-center gap-4">
                         <button
                           onClick={() =>
@@ -198,10 +197,10 @@ const ManageUsers = () => {
             ) : (
               <tr className="md:h-[65vh]">
                 <td
-                  colSpan="8"
-                  className="  py-5 text-red-600 font-semibold text-xl w-full h-full"
+                  colSpan="9"
+                  className="py-5 text-red-600 font-semibold text-xl w-full h-full border border-gray-400"
                 >
-                  🙅‍♂️No users found...
+                  🙅‍♂️ No users found...
                 </td>
               </tr>
             )}

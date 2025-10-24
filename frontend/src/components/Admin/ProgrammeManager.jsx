@@ -1,7 +1,4 @@
 import { useState, useContext, useRef } from "react";
-import Swal from "sweetalert2";
-import upload_Image from "/upload_area.svg";
-
 import { toast } from "react-toastify";
 import {
   deleteProgramme,
@@ -10,99 +7,95 @@ import {
 } from "../../../Services/programmeService";
 import { ProgrammesContext } from "../Context/ProgrammeContext";
 import { MdOutlineDeleteForever } from "react-icons/md";
-import Loader from "../Loader";
+import Loader from "../Loader/Loader";
+import { showConfirm } from "../../../Utils/alertHelper";
+import { uploadFile } from "../../../Utils/uploadFile";
 
 const ProgrammeManager = () => {
   const scrollRef = useRef(null);
-  const [image, setImage] = useState(null);
+  const [imageFile, setImageFile] = useState(null);
+
   const [programmeData, setProgrammeData] = useState({
-    image: "",
+    imagepath: "",
+    imagename: "",
     programmefullname: "",
     programmeshortname: "",
+    academicstructure: "",
     _id: "",
   });
+
   const { fetchAllData, programmeLists, setProgrammeLists, loading } =
     useContext(ProgrammesContext);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    toast.dismiss();
 
-    // Create FormData for file upload
-    const formData = new FormData();
-    formData.append("image", image);
-    formData.append("programmefullname", programmeData.programmefullname);
-    formData.append("programmeshortname", programmeData.programmeshortname);
-    formData.append("academicstructure", programmeData.academicstructure);
-
-    // Check if all fields are filled
     if (
       !programmeData.programmefullname ||
       !programmeData.programmeshortname ||
-      !programmeData.academicstructure ||
-      (!image && !programmeData.image)
+      !programmeData.academicstructure
     ) {
-      toast.error("Please fill in all required fields.");
-      return;
+      return toast.error("Please fill in all required fields.");
     }
 
-    if (programmeData._id) {
-      const formData = new FormData();
-      formData.append("programmefullname", programmeData.programmefullname);
-      formData.append("programmeshortname", programmeData.programmeshortname);
-      formData.append("academicstructure", programmeData.academicstructure);
+    try {
+      let imagepath = programmeData.imagepath;
+      let imagename = programmeData.imagename;
 
-      if (image) {
-        formData.append("image", image); // Only add if new image is selected
+      if (imageFile) {
+        const res = await uploadFile(imageFile, "images");
+        if (!res) return;
+        imagepath = res.fileUrl;
+        imagename = res.originalName;
       }
-      try {
-        const res = await updateProgramme(programmeData._id, formData);
-        if (res.success) {
-          toast.success(res.message);
-          setProgrammeData({
-            image: "",
-            programmefullname: "",
-            programmeshortname: "",
-            academicstructure: "",
-            _id: "",
-          });
-          setImage(null);
-          fetchAllData();
-        } else {
-          toast.error(res.message || "Failed to update programme.");
-        }
-      } catch (error) {
-        const errorMessage =
-          error?.response?.message ||
-          error.message ||
-          "Error updating programme.";
-        toast.error(errorMessage);
-        console.error("Error submitting programme:", errorMessage);
+
+      const payload = {
+        programmefullname: programmeData.programmefullname,
+        programmeshortname: programmeData.programmeshortname,
+        academicstructure: programmeData.academicstructure,
+      };
+
+      if (!programmeData._id || imageFile) {
+        payload.imagepath = imagepath;
+        payload.imagename = imagename;
       }
+
+      let res;
+      if (programmeData._id) {
+        res = await updateProgramme(programmeData._id, payload);
+      } else {
+        res = await addProgramme(payload);
+      }
+
+      if (res.success) {
+        toast.success(res.message);
+        setProgrammeData({
+          imagepath: "",
+          imagename: "",
+          programmefullname: "",
+          programmeshortname: "",
+          academicstructure: "",
+          _id: "",
+        });
+        setImageFile(null);
+        fetchAllData();
+      } else {
+        toast.error(res.message || "Something went wrong.");
+      }
+    } catch (err) {
+      toast.error(err?.message || "Error submitting programme.");
+      console.error(err);
+    }
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith("image/")) {
+      setImageFile(file);
     } else {
-      try {
-        const res = await addProgramme(formData);
-        if (res.success) {
-          toast.success(res.message);
-          setProgrammeData({
-            image: "",
-            programmefullname: "",
-            programmeshortname: "",
-            academicstructure: "",
-            _id: "",
-          });
-          setImage(null);
-          fetchAllData();
-        } else {
-          toast.error(res.message || "Failed to add programme.");
-        }
-      } catch (error) {
-        const errorMessage =
-          error?.response?.data?.message ||
-          error.message ||
-          "Error adding programme.";
-        toast.error(errorMessage);
-        console.error("Error adding programme:", errorMessage);
-      }
+      toast.error("Please drop a valid image file.");
     }
   };
 
@@ -110,90 +103,96 @@ const ProgrammeManager = () => {
     const { name, value } = e.target;
     setProgrammeData({ ...programmeData, [name]: value });
   };
-  const imageHandler = (e) => {
-    setImage(e.target.files[0]);
+
+  const handleImageChange = (e) => {
+    setImageFile(e.target.files[0]);
   };
 
   const handleDelete = async (id) => {
-    const response = await Swal.fire({
+    const response = await showConfirm({
       title: "Are you sure you want to delete this programme?",
       text: "You won't be able to revert this!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#49bb0f",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!",
-      width: "400px",
     });
-
     if (!response.isConfirmed) return;
 
     try {
       const deleteResponse = await deleteProgramme(id);
       if (deleteResponse.success) {
         toast.success(deleteResponse.message);
-        setProgrammeLists((prevProgrammes) =>
-          prevProgrammes.filter((programme) => programme._id !== id)
-        );
+        setProgrammeLists((prev) => prev.filter((p) => p._id !== id));
       }
-    } catch (error) {
-      toast.error(
-        error?.response?.data?.message || "Error deleting programme."
-      );
-      console.error(
-        "Error deleting programme:",
-        error?.response?.data?.message || error.message
-      );
+    } catch (err) {
+      toast.error(err?.message || "Error deleting programme.");
     }
   };
 
-  if (loading) {
-    return <Loader />;
-  }
+  if (loading) return <Loader />;
 
   return (
     <div
       ref={scrollRef}
-      className="flex flex-col items-center  w-full max-w-6xl mt-8 pb-10  overflow-y-scroll scroll-container bg-transparent shadow-sm mx-auto h-screen"
+      className="flex flex-col items-center w-full  px-5 mt-8 pb-10 overflow-y-scroll scroll-container  text-textLight dark:text-textDark mx-auto h-screen"
     >
-      <h1 className="text-2xl font-semibold mb-4 text-center    text-[#5CAE59]">
+      <h1 className="text-2xl font-semibold mb-4 text-center text-lightGreen dark:text-darkGreen">
         {programmeData._id ? "Edit Programme" : "Add New Programme"}
       </h1>
 
-      {/* Form to add or edit programme */}
+      {/* Form */}
       <form
         onSubmit={handleSubmit}
         className="flex flex-col gap-5 w-full max-w-xl"
       >
-        <div className=" rounded-lg">
-          <label
-            htmlFor="programmeImage"
-            className="flex flex-col gap-2 items-center"
-          >
-            <img
-              src={
-                image
-                  ? URL.createObjectURL(image)
-                  : programmeData.image || "/upload_area.png"
-              }
-              alt="upload"
-              className="cursor-pointer w-32 h-32 object-cover bg-transparent shadow-lg rounded-lg border-2 border-slate-100 "
-              loading="lazy"
-            />
-            <span>Cover image</span>
-          </label>
+        {/* Image Upload */}
+        <div
+          className={`mx-auto w-full max-w-[150px] h-[150px] dark:bg-gray-900 border-2 border-dashed rounded-xl flex flex-col justify-center items-center cursor-pointer transition-all ${
+            imageFile
+              ? "border-green-400"
+              : "border-gray-300 hover:border-green-400"
+          }`}
+          onDragOver={(e) => e.preventDefault()}
+          onDrop={handleDrop}
+          onClick={() => document.getElementById("programmeImage").click()}
+        >
           <input
             type="file"
-            name="image"
             id="programmeImage"
             hidden
-            onChange={imageHandler}
+            accept="image/*"
+            onChange={handleImageChange}
           />
+          {imageFile || programmeData.imagepath ? (
+            <img
+              loading="lazy"
+              src={
+                imageFile
+                  ? URL.createObjectURL(imageFile)
+                  : `${import.meta.env.VITE_API_FILE_URL}${
+                      programmeData.imagepath
+                    }`
+              }
+              alt="Preview"
+              className="w-full h-full object-cover rounded-xl"
+            />
+          ) : (
+            <div className="flex flex-col items-center justify-center gap-2  text-subTextLight dark:text-subTextDark w-full mx-auto">
+              <img
+                loading="lazy"
+                src="/upload_area.png"
+                alt="upload"
+                className="w-20 h-20"
+              />
+              <p className="text-sm font-medium text-center">
+                Drag & Drop or Click to Upload
+              </p>
+            </div>
+          )}
         </div>
-        <div className="flex flex-col">
+
+        {/* Text Inputs */}
+        <div className="flex flex-col gap-2">
           <label
             htmlFor="programmefullname"
-            className="font-medium text-gray-700"
+            className="font-medium text-textLight dark:text-textDark"
           >
             Programme Fullname
           </label>
@@ -202,17 +201,17 @@ const ProgrammeManager = () => {
             id="programmefullname"
             name="programmefullname"
             value={programmeData.programmefullname}
-            placeholder="Programme fullname..."
             onChange={handleChange}
-            className="px-4 py-3 rounded-2xl shadow-lg focus: outline-slate-200 focus:ring-2 focus:ring-gray-200 bg-transparent border  border-slate-100  placeholder:font-medium"
+            placeholder="Programme fullname..."
             required
+            className="px-4 py-3 rounded-2xl shadow-lg border border-slate-100 bg-transparent dark:bg-gray-900 text-textLight dark:text-textDark"
           />
         </div>
 
-        <div className="flex flex-col">
+        <div className="flex flex-col gap-2">
           <label
             htmlFor="programmeshortname"
-            className="font-medium text-gray-700"
+            className="font-medium text-textLight dark:text-textDark"
           >
             Programme Shortname
           </label>
@@ -221,24 +220,27 @@ const ProgrammeManager = () => {
             id="programmeshortname"
             name="programmeshortname"
             value={programmeData.programmeshortname}
-            placeholder="Programme shortname..."
             onChange={handleChange}
-            className="px-4 py-3 rounded-2xl shadow-lg focus:outline-slate-200 focus:ring-2 focus:ring-gray-200 bg-transparent border  border-slate-100  placeholder:font-medium"
+            placeholder="Programme shortname..."
             required
+            className="px-4 py-3 rounded-2xl shadow-lg border border-slate-100 bg-transparent dark:bg-gray-900 text-textLight dark:text-textDark"
           />
         </div>
 
         <div className="flex flex-col">
-          <label htmlFor="structure" className="font-medium text-gray-700">
+          <label
+            htmlFor="structure"
+            className="font-medium text-textLight dark:text-textDark"
+          >
             Academic Structure
           </label>
           <select
             name="academicstructure"
             id="structure"
-            onChange={handleChange}
             value={programmeData.academicstructure}
-            className="px-4 py-3 rounded-2xl shadow-lg focus: outline-slate-200 focus:ring-2 focus:ring-gray-200 bg-transparent border  border-slate-100  placeholder:font-medium"
+            onChange={handleChange}
             required
+            className="px-4 py-3 rounded-2xl shadow-lg bg-light dark:bg-gray-900 border border-slate-100 bg-transparent text-textLight dark:text-textDark"
           >
             <option value="">Select</option>
             <option value="semester">Semester-Wise</option>
@@ -246,43 +248,43 @@ const ProgrammeManager = () => {
           </select>
         </div>
 
-        <div className="text-center">
+        <div className="text-left">
           <button
             type="submit"
-            className="bg-transparent border  border-slate-100 hover-supported:hover:border-transparent  px-4 py-3 rounded-2xl font-medium hover-supported: hover:bg-[#5CAE59] hover-supported:hover:text-gray-200 active:bg-green-600 shadow-lg transition-all duration-500"
+            className="bg-lightGreen dark:bg-darkGreen hover-supported:hover:bg-darkGreen text-white font-bold py-2 px-4 rounded-lg transition-all duration-200"
           >
             {programmeData._id ? "Update Programme" : "Add Programme"}
           </button>
         </div>
       </form>
-      {/* List of Programmes */}
+
+      {/* Programmes List */}
       <div className="mt-6 w-full">
         <h2 className="text-xl font-semibold mb-4 text-center">
           Programmes List
         </h2>
-        <div className="overflow-x-auto bg-transparent border-2 border-slate-300 rounded-lg shadow-lg">
-          <table border="collapse" className="w-full  text-center h-max ">
-            <thead className="bg-green-600 text-white text-[12px] md:text-base ">
-              <tr className="text-center border-b border-gray-400">
-                <th className="p-2  border-x-2 border-gray-400   ">Image</th>
-                <th className="px-4 py-2   border-r border-gray-400">
-                  Fullname
-                </th>
-                <th className="px-4 py-2 border-r border-gray-400">
-                  Shortname
-                </th>
-                <th className="px-4 py-2 border-r border-gray-400">
+        <div className="overflow-x-auto bg-transparent border-2 border-slate-300 dark:border-gray-700 rounded-lg shadow-lg">
+          <table className="w-full text-center h-max border-collapse">
+            <thead className="bg-lightGreen dark:bg-darkGreen text-white text-[12px] md:text-base">
+              <tr>
+                <th className="p-2 border border-gray-400">Image</th>
+                <th className="px-4 py-2 border border-gray-400">Fullname</th>
+                <th className="px-4 py-2 border border-gray-400">Shortname</th>
+                <th className="px-4 py-2 border border-gray-400">
                   Academic Structure
                 </th>
-                <th className="px-4 py-2 w-[20%]  rounded-tr-lg">Actions</th>
+                <th className="px-4 py-2 border border-gray-400">Image Name</th>
+                <th className="px-4 py-2 w-[20%] border border-gray-400">
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody>
               {programmeLists.length === 0 ? (
                 <tr>
                   <td
-                    colSpan="4"
-                    className="text-center py-2  w-full text-sm text-gray-500"
+                    colSpan="6"
+                    className="text-center py-2 text-sm text-subTextLight dark:text-subTextDark border border-gray-400"
                   >
                     No programmes available
                   </td>
@@ -291,48 +293,55 @@ const ProgrammeManager = () => {
                 programmeLists.map((programme) => (
                   <tr
                     key={programme._id}
-                    className="border-b border-gray-500 bg-gray-200 hover-supported:hover:bg-gray-300 text-center transition-all duration-500"
+                    className="bg-gray-200 dark:bg-gray-900 hover:bg-gray-300 dark:hover:bg-gray-700 text-center transition-all duration-500"
                   >
-                    <td className="p-2 flex justify-center items-center  border-r border-gray-400">
-                      <img
-                        src={programme.imagepath}
-                        alt="image"
-                        className="w-14 h-14 rounded-lg object-cover"
-                        loading="lazy"
-                      />
+                    <td className="p-2 border border-gray-400">
+                      <div className="flex justify-center items-center">
+                        <img
+                          loading="lazy"
+                          src={`${import.meta.env.VITE_API_FILE_URL}${
+                            programme.imagepath
+                          }`}
+                          alt="image"
+                          className="w-14 h-14 rounded-lg object-cover"
+                        />
+                      </div>
                     </td>
-                    <td className="p-2   border-r border-gray-400">
+                    <td className="p-2 border border-gray-400">
                       {programme.programmefullname}
                     </td>
-                    <td className="p-2   border-r border-gray-400">
+                    <td className="p-2 border border-gray-400">
                       {programme.programmeshortname}
                     </td>
-                    <td className="p-2   border-r border-gray-400 capitalize">
+                    <td className="p-2 border border-gray-400 capitalize">
                       {programme.academicstructure}
                     </td>
-
-                    <td className="p-2 w-[20%] ">
+                    <td className="p-2 border border-gray-400">
+                      {programme.imagename || "-"}
+                    </td>
+                    <td className="p-2 w-[20%] border border-gray-400">
                       <div className="flex justify-center items-center gap-4">
                         <button
                           title="Edit"
                           onClick={() => {
                             setProgrammeData({
                               ...programme,
-                              image: programme.imagepath || "",
+                              imagepath: programme.imagepath || "",
+                              imagename: programme.imagename || "",
                             });
                             scrollRef.current?.scrollTo({
                               top: 0,
                               behavior: "smooth",
                             });
                           }}
-                          className="  text-xl  "
+                          className="text-xl"
                         >
                           🖋️
                         </button>
                         <button
                           title="Delete"
                           onClick={() => handleDelete(programme._id)}
-                          className="text-red-500 hover-supported:hover:text-red-700"
+                          className="text-red-500 hover:text-red-700"
                         >
                           <MdOutlineDeleteForever size={20} />
                         </button>
