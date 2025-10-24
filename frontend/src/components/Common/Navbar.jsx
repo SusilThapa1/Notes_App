@@ -40,20 +40,28 @@ const Navbar = () => {
   ];
 
   const dropDownLink = [
-    { to: "/study/userprofile", icon: <FaRegUser />, text: "My Profile" },
-    { to: "/study/myuploads", icon: <HiOutlineUpload />, text: "My Uploads" },
     {
-      to: "/study/user/change-password",
+      to: "/user/profile",
+      icon: <FaRegUser />,
+      text: "My Profile",
+    },
+    {
+      to: "/user/myuploads",
+      icon: <HiOutlineUpload />,
+      text: "My Uploads",
+    },
+    {
+      to: "/user/change-password",
       icon: <MdLockOutline />,
       text: "Change Password",
     },
     {
-      to: "/study/user/view-logins",
+      to: "/user/view-logins",
       icon: <MdOutlineDevices />,
       text: "View All Logins",
     },
     {
-      to: "/study/user/deletemyaccount",
+      to: "/user/deletemyaccount",
       icon: <FiAlertTriangle />,
       text: "Delete Account",
       danger: true,
@@ -62,14 +70,14 @@ const Navbar = () => {
 
   if (userDetails?.role === "admin") {
     dropDownLink.unshift({
-      to: "/study/admin/dashboard",
+      to: "/admin/dashboard",
       icon: <MdOutlineDashboard />,
       text: "Admin Dashboard",
     });
   }
 
   const getPath = (name) =>
-    name.toLowerCase() === "home" ? "/" : `/study/${name.toLowerCase()}`;
+    name.toLowerCase() === "home" ? "/" : `/${name.toLowerCase()}`;
   const isActive = (path) =>
     location.pathname === path ||
     (path !== "/" && location.pathname.startsWith(path));
@@ -199,8 +207,8 @@ const Navbar = () => {
             </>
           ) : (
             <div className="flex gap-2 md:gap-4">
-              <AuthButton to="/study/signup" text="Sign up" />
-              <AuthButton to="/study/signin" text="Sign in" />
+              <AuthButton to="/signup" text="Sign up" />
+              <AuthButton to="/signin" text="Sign in" />
             </div>
           )}
         </div>

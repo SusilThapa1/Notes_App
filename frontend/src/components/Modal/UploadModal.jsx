@@ -22,7 +22,7 @@ const UploadModal = ({
   isEdit = false,
   onUploadComplete,
 }) => {
-  const { programmeLists } = useContext(ProgrammesContext);
+  const { programmeLists, universityLists } = useContext(ProgrammesContext);
   const { userDetails } = useContext(AuthContext);
 
   const [uploadData, setUploadData] = useState({
@@ -44,7 +44,7 @@ const UploadModal = ({
   useEffect(() => {
     if (isEdit && existingData) {
       setUploadData({
-        university: existingData.university || "",
+        university: existingData.universityID?._id || "",
         resources: existingData.resources || "",
         programme: existingData.programmeID?._id || "",
         courseCode: existingData.courseCode || "",
@@ -89,6 +89,25 @@ const UploadModal = ({
     setFile(selectedFile);
   };
 
+  const handleDrop = (e) => {
+    {
+      e.preventDefault();
+      e.stopPropagation();
+      const droppedFile = e.dataTransfer.files[0];
+      if (droppedFile && droppedFile.type === "application/pdf") {
+        const maxSizeMB = 25;
+        const fileSizeMB = droppedFile.size / (1024 * 1024);
+        if (fileSizeMB > maxSizeMB) {
+          toast.error(`File size exceeds ${maxSizeMB} MB limit`);
+          return;
+        }
+        setFile(droppedFile);
+      } else {
+        toast.error("Only PDF files are allowed.");
+      }
+    }
+  };
+
   // Submit handler
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -111,6 +130,7 @@ const UploadModal = ({
       (p) => p._id === uploadData.programme
     );
 
+    // Require file only when adding new
     if (!isEdit && !file) {
       return toast.error("Please select a file to upload.");
     }
@@ -121,7 +141,7 @@ const UploadModal = ({
       let filepath = uploadData.filepath;
       let filename = uploadData.filename;
 
-      // Upload new file if selected
+      //  Upload new file only if a File object is selected
       if (file && file instanceof File) {
         const res = await uploadFile(file, uploadData.resources);
         if (!res || !res.fileUrl) {
@@ -133,6 +153,7 @@ const UploadModal = ({
         filename = res.originalName;
       }
 
+      //  Build payload
       const payload = {
         university: uploadData.university,
         resources: uploadData.resources,
@@ -141,10 +162,14 @@ const UploadModal = ({
         courseName: uploadData.courseName,
         academicstructure: selectedProgramme?.academicstructure || "Semester",
         semyear: uploadData.semyear,
-        filepath,
-        filename,
         isVerified: uploadData.isVerified,
       };
+
+      //  Include file data only if a new file was uploaded or adding new
+      if (!isEdit || (file && file instanceof File)) {
+        payload.filepath = filepath;
+        payload.filename = filename;
+      }
 
       let response;
       if (isEdit && uploadData._id) {
@@ -154,7 +179,7 @@ const UploadModal = ({
       }
 
       if (response.success) {
-        toast.success(response.message || "File uploaded successfully!");
+        toast.success(response.message || "File saved successfully!");
         onClose();
         if (onUploadComplete) onUploadComplete();
       } else {
@@ -175,43 +200,35 @@ const UploadModal = ({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4 sm:px-5">
-      <div className="bg-white rounded-lg shadow-lg w-full max-w-lg p-6 relative overflow-auto max-h-[90vh]">
+      <div className="bg-light dark:bg-dark rounded-lg shadow-lg w-full max-w-lg p-6 relative overflow-auto max-h-[95vh]">
         <button
           onClick={onClose}
-          className="absolute top-3 right-3 text-gray-500 hover:text-gray-800"
+          className="absolute top-3 right-3 text-subTextLight dark:text-subTextDark hover-supported:hover:text-red-600"
         >
           <HiOutlineX size={20} />
         </button>
 
-        <h2 className="text-xl text-center font-semibold mb-4 text-gray-700">
+        <h2 className="text-xl text-center font-semibold mb-2 text-textLight dark:text-textDark">
           {isEdit ? "Edit Upload" : "Upload File"}
         </h2>
 
-        <form onSubmit={handleSubmit} className="space-y-4 w-full">
+        <form onSubmit={handleSubmit} className="space-y-3 w-full">
           {/* University */}
           <div>
-            <label className="block text-sm font-medium mb-1">
+            <label className="block text-sm font-medium mb-1 dark:text-textDark">
               Choose University
             </label>
             <select
               name="university"
               value={uploadData.university}
               onChange={handleChange}
-              className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-gray-300 outline-none"
+              className="w-full px-3 py-2 border border-gray-400 dark:border-gray-600 rounded-lg  outline-none bg-transparent dark:bg-gray-900 dark:text-textDark"
             >
               <option value="">Select University</option>
-              {[
-                "Tribhuvan University",
-                "Kathmandu University",
-                "Purbanchal University",
-                "Pokhara University",
-                "Mid-West University",
-                "Far-Western University",
-                "Lumbini Buddhist University",
-                "Agriculture and Forestry University",
-              ].map((uni) => (
-                <option key={uni} value={uni}>
-                  {uni}
+              {universityLists.map((university) => (
+                <option key={university._id} value={university._id}>
+                  {university.universityfullname} (
+                  {university.universityshortname})
                 </option>
               ))}
             </select>
@@ -219,14 +236,14 @@ const UploadModal = ({
 
           {/* Resource */}
           <div>
-            <label className="block text-sm font-medium mb-1">
+            <label className="block text-sm font-medium mb-1 dark:text-textDark">
               Resource Type
             </label>
             <select
               name="resources"
               value={uploadData.resources}
               onChange={handleChange}
-              className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-gray-200"
+              className="w-full px-3 py-2 border border-gray-400 dark:border-gray-600 rounded-lg  bg-transparent dark:bg-gray-900 dark:text-textDark"
             >
               <option value="">Select Type</option>
               <option value="syllabus">Syllabus</option>
@@ -237,26 +254,30 @@ const UploadModal = ({
 
           {/* Programme */}
           <div>
-            <label className="block text-sm font-medium mb-1">
+            <label className="block text-sm font-medium mb-1 dark:text-textDark">
               Programme Name
             </label>
             <select
               name="programme"
               value={uploadData.programme}
               onChange={handleChange}
-              className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-gray-300"
+              className="w-full px-3 py-2 border border-gray-400 dark:border-gray-600 rounded-lg  bg-transparent dark:bg-gray-900 dark:text-textDark"
             >
               <option value="">Select Programme</option>
               {programmeLists.map((programme) => (
-                <option key={programme._id} value={programme._id}>
+                <option
+                  key={programme._id}
+                  value={programme._id}
+                  className="max-w-3xl"
+                >
                   {programme.programmefullname} ({programme.programmeshortname})
                 </option>
               ))}
             </select>
             {selectedProgramme && (
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-subTextLight dark:text-subTextDark mt-1">
                 Academic Structure:{" "}
-                <span className="font-medium text-gray-700">
+                <span className="font-medium text-textLight dark:text-textDark">
                   {selectedProgramme.academicstructure}
                 </span>
               </p>
@@ -271,7 +292,7 @@ const UploadModal = ({
               value={uploadData.courseCode}
               onChange={handleChange}
               placeholder="Course Code"
-              className="flex-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-gray-300"
+              className="flex-1 px-3 py-2 border border-gray-400 dark:border-gray-600 rounded-lg  bg-transparent dark:bg-gray-900 dark:text-textDark dark:placeholder:text-gray-400"
             />
             <input
               type="text"
@@ -279,13 +300,13 @@ const UploadModal = ({
               value={uploadData.courseName}
               onChange={handleChange}
               placeholder="Course Name"
-              className="flex-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-gray-300"
+              className="flex-1 px-3 py-2 border border-gray-400 dark:border-gray-600 rounded-lg  bg-transparent dark:bg-gray-900 dark:text-textDark dark:placeholder:text-gray-400"
             />
           </div>
 
           {/* Semester / Year */}
           <div>
-            <label className="block text-sm font-medium mb-1">
+            <label className="block text-sm font-medium mb-1 dark:text-textDark">
               {selectedProgramme?.academicstructure === "Yearly"
                 ? "Select Year"
                 : "Select Semester"}
@@ -294,7 +315,7 @@ const UploadModal = ({
               name="semyear"
               value={uploadData.semyear}
               onChange={handleChange}
-              className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-gray-300"
+              className="w-full px-3 py-2 border border-gray-400 dark:border-gray-600 rounded-lg  bg-transparent dark:bg-gray-900 dark:text-textDark"
             >
               <option value="">
                 {selectedProgramme?.academicstructure === "Yearly"
@@ -327,7 +348,9 @@ const UploadModal = ({
           {/* Verified (Admin Only) */}
           {userDetails?.role === "admin" && (
             <div className="flex items-center gap-3">
-              <label className="text-sm font-medium">Verified</label>
+              <label className="text-sm font-medium dark:text-textDark">
+                Verified
+              </label>
               <button
                 type="button"
                 onClick={() =>
@@ -337,11 +360,13 @@ const UploadModal = ({
                   })
                 }
                 className={`w-12 h-6 flex items-center rounded-full pr-1 duration-300 ${
-                  uploadData.isVerified ? "bg-green-500" : "bg-gray-300"
+                  uploadData.isVerified
+                    ? "bg-lightGreen"
+                    : "bg-gray-300 dark:bg-gray-600"
                 }`}
               >
                 <div
-                  className={`bg-white w-8 h-6 rounded-full shadow-md transform duration-300 ${
+                  className={`bg-light dark:bg-gray-200 w-8 h-6 rounded-full shadow-md transform duration-300 ${
                     uploadData.isVerified ? "translate-x-6" : "translate-x-0"
                   }`}
                 />
@@ -351,49 +376,72 @@ const UploadModal = ({
 
           {/* File Upload */}
           <div>
-            <label className="block text-sm font-medium mb-1">
+            <label className="block text-sm font-medium mb-1 dark:text-textDark">
               Select File
             </label>
 
-            <label
-              htmlFor="fileInput"
-              className="flex flex-col items-center justify-center w-full p-5 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50 hover:bg-gray-100 transition cursor-pointer"
+            <div
+              onDrop={handleDrop}
+              onDragOver={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                e.currentTarget.classList.add(
+                  "border-green-400",
+                  "bg-green-50"
+                );
+              }}
+              onDragLeave={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                e.currentTarget.classList.remove(
+                  "border-green-400",
+                  "bg-green-50"
+                );
+              }}
+              onClick={() => document.getElementById("fileInput").click()}
+              className="flex flex-col items-center justify-center w-full p-5 border-2 border-dashed border-gray-400 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-700 transition cursor-pointer"
             >
               {!file ? (
                 <>
-                  <HiOutlineUpload className="text-3xl text-gray-500 mb-2" />
-                  <p className="text-gray-600 text-sm">
-                    Click to{" "}
-                    <span className="text-blue-600 font-medium">
-                      upload a PDF
-                    </span>
+                  <HiOutlineUpload className="text-3xl text-subTextLight dark:text-subTextDark mb-2" />
+                  <p className="text-subTextLight dark:text-subTextDark text-sm text-center">
+                    <span className="text-blue-600 dark:text-blue-400 font-medium">
+                      Click to upload
+                    </span>{" "}
+                    or <span className="font-medium">drag and drop</span> your
+                    PDF here
                   </p>
-                  <p className="text-xs text-gray-400 mt-1">(Max size: 5 MB)</p>
+                  <p className="text-xs text-subTextLight dark:text-subTextDark mt-1">
+                    (Max size: 25 MB)
+                  </p>
                 </>
               ) : (
                 <div className="flex flex-col items-center gap-2">
-                  <div className="flex flex-col items-center bg-white border border-gray-200 rounded-md p-3 shadow-sm w-full">
+                  <div className="flex flex-col items-center bg-light dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-md p-3 shadow-sm w-full">
                     <div className="flex items-center gap-2">
-                      <VscFilePdf className="text-2xl text-red-600" />
-                      <span className="text-gray-700 font-medium truncate">
+                      <VscFilePdf className="text-2xl text-red-600 dark:text-red-400" />
+                      <span className="text-textLight dark:text-textDark font-medium truncate">
                         {file.name}
                       </span>
                     </div>
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="text-xs text-subTextLight dark:text-subTextDark mt-1">
                       {file.size ? formatFileSize(file.size) : "unknown size"}
                     </p>
                   </div>
 
                   <button
                     type="button"
-                    onClick={() => setFile(null)}
-                    className="flex items-center gap-1 text-red-500 hover:text-red-700 text-sm mt-2"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setFile(null);
+                    }}
+                    className="flex items-center gap-1 text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 text-sm mt-2"
                   >
                     <HiOutlineX /> Remove File
                   </button>
                 </div>
               )}
-            </label>
+            </div>
 
             {/* Hidden Input */}
             <input
@@ -409,7 +457,7 @@ const UploadModal = ({
           <button
             type="submit"
             disabled={loading}
-            className="w-full flex items-center justify-center gap-2 bg-lightGreen text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
+            className="w-full flex items-center justify-center gap-2 bg-lightGreen text-white px-4 py-2 rounded-lg hover:bg-darkGreen transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? (
               "Saving..."

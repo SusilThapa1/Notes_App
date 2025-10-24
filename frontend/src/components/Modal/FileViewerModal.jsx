@@ -64,7 +64,7 @@ const FileViewerModal = ({ isOpen, onClose, fileUrl, fileName, fileId }) => {
             {fileName}
           </h2>
           <button
-            onClick={() => navigate(`/study/view/${fileId}`)}
+            onClick={() => navigate(`/view/${fileId}`)}
             className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition text-sm font-medium"
           >
             <HiOutlineExternalLink /> View Full Page

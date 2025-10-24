@@ -4,7 +4,7 @@ import { LuEyeClosed, LuEye } from "react-icons/lu";
 import { TbLockPassword } from "react-icons/tb";
 import { MdEmail } from "react-icons/md";
 import { toast } from "react-toastify";
-import { userLogin } from "../../../Services/userService";
+import { userLogin } from "../../../Services/authService";
 import { AuthContext } from "../Context/AuthContext";
 
 const Login = () => {
@@ -56,7 +56,7 @@ const Login = () => {
   };
 
   return (
-    <div className="h-screen flex justify-center items-center w-full bg-light dark:bg-dark text-gray-800 dark:text-gray-100 transition-colors duration-300">
+    <div className="h-screen flex justify-center items-center w-full bg-light dark:bg-dark text-textLight dark:text-textDark transition-colors duration-300">
       <div className="flex flex-col justify-center items-center gap-5 px-5 py-8 w-[85%] md:w-[600px] rounded-xl backdrop-blur-md shadow-lg border border-slate-100 dark:bg-gray-900 dark:border-gray-700 transition-all duration-300">
         {/* Logo */}
         <img
@@ -74,34 +74,34 @@ const Login = () => {
         <form onSubmit={handleSubmit} className="flex flex-col gap-7 w-full ">
           {/* Email Field */}
           <div className="flex items-center bg-transparent border border-slate-100 dark:border-gray-700 px-4 py-3 rounded-full shadow-lg">
-            <MdEmail className="text-gray-700 dark:text-gray-300 mr-2" />
+            <MdEmail className="text-subTextLight dark:text-subTextDark mr-2" />
             <input
               type="email"
               name="email"
               value={formData.email}
               onChange={handleChange}
               placeholder="Enter email"
-              className="w-full bg-transparent focus:outline-none placeholder-gray-400 dark:placeholder-gray-500"
+              className="w-full bg-transparent focus:outline-none text-textLight dark:text-textDark placeholder-subTextLight dark:placeholder-subTextDark"
               aria-label="Email"
             />
           </div>
 
           {/* Password Field */}
           <div className="flex items-center bg-transparent border border-slate-100 dark:border-gray-700 px-4 py-3 rounded-full shadow-lg">
-            <TbLockPassword className="text-red-500 mr-2" />
+            <TbLockPassword className="text-deleteNormal mr-2" />
             <input
               type={showPass ? "text" : "password"}
               name="password"
               value={formData.password}
               onChange={handleChange}
               placeholder="Password"
-              className="w-full bg-transparent focus:outline-none placeholder-gray-400 dark:placeholder-gray-500"
+              className="w-full bg-transparent focus:outline-none text-textLight dark:text-textDark placeholder-subTextLight dark:placeholder-subTextDark"
               aria-label="Password"
             />
             <button
               type="button"
               onClick={passShow}
-              className="ml-2 text-gray-600 dark:text-gray-300"
+              className="ml-2 text-subTextLight dark:text-subTextDark"
             >
               {showPass ? <LuEye title="Hide" /> : <LuEyeClosed title="Show" />}
             </button>
@@ -125,16 +125,16 @@ const Login = () => {
         {/* Links */}
         <div className="flex flex-col justify-center items-center gap-2">
           <Link
-            to="/study/forgot-password"
-            className="text-blue-500 dark:text-blue-400 hover-supported:hover:underline"
+            to="/forgot-password"
+            className="text-editOutlineText hover-supported:hover:underline"
           >
             Forgot password?
           </Link>
-          <p className="text-center w-full">
+          <p className="text-center w-full text-subTextLight dark:text-subTextDark">
             Don't have an account?{" "}
             <Link
-              to="/study/signup"
-              className="text-red-500 hover-supported:hover:underline cursor-pointer"
+              to="/signup"
+              className="text-deleteOutlineText hover-supported:hover:underline cursor-pointer"
             >
               Click here
             </Link>

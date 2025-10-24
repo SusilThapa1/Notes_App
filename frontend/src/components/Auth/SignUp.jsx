@@ -5,7 +5,7 @@ import { MdEmail } from "react-icons/md";
 import { TbLockPassword } from "react-icons/tb";
 import { GiConfirmed } from "react-icons/gi";
 import { LuEyeClosed, LuEye } from "react-icons/lu";
-import { registerUser } from "../../../Services/userService";
+import { registerUser } from "../../../Services/authService";
 import { toast } from "react-toastify";
 import { AuthContext } from "../Context/AuthContext";
 import { emailRegex, passwordRegex } from "../../../Validator/validator";
@@ -120,22 +120,25 @@ const SignUp = () => {
           {/* Username */}
           <div
             className={`flex items-center bg-transparent border border-slate-100 dark:border-gray-700 px-4 py-3 rounded-full shadow-lg transition-all duration-500 ${
-              errors.username ? "border-red-500" : ""
+              errors.username ? "border-deleteNormal" : ""
             }`}
           >
-            <FaUser size={15} className="text-gray-600 dark:text-gray-300 mr-2" />
+            <FaUser
+              size={15}
+              className="text-subTextLight dark:text-subTextDark mr-2"
+            />
             <input
               type="text"
               name="username"
               value={formData.username}
               onChange={handleChange}
               placeholder="Enter name"
-              className="w-full bg-transparent placeholder-gray-400   focus:outline-none"
+              className="w-full bg-transparent placeholder-subTextLight dark:placeholder-subTextDark text-textLight dark:text-textDark focus:outline-none"
               aria-label="Username"
             />
           </div>
           {errors.username && (
-            <p className="text-red-500 text-sm text-center">
+            <p className="text-deleteNormal text-sm text-center">
               {errors.username}
             </p>
           )}
@@ -153,40 +156,42 @@ const SignUp = () => {
               value={formData.email}
               onChange={handleChange}
               placeholder="Enter email"
-              className="w-full bg-transparent placeholder-gray-400 text-textLight dark:text-textDark focus:outline-none"
+              className="w-full bg-transparent placeholder-subTextLight dark:placeholder-subTextDark text-textLight dark:text-textDark focus:outline-none"
               aria-label="Email"
             />
           </div>
           {errors.email && (
-            <p className="text-red-500 text-sm text-center">{errors.email}</p>
+            <p className="text-deleteNormal text-sm text-center">
+              {errors.email}
+            </p>
           )}
 
           {/* Password */}
           <div
             className={`flex items-center bg-transparent border border-slate-100 dark:border-gray-700 px-4 py-3 rounded-full shadow-lg transition-all duration-500 ${
-              errors.password ? "border-red-500" : ""
+              errors.password ? "border-deleteNormal" : ""
             }`}
           >
-            <TbLockPassword size={15} className="text-red-500 mr-2" />
+            <TbLockPassword size={15} className="text-deleteNormal mr-2" />
             <input
               type={showPass ? "text" : "password"}
               name="password"
               value={formData.password}
               onChange={handleChange}
               placeholder="Password"
-              className="w-full bg-transparent placeholder-gray-400 text-textLight dark:text-textDark focus:outline-none"
+              className="w-full bg-transparent placeholder-subTextLight dark:placeholder-subTextDark text-textLight dark:text-textDark focus:outline-none"
               aria-label="Password"
             />
             <button
               type="button"
               onClick={passShow}
-              className="ml-2 text-gray-600 dark:text-gray-300"
+              className="ml-2 text-subTextLight dark:text-subTextDark"
             >
               {showPass ? <LuEye title="hide" /> : <LuEyeClosed title="show" />}
             </button>
           </div>
           {errors.password && (
-            <p className="text-red-500 text-sm text-center">
+            <p className="text-deleteNormal text-sm text-center">
               {errors.password}
             </p>
           )}
@@ -194,22 +199,22 @@ const SignUp = () => {
           {/* Confirm Password */}
           <div
             className={`flex items-center bg-transparent border border-slate-100 dark:border-gray-700 px-4 py-3 rounded-full shadow-lg transition-all duration-500 ${
-              errors.confirmPassword ? "border-red-500" : ""
+              errors.confirmPassword ? "border-deleteNormal" : ""
             }`}
           >
-            <GiConfirmed size={15} className="text-green-500 mr-2" />
+            <GiConfirmed size={15} className="text-addNormal mr-2" />
             <input
               type={showPass ? "text" : "password"}
               name="confirmPassword"
               value={formData.confirmPassword}
               onChange={handleChange}
               placeholder="Confirm password"
-              className="w-full bg-transparent placeholder-gray-400 text-textLight dark:text-textDark focus:outline-none"
+              className="w-full bg-transparent placeholder-subTextLight dark:placeholder-subTextDark text-textLight dark:text-textDark focus:outline-none"
               aria-label="Confirm Password"
             />
           </div>
           {errors.confirmPassword && (
-            <p className="text-red-500 text-sm text-center">
+            <p className="text-deleteNormal text-sm text-center">
               {errors.confirmPassword}
             </p>
           )}
@@ -225,14 +230,18 @@ const SignUp = () => {
                   value={g}
                   checked={formData.gender === g}
                   onChange={handleChange}
-                  className="cursor-pointer accent-green-600 text-textLight dark:text-textDark"
+                  className="cursor-pointer accent-lightGreen text-textLight dark:text-textDark"
                 />
-                <span className="capitalize text-textLight dark:text-textDark">{g}</span>
+                <span className="capitalize text-textLight dark:text-textDark">
+                  {g}
+                </span>
               </label>
             ))}
           </div>
           {errors.gender && (
-            <p className="text-red-500 text-sm text-center">{errors.gender}</p>
+            <p className="text-deleteNormal text-sm text-center">
+              {errors.gender}
+            </p>
           )}
 
           {/* Agreement */}
@@ -246,21 +255,21 @@ const SignUp = () => {
                 onChange={(e) =>
                   setFormData((prev) => ({ ...prev, agree: e.target.checked }))
                 }
-                className="w-4 h-5 accent-green-600 "
+                className="w-4 h-5 accent-lightGreen "
                 required
               />
               <span>
                 I agree to the{" "}
                 <a
-                  href="/study/code-of-conduct"
-                  className="text-blue-500 underline"
+                  href="/code-of-conduct"
+                  className="text-editOutlineText underline"
                 >
                   code of conduct
                 </a>{" "}
                 and{" "}
                 <a
-                  href="/study/privacy-policy"
-                  className="text-blue-500 underline"
+                  href="/privacy-policy"
+                  className="text-editOutlineText underline"
                 >
                   privacy policy
                 </a>
@@ -283,7 +292,7 @@ const SignUp = () => {
 
         <p className="w-full text-center text-textLight dark:text-textDark">
           Already have an account?{" "}
-          <Link to="/study/signin" className="cursor-pointer text-red-500">
+          <Link to="/signin" className="cursor-pointer text-deleteOutlineText">
             Click here
           </Link>
         </p>
