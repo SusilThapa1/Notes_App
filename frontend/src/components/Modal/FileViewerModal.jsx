@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { IoClose } from "react-icons/io5";
 import { HiOutlineExternalLink } from "react-icons/hi";
 
@@ -10,6 +10,8 @@ import "@react-pdf-viewer/default-layout/lib/styles/index.css";
 
 const FileViewerModal = ({ isOpen, onClose, fileUrl, fileName, fileId }) => {
   const navigate = useNavigate();
+  const location = useLocation()
+  console.log(location.pathname)
   if (!isOpen) return null;
 
   const workerUrl =
@@ -64,7 +66,7 @@ const FileViewerModal = ({ isOpen, onClose, fileUrl, fileName, fileId }) => {
             {fileName}
           </h2>
           <button
-            onClick={() => navigate(`/view/${fileId}`)}
+            onClick={() => navigate(`${location.pathname}/${fileId}`)}
             className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition text-sm font-medium"
           >
             <HiOutlineExternalLink /> View Full Page
