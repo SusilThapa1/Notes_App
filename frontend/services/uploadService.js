@@ -5,7 +5,19 @@ const API_URL = import.meta.env.VITE_API_URL + "/upload";
 
 const fetchAllUploads = async () => {
   try {
-    const response = await axios.get(`${API_URL}/getUploadData`);
+    const response = await axios.get(`${API_URL}/getUploadData`, {
+      withCredentials: true,
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+const fetchMyUploads = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/getMyUploads`, {
+      withCredentials: true, 
+    });
     return response.data;
   } catch (error) {
     throw error;
@@ -49,4 +61,4 @@ const deleteUpload = async (uploadId) => {
   }
 };
 
-export { addUpload, fetchAllUploads, updateUpload, deleteUpload };
+export { addUpload, fetchAllUploads,fetchMyUploads, updateUpload, deleteUpload };

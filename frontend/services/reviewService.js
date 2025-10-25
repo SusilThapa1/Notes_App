@@ -63,7 +63,6 @@ const deleteReplyReview = async (id) => {
         withCredentials: true,
       }
     );
-    console.log(response?.data);
     return response.data;
   } catch (err) {
     throw err;

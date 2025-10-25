@@ -18,7 +18,6 @@ const addProgramme = async (programmeData) => {
       `${API_URL}/addProgramme`,
       programmeData,
       {
-        headers: { "Content-Type": "multipart/form-data" },
         withCredentials: true,
       }
     );
@@ -34,7 +33,7 @@ const updateProgramme = async (programmeId, programmeData) => {
       `${API_URL}/updateProgramme/${programmeId}`,
       programmeData,
       {
-        headers: { "Content-Type": "multipart/form-data" },
+        
         withCredentials: true,
       }
     );
