@@ -45,22 +45,39 @@ const sendReview = async (req, res) => {
 
 const getReviews = async (req, res) => {
   try {
-    const reviews = await Review.find()
-      .sort({ updatedAt: -1 })
-      .populate("userId", "_id username profilepath");
+    // Fetch all reviews sorted by updatedAt descending
+    let reviews = await Review.find().sort({ updatedAt: -1 });
+
+    // Array to store valid reviews
+    const validReviews = [];
+
+    for (const review of reviews) {
+      // Check if the user exists
+      const userExists = await Users.exists({ _id: review.userId });
+      if (userExists) {
+        // If user exists, populate user info and push to validReviews
+        const populatedReview = await review.populate("userId", "_id username profilepath");
+        validReviews.push(populatedReview);
+      } else {
+        // If user does not exist, delete the review
+        await Review.findByIdAndDelete(review._id);
+      }
+    }
 
     return res.status(200).json({
       success: 1,
-      message: "Review fetched successfully",
-      data: reviews,
+      message: "Reviews fetched successfully",
+      data: validReviews,
     });
   } catch (err) {
     console.error("Error fetching reviews:", err.message);
-    return res
-      .status(500)
-      .json({ success: 0, message: "Server error: " + err.message });
+    return res.status(500).json({
+      success: 0,
+      message: "Server error: " + err.message,
+    });
   }
 };
+
 
 const adminReply = async (req, res) => {
   const { replyText, date } = req.body;

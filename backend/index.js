@@ -6,12 +6,13 @@ const { upload, profile } = require("./middlewares/file");
 const cookieParser = require("cookie-parser");
 const { globalLimiter } = require("./Utils/rateLimiter");
 
+const authRouter = require("./Routes/authRoutes");
 const userRouter = require("./Routes/userRoutes");
-const semesterRouter = require("./Routes/semesterRoutes");
 const programmeRouter = require("./Routes/programmeRoutes");
 const uploadRouter = require("./Routes/uploadRoutes");
 const reviewRouter = require("./Routes/reviewRoutes");
 const { verifyToken } = require("./middlewares/authMiddleware");
+const universityRouter = require("./Routes/universityRoutes");
 
 require("./config/cronConfig");
 
@@ -19,9 +20,6 @@ const app = express();
 const PORT = 5001;
 
 connectDB();
-
-//  Permissions Policy: allow fullscreen only on your domain
- 
 
 //  Allowed frontend URL
 const allowedOrigins = process.env.FRONTEND_BASE_URL;
@@ -46,11 +44,10 @@ app.get("/", (req, res) => {
   res.send("Hello from server 🚀");
 });
 
-
 //  1. Single Dynamic Upload Route
-app.post("/uploads/:type",verifyToken, (req, res, next) => {
+app.post("/uploads/:type", verifyToken, (req, res, next) => {
   const { type } = req.params;
-  console.log(type)
+  console.log(type);
   let fileMiddleware;
 
   // choose where to store based on file type
@@ -63,8 +60,10 @@ app.post("/uploads/:type",verifyToken, (req, res, next) => {
   // run multer middleware
   fileMiddleware(req, res, (err) => {
     if (err) {
-      console.log(err.message)
-      return res.status(400).json({ success: 0, message:"wow  :"+ err.message });
+      console.log(err.message);
+      return res
+        .status(400)
+        .json({ success: 0, message: "wow  :" + err.message });
     }
 
     if (!req.file) {
@@ -74,14 +73,13 @@ app.post("/uploads/:type",verifyToken, (req, res, next) => {
     res.status(200).json({
       success: 1,
       message: `${type} uploaded successfully`,
-      data:{
+      data: {
         fileUrl: `/uploads/${type}/${req.file.filename}`,
-        originalName: req.file.originalname
-      }
+        originalName: req.file.originalname,
+      },
     });
   });
 });
-
 
 //  2. Profile Upload Route
 app.post("/profiles", profile.single("image"), (req, res) => {
@@ -95,14 +93,13 @@ app.post("/profiles", profile.single("image"), (req, res) => {
   });
 });
 
-
 //  3. API Routes
+app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
-app.use("/api/semester", semesterRouter);
+app.use("/api/university", universityRouter);
 app.use("/api/programme", programmeRouter);
 app.use("/api/upload", uploadRouter);
 app.use("/api/review", reviewRouter);
-
 
 //  4. Start Server
 app.listen(PORT, "0.0.0.0", () => {
