@@ -3,13 +3,10 @@ import { LuEye, LuEyeClosed } from "react-icons/lu";
 import { toast } from "react-toastify";
 import { deleteUserAccount } from "../../../Services/userService";
 import { AuthContext } from "../Context/AuthContext";
-import {
-  showConfirm,
-  showError,
-  showSuccess,
-} from "../../../Utils/alertHelper";
+import { useAlerts } from "../../../Utils/alertHelper";
 
 const DeleteMyAccount = () => {
+  const { showConfirm, showError, showSuccess } = useAlerts();
   const { logOut } = useContext(AuthContext);
 
   const [password, setPassword] = useState("");

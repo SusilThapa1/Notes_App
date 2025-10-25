@@ -5,14 +5,15 @@ import {
   fetchAllUsers,
 } from "../../../Services/userService";
 import { FaTrash } from "react-icons/fa6";
-import { FaExchangeAlt } from "react-icons/fa";
+import { HiOutlineSwitchHorizontal,HiOutlineTrash } from "react-icons/hi";
 import { FcSearch } from "react-icons/fc";
 import { toast } from "react-toastify";
 import { AuthContext } from "../Context/AuthContext";
 import Loader from "../Loader/Loader";
-import { showConfirm, showSuccess } from "../../../Utils/alertHelper";
+import { useAlerts } from "../../../Utils/alertHelper";
 
 const ManageUsers = () => {
+  const { showConfirm, showSuccess } = useAlerts();
   const [users, setUsers] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const { loading } = useContext(AuthContext);
@@ -179,7 +180,7 @@ const ManageUsers = () => {
                           className="text-cyan-500 hover-supported:hover:text-cyan-600"
                           title="change access role"
                         >
-                          <FaExchangeAlt size={18} />
+                          <HiOutlineSwitchHorizontal size={18} />
                         </button>
                         <button
                           onClick={() =>
@@ -188,7 +189,7 @@ const ManageUsers = () => {
                           className="text-red-500 hover-supported:hover:text-red-700"
                           title="delete"
                         >
-                          <FaTrash size={18} />
+                          <HiOutlineTrash  size={18} />
                         </button>
                       </div>
                     </td>

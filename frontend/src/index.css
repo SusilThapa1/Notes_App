@@ -8,11 +8,23 @@
 
 .custom-swal {
   max-width: 90vw !important;
+   border: 3px solid var(--swal-border-color);
+  border-radius: 16px !important;
 }
 .custom-swal-title {
-  font-size: 1.25rem; /* slightly larger title */
-  line-height: 1.5; /* more breathing room */
+  font-size: 1.25rem;  
+  line-height: 1.5;  
   margin-bottom: 8px;
+}
+
+/* Light mode */
+:root {
+  --swal-border-color: #e0e9e0; 
+}
+
+/* Dark mode */
+html.dark {
+  --swal-border-color: #1a1919;  
 }
 
 .Toastify__toast-container--top-center {

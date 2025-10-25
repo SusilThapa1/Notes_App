@@ -1,53 +1,79 @@
 import Swal from "sweetalert2";
+import { useContext } from "react";
+import { ThemeContext } from "../src/components/Context/ThemeContext";
 
-// Reusable confirm dialog
-export const showConfirm = async ({
-  title = "Are you sure?",
-  text = "",
-  icon = "warning",
-  confirmText = "Yes",
-  cancelText = "No",
-  width = "600px",
-}) => {
-  return await Swal.fire({
-  title,
-  text,
-  icon,
-  showCancelButton: true,
-  background: "#E2E8F0",
-  confirmButtonColor: "#49bb0f",
-  cancelButtonColor: "#d33",
-   confirmButtonText: confirmText,
-    cancelButtonText: cancelText,
-  width,
-  customClass: {
-    popup: "custom-swal",
-    title: "custom-swal-title",
-    htmlContainer: "custom-swal-text", // text/body area
-  },
-});
-};
+// Small hook wrapper to use inside your components
+export const useAlerts = () => {
+  const { theme } = useContext(ThemeContext);
+  console.log(theme)
 
-// Quick success popup
-export const showSuccess = ({ text = "", title = "Success!" }) => {
-  return Swal.fire({
-    title,
-    text,
-    icon: "success",
-    background: "#E2E8F0",
-    // buttonsStyling: false,
-    confirmButtonColor: "#49bb0f",
-  });
-};
+  const getThemeColors = () => {
+    return theme === "dark"
+      ? {
+          background: "#0d1117",
+          textColor: "#d6e6e6",
+          confirmButtonColor: "#4A9549", // dark green
+          cancelButtonColor: "#EF4444",
+        }
+      : {
+          background: "#E2E8F0",
+          textColor: "#111",
+          confirmButtonColor: "#5CAC54",
+          cancelButtonColor: "#d33",
+        };
+  };
 
-// Quick error popup
-export const showError = ({ text = "", title = "Error!" }) => {
-  return Swal.fire({
-    title,
-    text,
-    icon: "error",
-    background: "#E2E8F0",
-    // buttonsStyling: false,
-    confirmButtonColor: "#d33",
-  });
+  const showConfirm = async ({
+    title = "Are you sure?",
+    text = "",
+    icon = "warning",
+    confirmText = "Yes",
+    cancelText = "No",
+    width = "600px",
+  }) => {
+    const colors = getThemeColors();
+    return await Swal.fire({
+      title,
+      text,
+      icon,
+      showCancelButton: true,
+      background: colors.background,
+      color: colors.textColor,
+      confirmButtonColor: colors.confirmButtonColor,
+      cancelButtonColor: colors.cancelButtonColor,
+      confirmButtonText: confirmText,
+      cancelButtonText: cancelText,
+      width,
+      customClass: {
+        popup: "custom-swal",
+        title: "custom-swal-title",
+      },
+    });
+  };
+
+  const showSuccess = ({ text = "", title = "Success!" }) => {
+    const colors = getThemeColors();
+    return Swal.fire({
+      title,
+      text,
+      icon: "success",
+      background: colors.background,
+      color: colors.textColor,
+      confirmButtonColor: colors.confirmButtonColor,
+    });
+  };
+
+  const showError = ({ text = "", title = "Error!" }) => {
+    const colors = getThemeColors();
+    return Swal.fire({
+      title,
+      text,
+      icon: "error",
+      background: colors.background,
+      color: colors.textColor,
+      confirmButtonColor: colors.cancelButtonColor,
+    });
+  };
+
+  return { showConfirm, showSuccess, showError };
 };

@@ -10,12 +10,13 @@ import { toast } from "react-toastify";
 import { deleteUpload, fetchMyUploads } from "../../../Services/uploadService";
 import UploadModal from "../Modal/UploadModal";
 import { MyUploadCardLoader } from "../Loader/CardLoader";
-import { showConfirm } from "../../../Utils/alertHelper";
+import { useAlerts } from "../../../Utils/alertHelper";
 import { MdOutlineVerifiedUser } from "react-icons/md";
 import FileViewerModal from "../Modal/FileViewerModal";
 import { FcSearch } from "react-icons/fc";
 
 const MyUploads = () => {
+  const { showConfirm } = useAlerts();
   const [myUploads, setMyUploads] = useState([]);
   const [filteredUploads, setFilteredUploads] = useState([]);
   const [loading, setLoading] = useState(false);

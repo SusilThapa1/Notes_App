@@ -3,14 +3,11 @@ import { AuthContext } from "../Context/AuthContext";
 import { FaDesktop, FaMobileAlt, FaTabletAlt, FaGlobe } from "react-icons/fa";
 import Loader from "../Loader/Loader";
 import { removeSession } from "../../../Services/authService";
-import {
-  showConfirm,
-  showError,
-  showSuccess,
-} from "../../../Utils/alertHelper";
+import { useAlerts } from "../../../Utils/alertHelper";
 
 const ViewLogins = () => {
   const { userDetails, loading } = useContext(AuthContext);
+  const { showConfirm, showError, showSuccess } = useAlerts();
   const [, setTick] = useState(0);
 
   // Use currentDeviceId from context instead of cookies
