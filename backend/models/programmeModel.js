@@ -27,4 +27,4 @@ const programSchema = mongoose.Schema(
   },
   { timestamps: true }
 );
-module.exports = mongoose.model("programme", programSchema);
+module.exports = mongoose.model("programmes", programSchema);

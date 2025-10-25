@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const Users = require("../models/userModel");
+const { clearCookie } = require("../Utils/cookieHelper");
 
 const verifyToken = async (req, res, next) => {
   const token = req.cookies.token;
@@ -10,6 +11,8 @@ const verifyToken = async (req, res, next) => {
     const user = await Users.findById(decoded.id).select("-password");  
 
     if (!user) {
+      clearCookie(res,"token")
+      clearCookie(res,"deviceId")
       return res.status(404).json({ success: 0, message: "User not found" });
     }
 
@@ -37,6 +40,8 @@ const verifyAdmin = async (req, res, next) => {
     const user = await Users.findById(decoded.id);
 
     if (!user) {
+      clearCookie(res,"token")
+      clearCookie(res,"deviceId")
       return res.status(404).json({ success: 0, message: "User not found" });
     }
 

@@ -108,12 +108,10 @@ let uploadDelete = async (req, res) => {
 
 // Get a single upload
 let getSingleUpload = async (req, res) => {
-  console.log(req.userid);
   try {
     const upload = await Uploads.find({ userID: req.userid })
       .populate("userID", "username email profilepath")
-      .populate("programmeID");
-    console.log(upload);
+      .populate("programmeID").populate("universityID");
     if (!upload)
       return res.status(404).json({ success: 0, message: "Upload not found" });
 

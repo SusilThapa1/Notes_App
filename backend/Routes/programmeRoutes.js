@@ -15,7 +15,6 @@ programmeRouter.post(
   "/addProgramme",
   verifyToken,
   verifyAdmin,
-  upload.single("image"),
   programmeInsert
 );
 programmeRouter.get("/viewProgramme", programmeList);
@@ -28,7 +27,6 @@ programmeRouter.put(
   "/updateProgramme/:id",
   verifyToken,
   verifyAdmin,
-  upload.single("image"),
   programmeUpdate
 );
 
