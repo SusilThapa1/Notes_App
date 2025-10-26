@@ -43,7 +43,12 @@ const Review = ({ existingReview }) => {
         rating: newReview.rating,
         message: newReview.message,
       });
-      reviewFormRef.current.scrollIntoView({ behavior: "smooth" });
+      setTimeout(() => {
+        reviewFormRef.current.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        });
+      }, 50);
     }
   }, [existingReview]);
 
@@ -57,7 +62,7 @@ const Review = ({ existingReview }) => {
     toast.dismiss();
     if (!review.rating || !review.message)
       return toast.error("Please rate and write something!");
-    if (!userDetails?.isAccountVerified) navigate("/study/signin");
+    if (!userDetails?.isAccountVerified) navigate("/signin");
 
     try {
       const res = review._id
@@ -97,13 +102,16 @@ const Review = ({ existingReview }) => {
         <h1 className="text-2xl md:text-3xl text-lightGreen font-bold ">
           Share Your Thoughts and Experience
         </h1>
-        <p className="text-gray-600 dark:text-gray-300 text-sm md:text-base">
+        <p className="text-subTextLight dark:text-subTextDark text-sm md:text-base">
           Drop a review and let others know what you think about this website!
         </p>
 
-        <form onSubmit={handleReview} className="w-full dark:bg-gray-900">
-          <div className="flex flex-col gap-2 items-start p-4 border-2 border-slate-100 dark:border-gray-600 shadow-md rounded-3xl">
-            <h1 className="text-gray-600 dark:text-gray-300 text-sm font-medium">
+        <form
+          onSubmit={handleReview}
+          className="w-full dark:bg-gray-900 shadow-md rounded-3xl"
+        >
+          <div className="flex flex-col gap-2 items-start p-4 border-2 border-slate-100 dark:border-gray-600  rounded-3xl">
+            <h1 className="text-subTextLight dark:text-subTextDark text-sm font-medium">
               Rate this website
             </h1>
             <div className="flex gap-1 text-yellow-500">
@@ -133,7 +141,7 @@ const Review = ({ existingReview }) => {
                 placeholder="Write your review here..."
                 value={review.message}
                 onChange={handleChange}
-                className="bg-transparent w-full resize-none scroll-container text-sm text-gray-700 dark:text-gray-200"
+                className="bg-transparent w-full resize-none scroll-container text-sm text-textLight dark:text-textDark"
               />
               <button
                 title="Submit Review"

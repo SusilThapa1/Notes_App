@@ -12,13 +12,14 @@ import {
 import { AuthContext } from "../Context/AuthContext";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import { showConfirm, showError } from "../../../Utils/alertHelper";
+import { useAlerts } from "../../../Utils/alertHelper";
 
 const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
   const today = new Date().toISOString().slice(0, 10).replace(/-/g, "/");
   const navigate = useNavigate();
   const { userDetails } = useContext(AuthContext);
   const isAdmin = userDetails?.role === "admin";
+  const { showConfirm, showError } = useAlerts();
 
   const [editingReplyId, setEditingReplyId] = useState(null);
   const [editReplyText, setEditReplyText] = useState("");
@@ -160,8 +161,8 @@ const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
             <h3
               className={`text-md font-semibold ${
                 isOwn
-                  ? "text-gray-800 dark:text-gray-200"
-                  : "text-gray-800 dark:text-gray-200"
+                  ? "text-textLight dark:text-textDark"
+                  : "text-textLight dark:text-textDark"
               }`}
             >
               {review?.userId?.username}
@@ -174,14 +175,14 @@ const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
               <HiOutlineDotsVertical
                 onClick={() => handleShowUserAction(review._id)}
                 size={15}
-                className="text-gray-500 dark:text-gray-300"
+                className="text-subTextLight dark:text-subTextDark"
               />
             )}
 
           <div
             className={`${
               selectedUserReviewId === review._id ? "" : "hidden"
-            } absolute right-5 flex flex-col justify-center items-center gap-3 border border-slate-100 dark:border-gray-600 bg-gray-200 dark:bg-dark p-2 shadow-lg dark:shadow-gray-700 rounded-lg text-sm text-gray-500 dark:text-gray-300`}
+            } absolute right-5 flex flex-col justify-center items-center gap-3 border border-slate-100 dark:border-gray-600 bg-gray-200 dark:bg-dark p-2 shadow-lg dark:shadow-gray-700 rounded-lg text-sm text-subTextLight dark:text-subTextDark`}
           >
             <button
               type="button"
@@ -201,7 +202,7 @@ const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
                 setSelectedUserReviewId(null);
                 handleReviewDelete(review?._id);
               }}
-              className="hover-supported:hover:text-red-500 active:text-red-500"
+              className="hover-supported:hover:text-deleteNormal active:text-deleteNormal"
             >
               Delete review
             </button>
@@ -209,7 +210,7 @@ const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
         </div>
 
         {/* Date + Stars */}
-        <div className="flex items-center gap-5 text-sm text-gray-500 dark:text-gray-400 mt-1">
+        <div className="flex items-center gap-5 text-sm text-subTextLight dark:text-subTextDark mt-1">
           <div className="flex items-center gap-1 text-yellow-500">
             {[1, 2, 3, 4, 5].map((star) =>
               star <= review?.rating ? (
@@ -219,9 +220,16 @@ const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
               )
             )}
           </div>
-          <span>{review?.date}</span>
+          <span>
+            {new Date(review?.createdAt).toLocaleDateString()}{" "}
+            {review?.updatedAt && review?.updatedAt !== review?.createdAt && (
+              <span className="text-xs text-gray-500 dark:text-gray-400">
+                (edited)
+              </span>
+            )}
+          </span>
         </div>
-        <p className="text-sm text-gray-600 dark:text-gray-300 ml-1 mt-2 pb-3">
+        <p className="text-sm text-subTextLight dark:text-subTextDark ml-1 mt-2 pb-3">
           {review?.message}
         </p>
 
@@ -252,7 +260,7 @@ const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
                       placeholder="Write review reply here..."
                       value={replyReview.replyText}
                       onChange={handleReplyChange}
-                      className="bg-transparent w-full resize-none text-sm text-gray-700 dark:text-gray-200"
+                      className="bg-transparent w-full resize-none text-sm text-textLight dark:text-textDark"
                     />
                     <button
                       title="Submit Review Reply"
@@ -284,7 +292,7 @@ const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
                     `(${review?.reply?.repliedBy?.name})`}
                 </h3>
               </div>
-              <div className="flex justify-center items-center gap-3 text-sm text-gray-500 dark:text-gray-300">
+              <div className="flex justify-center items-center gap-3 text-sm text-subTextLight dark:text-subTextDark">
                 <span>{review?.reply?.repliedDate}</span>
                 {userDetails?.isAccountVerified && isAdmin && (
                   <HiOutlineDotsVertical
@@ -316,7 +324,7 @@ const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
                       setSelectedAdminReplyId(null);
                       handleReviewReplyDelete(review?._id);
                     }}
-                    className="hover-supported:hover:text-red-500 active:text-red-500"
+                    className="hover-supported:hover:text-deleteNormal active:text-deleteNormal"
                   >
                     Delete reply
                   </button>
@@ -324,7 +332,7 @@ const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
               </div>
             </div>
 
-            <p className="text-sm text-gray-600 dark:text-gray-300 ml-1 mt-2">
+            <p className="text-sm text-subTextLight dark:text-subTextDark ml-1 mt-2">
               {review?.reply?.text}
             </p>
 
@@ -340,7 +348,7 @@ const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
                     value={editReplyText}
                     onChange={(e) => setEditReplyText(e.target.value)}
                     maxLength={200}
-                    className="w-full resize-none bg-transparent text-sm text-gray-700 dark:text-gray-200"
+                    className="w-full resize-none bg-transparent text-sm text-textLight dark:text-textDark"
                   />
                   <button
                     type="submit"
@@ -359,8 +367,8 @@ const ReviewList = ({ allReview, setAllReview, getAllReview }) => {
   );
 
   return (
-    <div className="flex flex-col p-4 gap-4 border-2 border-slate-100 dark:border-gray-700   rounded-xl max-h-[90vh]  dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-      <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-200 text-left">
+    <div className="flex flex-col p-4 gap-4 border-2 border-slate-100 dark:border-gray-700 rounded-xl shadow-md max-h-[90vh] dark:bg-gray-900 text-textLight dark:text-textDark">
+      <h2 className="text-lg font-semibold text-textLight dark:text-textDark text-left">
         User Reviews ({allReview.length})
       </h2>
       <div className="overflow-y-scroll scroll-container scroll-smooth">
