@@ -8,15 +8,15 @@ const ProtectedRoute = ({ roleRequired }) => {
 
   if (loading) return <Loader />;
 
-  // User not logged in
-  if (!userDetails) return <Navigate to="/" replace />;
+  // User not logged in -> send to sign-in
+  if (!userDetails) return <Navigate to="/signin" replace />;
 
   // Role-based access control
   if (
     roleRequired &&
     userDetails?.role?.toLowerCase() !== roleRequired.toLowerCase()
   ) {
-    return <Navigate to="/study/not-authorize" replace />;
+    return <Navigate to="/not-authorize" replace />;
   }
 
   return <Outlet />;

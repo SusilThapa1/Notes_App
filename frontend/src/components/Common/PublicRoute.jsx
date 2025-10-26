@@ -12,7 +12,7 @@ const PublicRoute = () => {
     // redirect based on role
     const role = userDetails.role?.toLowerCase();
     if (role === "admin") {
-      return <Navigate to="/study/admin/dashboard" replace />;
+      return <Navigate to="/admin/dashboard" replace />;
     }
     if (role === "user") {
       return <Navigate to="/" replace />;

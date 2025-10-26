@@ -1,34 +1,24 @@
 import { createContext, useState, useEffect, useRef } from "react";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+import { fetchSingleUser } from "../../../Services/userService";
 import {
-  fetchAllUsers,
-  fetchSingleUser,
+  heartbeat,
   logoutUser,
   sendEmailChangeVerifyOtp,
   sendVerifyOtp,
-} from "../../../Services/userService";
-import { useNavigate } from "react-router-dom";
-import { jwtDecode } from "jwt-decode";
+} from "../../../Services/authService";
 
 const AuthContext = createContext(null);
 
 const AuthProvider = ({ children }) => {
   const [userDetails, setUserDetails] = useState(null);
-
   const [loading, setLoading] = useState(true);
-  const [greeting, setGreeting] = useState(localStorage.getItem("greet"));
-  const [token, setToken] = useState(localStorage.getItem("token"));
+  const [greeting, setGreeting] = useState(null);
+  const heartbeatIntervalRef = useRef(null);
+  const navigate = useNavigate();
 
-  const [user, setUser] = useState(() => {
-    try {
-      const storedUser = localStorage.getItem("user");
-      return storedUser ? JSON.parse(storedUser) : null;
-    } catch (error) {
-      console.error("Invalid user data in localStorage:", error);
-      return null;
-    }
-  });
-
+  // Random greeting
   const greetings = [
     "Hey",
     "Howdy",
@@ -38,155 +28,149 @@ const AuthProvider = ({ children }) => {
     "Namaste",
     "Good to see you",
   ];
-  const randomGreeting =
-    greetings[Math.floor(Math.random() * greetings.length)];
 
-  const setUserSession = (newToken, newUser) => {
-    localStorage.setItem("token", newToken);
-    localStorage.setItem("user", JSON.stringify(newUser));
-    localStorage.setItem("greet", randomGreeting);
-    setToken(newToken);
-    setUser(newUser);
-    setGreeting(randomGreeting);
-  };
+  useEffect(() => {
+    if (!userDetails?._id) return;
 
-  const navigate = useNavigate();
-
-  const logoutTimerRef = useRef(null);
-
-  const logOut = async (isAutoLogout = false, text) => {
-    try {
-      if (logoutTimerRef.current) {
-        clearTimeout(logoutTimerRef.current);
-      }
-
-      const res = await logoutUser();
-      if (res.success) {
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
-        localStorage.removeItem("greet");
-        setToken(null);
-        setUser(null);
-        setGreeting(null);
-        navigate("/study/signin");
-
-        // Show different toast messages based on logout type
-        if (isAutoLogout) {
-          toast.info(
-            "Session expired. You have been logged out automatically."
-          );
-        } else {
-          toast.success(text);
-        }
-      }
-    } catch (err) {
-      console.error(err?.response?.data?.message);
-      toast.error("Error during logout");
+    // Check if a greeting is already stored in localStorage
+    const storedGreeting = localStorage.getItem("greeting");
+    if (storedGreeting) {
+      setGreeting(storedGreeting);
+    } else {
+      const randomGreeting =
+        greetings[Math.floor(Math.random() * greetings.length)];
+      setGreeting(randomGreeting);
+      localStorage.setItem("greeting", randomGreeting); // save for future reloads
     }
+  }, [userDetails?._id]);
+
+  const setUserSession = (newUser) => {
+    setUserDetails(newUser);
   };
 
-  const userDetail = async () => {
+  // Fetch user details
+  const fetchUserDetails = async () => {
     try {
       const res = await fetchSingleUser();
-      if (res.success) {
-        setUserDetails(res.data);
-      } else {
-        toast.error("Failed to fetch user details.");
-      }
-    } catch (e) {
-      console.error(e);
-      // toast.error("Error fetching user details.");
-    } finally {
-      setLoading(false);
+      if (res.success) setUserSession(res.data);
+    } catch (err) {
+      if (err.response?.status === 401 || err.response?.status === 403) {
+        clearSession();
+        navigate("/");
+      } else console.error("Failed to fetch user details:", err);
     }
   };
 
-  const sendEmailVerifyOtp = async (email) => {
-    console.log(email);
-    if (!email) {
-      return toast.error("Email not found");
-    }
-    try {
-      const resp = await sendVerifyOtp(email);
-      if (resp.success) {
-        toast.success(resp.message);
-
-        navigate("/study/user/email-verify-OTP");
-      } else {
-        toast.error(resp.message);
-      }
-    } catch (error) {
-      toast.error(error?.response?.data?.message);
-    }
+  // Clear session
+  const clearSession = () => {
+    setUserSession(null);
+    setGreeting(null);
+    if (heartbeatIntervalRef.current)
+      clearInterval(heartbeatIntervalRef.current);
   };
 
-  const emailChangeVerifyOtp = async (email) => {
-    console.log(email);
-    if (!email) {
-      return toast.error("Email not found");
-    }
-    try {
-      const resp = await sendEmailChangeVerifyOtp(email);
-      if (resp.success) {
-        toast.success(resp.message);
+  // Logout
+  const logOut = async (isAutoLogout = false, message) => {
+    // Optimistically clear session and navigate to sign-in to avoid race conditions
+    clearSession();
+    navigate("/signin", { replace: true });
 
-        navigate("/study/user/email-change-verify-OTP");
+    try {
+      await logoutUser(); // ask backend to clear cookie/session
+    } catch (err) {
+      // Handle already invalidated session (remote removal, expired, etc.)
+      if (err.response?.status === 401) {
+        console.warn("Session removed or invalid");
       } else {
-        toast.error(resp.message);
+        console.error(err);
+        // keep user on sign-in even if server call fails
+        toast.error(
+          "Logout failed on server, but your local session was cleared"
+        );
       }
-    } catch (error) {
-      toast.error(error?.response?.data?.message);
+    }
+
+    if (isAutoLogout) {
+      toast.info("Session expired.");
+    } else if (message) {
+      toast.success(message);
     }
   };
 
   useEffect(() => {
-    if (!token) {
-      setLoading(false);
-      return;
-    }
+    if (!userDetails?._id) return;
 
-    let decoded;
-    try {
-      decoded = jwtDecode(token);
-    } catch (err) {
-      console.error("Invalid token");
-      logOut(true);
-      return;
-    }
-
-    const expiresAt = decoded.exp * 1000;
-    const now = Date.now();
-    const timeout = expiresAt - now;
-
-    if (timeout <= 0) {
-      // Token already expired
-      logOut(true);
-    } else {
-      // Set timer to auto logout, pass true to show auto logout toast
-      logoutTimerRef.current = setTimeout(() => {
-        logOut(true);
-      }, timeout);
-    }
-
-    userDetail();
+    heartbeatIntervalRef.current = setInterval(async () => {
+      try {
+        const res = await heartbeat();
+        if (res?.user) setUserSession(res.user);
+      } catch (err) {
+        if (err.message === "SESSION_EXPIRED") {
+          logOut(true);
+        } else {
+          console.error("Heartbeat error:", err);
+        }
+      }
+    }, 15000); // every 15 sec
 
     return () => {
-      if (logoutTimerRef.current) {
-        clearTimeout(logoutTimerRef.current);
+      if (heartbeatIntervalRef.current) {
+        clearInterval(heartbeatIntervalRef.current);
+        heartbeatIntervalRef.current = null;
       }
     };
-  }, [token]);
+  }, [userDetails?._id]);
+
+  // Initialize session on mount
+  useEffect(() => {
+    const init = async () => {
+      await fetchUserDetails();
+      setLoading(false);
+    };
+    init();
+  }, []);
+
+  // OTP functions
+  const sendEmailVerifyOtp = async (email) => {
+    if (!email) {
+      navigate("/signup");
+      toast.error("Email not found");
+      return;
+    }
+    try {
+      const res = await sendVerifyOtp(email);
+      if (res.success) {
+        toast.success(res.message);
+        navigate("/user/email-verify-OTP", {
+          state: { userId: res.userId },
+        });
+      } else toast.error(res.message);
+    } catch (err) {
+      toast.error(err?.response?.data?.message);
+    }
+  };
+
+  const emailChangeVerifyOtp = async (email) => {
+    if (!email) return toast.error("Email not found");
+    try {
+      const res = await sendEmailChangeVerifyOtp(email);
+      if (res.success) {
+        navigate("/user/email-change-verify-OTP");
+        toast.success(res.message);
+      } else toast.error(res.message);
+    } catch (err) {
+      toast.error(err?.response?.data?.message);
+    }
+  };
 
   return (
     <AuthContext.Provider
       value={{
-        setUserSession,
         userDetails,
+        clearSession,
         setUserDetails,
+        setUserSession,
         logOut,
-        token,
-        user,
-        setUser,
         greeting,
         loading,
         sendEmailVerifyOtp,
