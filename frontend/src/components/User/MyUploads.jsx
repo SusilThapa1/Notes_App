@@ -43,7 +43,6 @@ const MyUploads = () => {
     }
   };
 
-  console.log(filteredUploads);
   useEffect(() => {
     fetchUploads();
   }, []);
@@ -184,7 +183,20 @@ const MyUploads = () => {
               </h1>
 
               <div className="flex items-center text-base text-subTextLight dark:text-subTextDark gap-1">
-                <h3>{file.courseCode}</h3> - <p>{file.courseName}</p>
+                {file.courseCode && file.courseName && (
+                  <>
+                    <h3>{file.courseCode}</h3>
+                    <span>-</span>
+                    <p>{file.courseName}</p>
+                  </>
+                )}
+                {file.year && (
+                  <>
+                    <h3>Questions</h3>
+                    <span>-</span>
+                    <p>{file.year}</p>
+                  </>
+                )}
               </div>
 
               <div className="flex gap-2 items-center flex-wrap mt-2">
