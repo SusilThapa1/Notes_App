@@ -12,13 +12,14 @@ import {
   MdVerified,
 } from "react-icons/md";
 import { emailRegex } from "../../../Validator/validator";
-import { showConfirm } from "../../../Utils/alertHelper";
+import { useAlerts } from "../../../Utils/alertHelper";
 import Loader from "../Loader/Loader";
 import { HiOutlineTrash } from "react-icons/hi";
 import { IoSaveOutline } from "react-icons/io5";
 import { HiOutlinePencilSquare } from "react-icons/hi2";
 
 const Profile = () => {
+  const { showConfirm } = useAlerts();
   const {
     userDetails,
     setUserDetails,
