@@ -10,23 +10,35 @@ let uploadInsert = async (req, res) => {
       programme,
       courseCode,
       courseName,
+      year,
       semyear,
       filename,
       filepath,
       isVerified,
     } = req.body;
 
-    if (
-      !university ||
-      !resources ||
-      !programme ||
-      !courseCode ||
-      !courseName ||
-      !semyear
-    ) {
-      return res
-        .status(400)
-        .json({ success: 0, message: "All required fields must be filled" });
+    // Required checks
+    if (!university || !resources || !programme || !semyear) {
+      return res.status(400).json({
+        success: 0,
+        message: "All fields must be filled",
+      });
+    }
+
+    // Conditional fields for syllabus/notes
+    if (resources !== "questions" && (!courseCode || !courseName)) {
+      return res.status(400).json({
+        success: 0,
+        message: "Course code and name are required for this resource type",
+      });
+    }
+
+    // Conditional field for questions
+    if (resources === "questions" && !year) {
+      return res.status(400).json({
+        success: 0,
+        message: "Year is required for questions",
+      });
     }
 
     if (!filename || !filepath) {
@@ -40,8 +52,9 @@ let uploadInsert = async (req, res) => {
       universityID: university,
       resources,
       programmeID: programme,
-      courseCode,
-      courseName,
+      courseCode: courseCode || "",  
+      courseName: courseName || "",  
+      year: year || "",  
       semyear,
       filename,
       filepath,
@@ -111,7 +124,8 @@ let getSingleUpload = async (req, res) => {
   try {
     const upload = await Uploads.find({ userID: req.userid })
       .populate("userID", "username email profilepath")
-      .populate("programmeID").populate("universityID");
+      .populate("programmeID")
+      .populate("universityID");
     if (!upload)
       return res.status(404).json({ success: 0, message: "Upload not found" });
 
@@ -137,6 +151,7 @@ let uploadUpdate = async (req, res) => {
       programme,
       courseCode,
       courseName,
+      year,
       semyear,
       filename,
       filepath,
@@ -149,6 +164,7 @@ let uploadUpdate = async (req, res) => {
       programmeID: programme,
       courseCode,
       courseName,
+      year,
       semyear,
       filename,
       filepath,

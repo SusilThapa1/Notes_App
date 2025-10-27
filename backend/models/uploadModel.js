@@ -6,8 +6,9 @@ const uploadSchema = new mongoose.Schema(
     universityID: { type: mongoose.Schema.Types.ObjectId, ref: "universities", required: true },
     resources: { type: String, enum: ["syllabus", "notes", "questions"], required: true },
     programmeID: { type: mongoose.Schema.Types.ObjectId, ref: "programmes", required: true },
-    courseCode: { type: String, required: true },
-    courseName: { type: String, required: true },
+      courseCode: { type: String },
+    courseName: { type: String },
+    year: { type: Number },
     semyear: {
       type: String,
       enum: [
@@ -23,6 +24,16 @@ const uploadSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+uploadSchema.pre("save", function (next) {
+  if (this.resources === "questions" && !this.year) {
+    return next(new Error("Year is required for questions resource"));
+  }
+  if ((this.resources === "syllabus" || this.resources === "notes") && (!this.courseCode || !this.courseName)) {
+    return next(new Error("Course code and name are required for syllabus or notes"));
+  }
+  next();
+});
 
 
 module.exports = mongoose.model("Uploads", uploadSchema);
