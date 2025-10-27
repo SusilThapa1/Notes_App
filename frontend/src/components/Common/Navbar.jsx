@@ -13,9 +13,10 @@ import {
 import { HiOutlineUpload } from "react-icons/hi";
 import { AuthContext } from "../Context/AuthContext";
 import { ThemeContext } from "../Context/ThemeContext";
-import { showConfirm } from "../../../Utils/alertHelper";
+import { useAlerts } from "../../../Utils/alertHelper";
 
 const Navbar = () => {
+  const { showConfirm } = useAlerts();
   const { logOut, userDetails, loading } = useContext(AuthContext);
   const { theme, toggleTheme } = useContext(ThemeContext);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -87,7 +88,7 @@ const Navbar = () => {
       <div className="relative backdrop-blur-lg flex items-center justify-between py-2 px-5 md:px-10 lg:px-20 h-16">
         {/* Logo & Mobile Button */}
         <div className="flex justify-center gap-5 items-center w-20  ">
-          {userDetails && userDetails?.role !== "admin" && (
+          {userDetails && userDetails?.role != "admin" && (
             <button
               onClick={toggleMenu}
               className="md:hidden text-2xl absolute left-5 text-textLight dark:text-textDark"
@@ -112,7 +113,7 @@ const Navbar = () => {
         </div>
 
         {/* Desktop Navigation */}
-        {userDetails && userDetails?.role !== "admin" && (
+        {userDetails && (
           <ul className="hidden md:flex gap-5 font-semibold text-textLight dark:text-textDark">
             {baseLinks.map(({ name }) => {
               const path = getPath(name);
