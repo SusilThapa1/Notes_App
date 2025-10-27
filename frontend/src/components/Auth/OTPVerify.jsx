@@ -5,7 +5,7 @@ import {
   otpResend,
   verifyEmail,
   verifyEmailChange,
-} from "../../../Services/userService";
+} from "../../../Services/authService";
 import { AuthContext } from "../Context/AuthContext";
 
 const OTPVerify = () => {
@@ -54,7 +54,7 @@ const OTPVerify = () => {
       if (res?.success) {
         setUserSession(res?.user); // frontend UI only
         toast.success(res?.message);
-        // navigate("/study/signin");
+        // navigate("/signin");
       } else toast.error(res?.message);
     } catch (err) {
       toast.error(err?.response?.data?.message || "Something went wrong");
@@ -144,7 +144,7 @@ const OTPVerify = () => {
                   onChange={(e) => handleChange(e, idx)}
                   onKeyDown={(e) => handleKeyDown(e, idx)}
                   ref={(el) => (inputRefs.current[idx] = el)}
-                  className="w-10 h-10 sm:w-12 sm:h-12 text-center text-xl border-2 border-gray-300 rounded-lg outline-slate-200 focus:ring-2 focus:ring-green-500 transition-all duration-300"
+                  className="w-10 h-10 sm:w-12 sm:h-12 text-center text-xl border-2 border-slate-100 dark:border-gray-700 rounded-lg outline-slate-200 focus:ring-2 focus:ring-lightGreen transition-all duration-300 text-textLight dark:text-textDark"
                 />
               ))}
             </div>
@@ -152,9 +152,9 @@ const OTPVerify = () => {
               type="submit"
               className={`${
                 error || otp.some((d) => d === "")
-                  ? "bg-red-600"
-                  : " bg-lightGreen"
-              } text-white px-4 sm:px-6 py-1 sm:py-2 shadow-lg font-medium rounded-lg`}
+                  ? "bg-deleteNormal hover:bg-deleteHover"
+                  : " bg-lightGreen hover:bg-darkGreen"
+              } text-white px-4 sm:px-6 py-1 sm:py-2 shadow-lg font-medium rounded-lg transition-colors`}
             >
               Verify
             </button>
