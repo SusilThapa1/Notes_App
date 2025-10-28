@@ -8,7 +8,7 @@ import { IoClose, IoMenu } from "react-icons/io5";
 import { AuthContext } from "../Context/AuthContext";
 
 const Sidebar = () => {
-  const url = "/study/admin";
+  const url = "/admin";
   const menus = [
     { name: "Dashboard", link: `${url}/dashboard` },
     { name: "Manage Users", link: `${url}/manageusers` },
@@ -47,10 +47,10 @@ const Sidebar = () => {
             }
             className="w-24 h-24 rounded-full object-cover"
           />
-          <h2 className="text-gray-700 font-medium dark:text-gray-200">
+          <h2 className="text-textLight font-medium dark:text-textDark">
             {userDetails?.username || "Easy Study Zone"}
           </h2>
-          <h3 className="text-gray-600 dark:text-gray-400">
+          <h3 className="text-subTextLight dark:text-subTextDark">
             {userDetails?.email}
           </h3>
         </div>
@@ -61,11 +61,11 @@ const Sidebar = () => {
             <Link
               to={menu.link}
               key={menu.name}
-              className={`flex gap-2 items-center w-full px-3 py-3 rounded-2xl transition-all duration-300 shadow-xl border hover-supported:hover:text-darkGreen dark:hover:text-lightGreen
+              className={`flex gap-2 items-center w-full px-3 py-3 rounded-2xl transition-all duration-300 shadow-xl border hover-supported:hover:text-darkGreen dark:hover:text-lightGreen dark:bg-gray-900
                 ${
                   isActive
                     ? "text-lightGreen border-transparent dark:border-gray-700"
-                    : "text-gray-700 border-yellow-50 dark:text-gray-300 dark:border-gray-700"
+                    : "text-subTextLight border-yellow-50 dark:text-subTextDark dark:border-gray-700"
                 }`}
             >
               {menu.name === "Dashboard" && <MdOutlineDashboard size={20} />}
@@ -86,7 +86,7 @@ const Sidebar = () => {
       {/* Mobile Admin Menu Toggle */}
       <button
         onClick={handleAdminMenu}
-        className="md:hidden text-2xl fixed top-3 z-50 text-gray-800 dark:text-gray-200"
+        className="md:hidden text-2xl fixed top-3 z-50 text-textLight dark:text-textDark"
         aria-label="Toggle menu"
       >
         {adminMenuOpen ? (
@@ -114,10 +114,10 @@ const Sidebar = () => {
             }
             className="w-20 h-20 rounded-full object-cover"
           />
-          <h2 className="text-gray-700 font-medium dark:text-gray-200">
+          <h2 className="text-textLight font-medium dark:text-textDark">
             {userDetails?.username || "Easy Study Zone"}
           </h2>
-          <h3 className="text-gray-600 dark:text-gray-400">
+          <h3 className="text-subTextLight dark:text-subTextDark">
             {userDetails?.email}
           </h3>
         </div>
@@ -133,7 +133,7 @@ const Sidebar = () => {
                 ${
                   isActive
                     ? "text-lightGreen border-lightGreen"
-                    : "text-gray-700 border-yellow-50 dark:text-gray-300 dark:border-gray-700"
+                    : "text-subTextLight border-yellow-50 dark:text-subTextDark dark:border-gray-700"
                 }`}
             >
               {menu.name === "Dashboard" && <MdOutlineDashboard size={18} />}
