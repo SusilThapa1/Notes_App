@@ -12,7 +12,7 @@ const AdminPage = () => {
     <div className=" flex  mt-[45px] overflow-hidden h-screen bg-no-repeat bg-center bg-cover scroll-smooth  ">
       <Sidebar />
       <Routes>
-        {/* 👇 Redirect /study/admin to /study/admin/dashboard */}
+        {/*Redirect /admin to /admin/dashboard */}
         <Route index element={<Navigate to="dashboard" replace />} />
 
         <Route path="dashboard" element={<WelcomeAdmin />} />
