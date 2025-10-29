@@ -1,13 +1,13 @@
 import React, { useEffect, useState, createContext } from "react";
 import { fetchAllProgrammes } from "../../../Services/programmeService";
 import { fetchAllUploads } from "../../../Services/uploadService";
-import { fetchAllSemesters } from "../../../Services/semesterService";
+import { fetchAllUniversities } from "../../../Services/universityService";
 
 const ProgrammesContext = createContext(null);
 
 const ProgrammesProvider = ({ children }) => {
   const [programmeLists, setProgrammeLists] = useState([]);
-  const [semesterLists, setSemesterLists] = useState([]);
+  const [universityLists, setUniversityLists] = useState([]);
   const [uploads, setUploads] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -26,16 +26,16 @@ const ProgrammesProvider = ({ children }) => {
       console.error("Programme fetch error:", err.message);
     }
 
-    // 2. Fetch Semesters
+    // 2. Fetch Universities (replaced semesters)
     try {
-      const res = await fetchAllSemesters();
+      const res = await fetchAllUniversities();
       if (res.success) {
-        setSemesterLists(res.data);
+        setUniversityLists(res.data);
       } else {
-        console.error("Error fetching semesters:", res.message);
+        console.error("Error fetching universities:", res.message);
       }
     } catch (err) {
-      console.error("Semester fetch error:", err.message);
+      console.error("University fetch error:", err.message);
     }
 
     // 3. Fetch Uploads
@@ -66,8 +66,8 @@ const ProgrammesProvider = ({ children }) => {
       value={{
         programmeLists,
         setProgrammeLists,
-        semesterLists,
-        setSemesterLists,
+        universityLists,
+        setUniversityLists,
         uploads,
         setUploads,
         fetchAllData,
