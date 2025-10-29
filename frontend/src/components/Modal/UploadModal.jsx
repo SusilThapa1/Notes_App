@@ -31,6 +31,7 @@ const UploadModal = ({
     programme: "",
     courseCode: "",
     courseName: "",
+    year: "",
     semyear: "",
     isVerified: false,
     filename: "",
@@ -40,7 +41,7 @@ const UploadModal = ({
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // Preload data if editing
+  // Preload when editing
   useEffect(() => {
     if (isEdit && existingData) {
       setUploadData({
@@ -49,6 +50,7 @@ const UploadModal = ({
         programme: existingData.programmeID?._id || "",
         courseCode: existingData.courseCode || "",
         courseName: existingData.courseName || "",
+        year: existingData.year || "",
         semyear: existingData.semyear || "",
         filename: existingData.filename || "",
         filepath: existingData.filepath || "",
@@ -59,7 +61,6 @@ const UploadModal = ({
       if (existingData.filepath && existingData.filename) {
         setFile({
           name: existingData.filename,
-          type: existingData.filename.split(".").pop(),
           previewUrl: existingData.filepath,
           size: 0,
         });
@@ -67,20 +68,18 @@ const UploadModal = ({
     }
   }, [isEdit, existingData]);
 
-  // Handle input
   const handleChange = (e) => {
     const { name, value } = e.target;
     setUploadData({ ...uploadData, [name]: value });
   };
 
-  // Handle file select
+  // File handling
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
     if (!selectedFile) return;
 
     const maxSizeMB = 25;
-    const fileSizeMB = selectedFile.size / (1024 * 1024);
-    if (fileSizeMB > maxSizeMB) {
+    if (selectedFile.size / (1024 * 1024) > maxSizeMB) {
       toast.error(`File size exceeds ${maxSizeMB} MB limit`);
       e.target.value = "";
       return;
@@ -90,22 +89,18 @@ const UploadModal = ({
   };
 
   const handleDrop = (e) => {
-    {
-      e.preventDefault();
-      e.stopPropagation();
-      const droppedFile = e.dataTransfer.files[0];
-      if (droppedFile && droppedFile.type === "application/pdf") {
-        const maxSizeMB = 25;
-        const fileSizeMB = droppedFile.size / (1024 * 1024);
-        if (fileSizeMB > maxSizeMB) {
-          toast.error(`File size exceeds ${maxSizeMB} MB limit`);
-          return;
-        }
-        setFile(droppedFile);
-      } else {
-        toast.error("Only PDF files are allowed.");
-      }
+    e.preventDefault();
+    e.stopPropagation();
+    const droppedFile = e.dataTransfer.files[0];
+    if (droppedFile?.type !== "application/pdf") {
+      toast.error("Only PDF files are allowed.");
+      return;
     }
+    if (droppedFile.size / (1024 * 1024) > 25) {
+      toast.error("File size exceeds 25 MB limit");
+      return;
+    }
+    setFile(droppedFile);
   };
 
   // Submit handler
@@ -113,24 +108,29 @@ const UploadModal = ({
     e.preventDefault();
     toast.dismiss();
 
-    const required = [
-      "university",
-      "resources",
-      "programme",
-      "courseCode",
-      "courseName",
-      "semyear",
-    ];
+    const {
+      resources,
+      university,
+      programme,
+      courseCode,
+      courseName,
+      year,
+      semyear,
+    } = uploadData;
 
-    if (required.some((key) => !uploadData[key])) {
+    // Conditional validation
+    if (!university || !resources || !programme || !semyear) {
       return toast.error("Please fill all required fields.");
     }
 
-    const selectedProgramme = programmeLists.find(
-      (p) => p._id === uploadData.programme
-    );
+    if (resources !== "questions" && (!courseCode || !courseName)) {
+      return toast.error("Course Code and Course Name are required.");
+    }
 
-    // Require file only when adding new
+    if (resources === "questions" && !year) {
+      return toast.error("Please select a year for questions.");
+    }
+
     if (!isEdit && !file) {
       return toast.error("Please select a file to upload.");
     }
@@ -141,10 +141,10 @@ const UploadModal = ({
       let filepath = uploadData.filepath;
       let filename = uploadData.filename;
 
-      //  Upload new file only if a File object is selected
+      // Upload file if new one selected
       if (file && file instanceof File) {
         const res = await uploadFile(file, uploadData.resources);
-        if (!res || !res.fileUrl) {
+        if (!res?.fileUrl) {
           toast.error("File upload failed.");
           setLoading(false);
           return;
@@ -153,19 +153,23 @@ const UploadModal = ({
         filename = res.originalName;
       }
 
-      //  Build payload
+      const selectedProgramme = programmeLists.find(
+        (p) => p._id === uploadData.programme
+      );
+
+      console.log(selectedProgramme?.academicstructure);
       const payload = {
-        university: uploadData.university,
-        resources: uploadData.resources,
-        programme: uploadData.programme,
-        courseCode: uploadData.courseCode,
-        courseName: uploadData.courseName,
+        university,
+        resources,
+        programme,
+        courseCode: courseCode || "",
+        courseName: courseName || "",
+        year: year || "",
+        semyear,
         academicstructure: selectedProgramme?.academicstructure || "Semester",
-        semyear: uploadData.semyear,
         isVerified: uploadData.isVerified,
       };
 
-      //  Include file data only if a new file was uploaded or adding new
       if (!isEdit || (file && file instanceof File)) {
         payload.filepath = filepath;
         payload.filename = filename;
@@ -181,7 +185,7 @@ const UploadModal = ({
       if (response.success) {
         toast.success(response.message || "File saved successfully!");
         onClose();
-        if (onUploadComplete) onUploadComplete();
+        onUploadComplete?.();
       } else {
         toast.error(response.message || "Something went wrong.");
       }
@@ -200,10 +204,10 @@ const UploadModal = ({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4 sm:px-5">
-      <div className="bg-light dark:bg-dark rounded-lg shadow-lg w-full max-w-lg p-6 relative overflow-auto max-h-[95vh]">
+      <div className="bg-light dark:bg-dark rounded-lg shadow-lg w-full max-w-lg p-6 relative overflow-auto scroll-container max-h-[95vh]">
         <button
           onClick={onClose}
-          className="absolute top-3 right-3 text-subTextLight dark:text-subTextDark hover-supported:hover:text-red-600"
+          className="absolute top-3 right-3 text-subTextLight dark:text-subTextDark hover:text-red-600 hover:dark:text-red-600"
         >
           <HiOutlineX size={20} />
         </button>
@@ -212,7 +216,7 @@ const UploadModal = ({
           {isEdit ? "Edit Upload" : "Upload File"}
         </h2>
 
-        <form onSubmit={handleSubmit} className="space-y-3 w-full">
+        <form onSubmit={handleSubmit} className="space-y-3">
           {/* University */}
           <div>
             <label className="block text-sm font-medium mb-1 dark:text-textDark">
@@ -222,19 +226,18 @@ const UploadModal = ({
               name="university"
               value={uploadData.university}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-400 dark:border-gray-600 rounded-lg  outline-none bg-transparent dark:bg-gray-900 dark:text-textDark"
+              className="w-full px-3 py-2 border rounded-lg bg-transparent border-gray-400 dark:border-gray-600 dark:bg-gray-900 dark:text-textDark"
             >
               <option value="">Select University</option>
-              {universityLists.map((university) => (
-                <option key={university._id} value={university._id}>
-                  {university.universityfullname} (
-                  {university.universityshortname})
+              {universityLists.map((u) => (
+                <option key={u._id} value={u._id}>
+                  {u.universityfullname} ({u.universityshortname})
                 </option>
               ))}
             </select>
           </div>
 
-          {/* Resource */}
+          {/* Resource Type */}
           <div>
             <label className="block text-sm font-medium mb-1 dark:text-textDark">
               Resource Type
@@ -243,7 +246,7 @@ const UploadModal = ({
               name="resources"
               value={uploadData.resources}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-400 dark:border-gray-600 rounded-lg  bg-transparent dark:bg-gray-900 dark:text-textDark"
+              className="w-full px-3 py-2 border rounded-lg bg-transparent border-gray-400 dark:border-gray-600 dark:bg-gray-900 dark:text-textDark"
             >
               <option value="">Select Type</option>
               <option value="syllabus">Syllabus</option>
@@ -261,19 +264,16 @@ const UploadModal = ({
               name="programme"
               value={uploadData.programme}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-400 dark:border-gray-600 rounded-lg  bg-transparent dark:bg-gray-900 dark:text-textDark"
+              className="w-full px-3 py-2 border rounded-lg bg-transparent border-gray-400 dark:border-gray-600 dark:bg-gray-900 dark:text-textDark"
             >
               <option value="">Select Programme</option>
-              {programmeLists.map((programme) => (
-                <option
-                  key={programme._id}
-                  value={programme._id}
-                  className="max-w-3xl"
-                >
-                  {programme.programmefullname} ({programme.programmeshortname})
+              {programmeLists.map((p) => (
+                <option key={p._id} value={p._id}>
+                  {p.programmefullname} ({p.programmeshortname})
                 </option>
               ))}
             </select>
+
             {selectedProgramme && (
               <p className="text-xs text-subTextLight dark:text-subTextDark mt-1">
                 Academic Structure:{" "}
@@ -284,64 +284,94 @@ const UploadModal = ({
             )}
           </div>
 
-          {/* Course Code + Name */}
-          <div className="flex flex-col sm:flex-row gap-2">
-            <input
-              type="text"
-              name="courseCode"
-              value={uploadData.courseCode}
-              onChange={handleChange}
-              placeholder="Course Code"
-              className="flex-1 px-3 py-2 border border-gray-400 dark:border-gray-600 rounded-lg  bg-transparent dark:bg-gray-900 dark:text-textDark dark:placeholder:text-gray-400"
-            />
-            <input
-              type="text"
-              name="courseName"
-              value={uploadData.courseName}
-              onChange={handleChange}
-              placeholder="Course Name"
-              className="flex-1 px-3 py-2 border border-gray-400 dark:border-gray-600 rounded-lg  bg-transparent dark:bg-gray-900 dark:text-textDark dark:placeholder:text-gray-400"
-            />
-          </div>
+          {/* Conditional Fields */}
+          {uploadData.resources === "questions" ? (
+            <div>
+              <label className="block text-sm font-medium mb-1 dark:text-textDark">
+                Select Year
+              </label>
+              <select
+                name="year"
+                value={uploadData.year}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border rounded-lg bg-transparent border-gray-400 dark:border-gray-600 dark:bg-gray-900 dark:text-textDark"
+              >
+                <option value="">Select Year</option>
+                {Array.from(
+                  { length: new Date().getFullYear() - 2019 },
+                  (_, i) => 2020 + i
+                ).map((yr) => (
+                  <option key={yr} value={yr}>
+                    {yr}
+                  </option>
+                ))}
+              </select>
+            </div>
+          ) : (
+            <div className="flex flex-col sm:flex-row gap-2">
+              <input
+                type="text"
+                name="courseCode"
+                value={uploadData.courseCode}
+                onChange={handleChange}
+                placeholder="Course Code"
+                className="flex-1 px-3 py-2 border rounded-lg bg-transparent border-gray-400 dark:border-gray-600 dark:bg-gray-900 dark:text-textDark"
+              />
+              <input
+                type="text"
+                name="courseName"
+                value={uploadData.courseName}
+                onChange={handleChange}
+                placeholder="Course Name"
+                className="flex-1 px-3 py-2 border rounded-lg bg-transparent border-gray-400 dark:border-gray-600 dark:bg-gray-900 dark:text-textDark"
+              />
+            </div>
+          )}
 
           {/* Semester / Year */}
           <div>
             <label className="block text-sm font-medium mb-1 dark:text-textDark">
-              {selectedProgramme?.academicstructure === "Yearly"
-                ? "Select Year"
-                : "Select Semester"}
+              {selectedProgramme
+                ? selectedProgramme.academicstructure === "Yearly"
+                  ? "Select Year"
+                  : "Select Semester"
+                : "Select Semester / Year"}
             </label>
+
             <select
               name="semyear"
               value={uploadData.semyear}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-400 dark:border-gray-600 rounded-lg  bg-transparent dark:bg-gray-900 dark:text-textDark"
+              className="w-full px-3 py-2 border border-gray-400 dark:border-gray-600 rounded-lg bg-transparent dark:bg-gray-900 dark:text-textDark"
             >
               <option value="">
-                {selectedProgramme?.academicstructure === "Yearly"
-                  ? "Select Year"
-                  : "Select Semester"}
+                {selectedProgramme
+                  ? selectedProgramme.academicstructure === "yearly"
+                    ? "Select Year"
+                    : "Select Semester"
+                  : "Select Semester / Year"}
               </option>
 
-              {selectedProgramme?.academicstructure === "Yearly" ? (
-                <>
-                  <option value="1st Year">1st Year</option>
-                  <option value="2nd Year">2nd Year</option>
-                  <option value="3rd Year">3rd Year</option>
-                  <option value="4th Year">4th Year</option>
-                </>
-              ) : (
-                <>
-                  <option value="1st Semester">1st Semester</option>
-                  <option value="2nd Semester">2nd Semester</option>
-                  <option value="3rd Semester">3rd Semester</option>
-                  <option value="4th Semester">4th Semester</option>
-                  <option value="5th Semester">5th Semester</option>
-                  <option value="6th Semester">6th Semester</option>
-                  <option value="7th Semester">7th Semester</option>
-                  <option value="8th Semester">8th Semester</option>
-                </>
-              )}
+              {selectedProgramme &&
+                (selectedProgramme.academicstructure === "yearly" ? (
+                  <>
+                    <option value="1st Year">1st Year</option>
+                    <option value="2nd Year">2nd Year</option>
+                    <option value="3rd Year">3rd Year</option>
+                    <option value="4th Year">4th Year</option>
+                  </>
+                ) : (
+                  <>
+                    <option value="1st Semester">1st Semester</option>
+                    <option value="2nd Semester">2nd Semester</option>
+                    <option value="3rd Semester">3rd Semester</option>
+                    <option value="4th Semester">4th Semester</option>
+                    <option value="5th Semester">5th Semester</option>
+                    <option value="6th Semester">6th Semester</option>
+                    <option value="7th Semester">7th Semester</option>
+                    <option value="8th Semester">8th Semester</option>
+                  </>
+                ))}
             </select>
           </div>
 
@@ -359,15 +389,15 @@ const UploadModal = ({
                     isVerified: !uploadData.isVerified,
                   })
                 }
-                className={`w-12 h-6 flex items-center rounded-full pr-1 duration-300 ${
+                className={`w-12 h-6 flex items-center rounded-full transition-all ${
                   uploadData.isVerified
                     ? "bg-lightGreen"
                     : "bg-gray-300 dark:bg-gray-600"
                 }`}
               >
                 <div
-                  className={`bg-light dark:bg-gray-200 w-8 h-6 rounded-full shadow-md transform duration-300 ${
-                    uploadData.isVerified ? "translate-x-6" : "translate-x-0"
+                  className={`bg-light dark:bg-gray-200 w-6 h-6 rounded-full shadow-md transform transition-transform ${
+                    uploadData.isVerified ? "translate-x-6" : ""
                   }`}
                 />
               </button>
@@ -379,85 +409,59 @@ const UploadModal = ({
             <label className="block text-sm font-medium mb-1 dark:text-textDark">
               Select File
             </label>
-
             <div
               onDrop={handleDrop}
-              onDragOver={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                e.currentTarget.classList.add(
-                  "border-green-400",
-                  "bg-green-50"
-                );
-              }}
-              onDragLeave={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                e.currentTarget.classList.remove(
-                  "border-green-400",
-                  "bg-green-50"
-                );
-              }}
+              onDragOver={(e) => e.preventDefault()}
               onClick={() => document.getElementById("fileInput").click()}
-              className="flex flex-col items-center justify-center w-full p-5 border-2 border-dashed border-gray-400 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-700 transition cursor-pointer"
+              className="flex flex-col items-center justify-center w-full pb-5 border-2 border-dashed border-gray-400 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer"
             >
               {!file ? (
                 <>
                   <HiOutlineUpload className="text-3xl text-subTextLight dark:text-subTextDark mb-2" />
-                  <p className="text-subTextLight dark:text-subTextDark text-sm text-center">
-                    <span className="text-blue-600 dark:text-blue-400 font-medium">
-                      Click to upload
-                    </span>{" "}
-                    or <span className="font-medium">drag and drop</span> your
-                    PDF here
+                  <p className="text-subTextLight dark:text-subTextDark text-sm">
+                    Click or drag to upload your PDF
                   </p>
-                  <p className="text-xs text-subTextLight dark:text-subTextDark mt-1">
+                  <p className="text-xs text-subTextLight dark:text-subTextDark">
                     (Max size: 25 MB)
                   </p>
                 </>
               ) : (
                 <div className="flex flex-col items-center gap-2">
-                  <div className="flex flex-col items-center bg-light dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-md p-3 shadow-sm w-full">
+                  <div className="flex flex-col flex-wrap over items-center gap-2 bg-light dark:bg-gray-700 p-3 rounded-md border border-gray-300 dark:border-gray-600 w-full justify-between">
                     <div className="flex items-center gap-2">
                       <VscFilePdf className="text-2xl text-red-600 dark:text-red-400" />
                       <span className="text-textLight dark:text-textDark font-medium truncate">
                         {file.name}
                       </span>
                     </div>
-                    <p className="text-xs text-subTextLight dark:text-subTextDark mt-1">
-                      {file.size ? formatFileSize(file.size) : "unknown size"}
+                    <p className="text-xs text-subTextLight dark:text-subTextDark">
+                      {formatFileSize(file.size)}
                     </p>
                   </div>
-
                   <button
                     type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setFile(null);
-                    }}
-                    className="flex items-center gap-1 text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 text-sm mt-2"
+                    onClick={() => setFile(null)}
+                    className="text-red-500 dark:text-red-400 hover:text-red-700 text-sm flex items-center gap-1"
                   >
                     <HiOutlineX /> Remove File
                   </button>
                 </div>
               )}
             </div>
-
-            {/* Hidden Input */}
             <input
               type="file"
               id="fileInput"
-              onChange={handleFileChange}
               accept=".pdf"
+              onChange={handleFileChange}
               className="hidden"
             />
           </div>
 
-          {/* Submit Button */}
+          {/* Submit */}
           <button
             type="submit"
             disabled={loading}
-            className="w-full flex items-center justify-center gap-2 bg-lightGreen text-white px-4 py-2 rounded-lg hover:bg-darkGreen transition disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full flex items-center justify-center gap-2 bg-lightGreen text-white px-4 py-2 rounded-lg hover:bg-darkGreen transition disabled:opacity-50"
           >
             {loading ? (
               "Saving..."
