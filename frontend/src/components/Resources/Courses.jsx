@@ -15,6 +15,7 @@ const FileCard = ({
   courseCode,
   courseName,
   year,
+  semyear,
   uploaderImage,
   uploadedBy,
   uploadDate,
@@ -36,13 +37,27 @@ const FileCard = ({
         {" - "}
         {university.universityfullname}({university.universityshortname})
       </h1>
-      <div className="flex items-center text-base text-subTextLight dark:text-subTextDark gap-1">
-        <h3>{courseCode}</h3>-<p>{courseName}</p>
-      </div>
+     <div className="flex items-center text-base text-subTextLight dark:text-subTextDark gap-1">
+  {courseCode && courseName && (
+    <>
+      <h3>{courseCode}</h3>
+      <span>-</span>
+      <p>{courseName}</p>
+    </>
+  )}
+  {year && (
+    <>
+      <h3>Questions</h3>
+      <span>-</span>
+      <p>{year}</p>
+    </>
+  )}
+</div>
+
 
       <div className="flex gap-2 items-center">
         <span className="border border-gray-300 dark:border-gray-600 px-2 py-1 bg-lightGreen rounded-lg text-white">
-          {year}
+          {semyear}
         </span>
         <span className="border border-gray-300 dark:border-gray-600 px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded-lg text-subTextLight dark:text-subTextDark">
           {uploadDate}
@@ -193,17 +208,18 @@ const Courses = ({ resource, programme, university, structure }) => {
             <FileCard
               key={file._id}
               file={file}
-              id={file._id}
-              university={file.universityID}
-              programme={file.programmeID}
-              courseCode={file.courseCode}
-              courseName={file.courseName}
-              year={file.semyear}
-              uploaderImage={file.userID?.profilepath}
-              uploadedBy={file.userID?.username || "Anonymous"}
-              uploadDate={new Date(file.createdAt).toLocaleDateString()}
-              fileName={file.filename}
-              fileUrl={file.filepath}
+              id={file?._id}
+              university={file?.universityID}
+              programme={file?.programmeID}
+              courseCode={file?.courseCode}
+              courseName={file?.courseName}
+              year={file?.year}
+              semyear={file?.semyear}
+              uploaderImage={file?.userID?.profilepath}
+              uploadedBy={file?.userID?.username || "Anonymous"}
+              uploadDate={new Date(file?.createdAt).toLocaleDateString()}
+              fileName={file?.filename}
+              fileUrl={file?.filepath}
             />
           ))}
         </div>
