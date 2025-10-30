@@ -39,7 +39,7 @@ const FileViewer = () => {
   const fileUrl = import.meta.env.VITE_API_FILE_URL + file.filepath;
 
   return (
-    <div className="flex flex-col mt-20  md:px-10 lg:px-20">
+    <div className="flex flex-col mt-20 py-3 md:px-10 lg:px-20">
       {/* PDF Viewer */}
       <div className="h-[calc(100vh-72px)] overflow-y-auto flex justify-center bg-gray-50 dark:bg-gray-900 rounded-lg shadow-inner border-none">
         <Worker workerUrl={workerUrl}>
