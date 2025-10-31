@@ -1,9 +1,8 @@
 import { useState, useContext, useRef } from "react";
 import { toast } from "react-toastify";
 
-import { MdOutlineDeleteForever } from "react-icons/md";
 import Loader from "../Loader/Loader";
-import { showConfirm } from "../../../Utils/alertHelper";
+import { useAlerts } from "../../../Utils/alertHelper";
 import { ProgrammesContext } from "../Context/ProgrammeContext";
 import { uploadFile } from "../../../Utils/uploadFile";
 import {
@@ -11,8 +10,10 @@ import {
   deleteUniversity,
   updateUniversity,
 } from "../../../Services/universityService";
+import { HiOutlinePencilAlt, HiOutlineTrash } from "react-icons/hi";
 
 const UniversityManager = () => {
+  const { showConfirm } = useAlerts();
   const scrollRef = useRef(null);
   const [imageFile, setImageFile] = useState(null);
 
@@ -316,16 +317,16 @@ const UniversityManager = () => {
                               behavior: "smooth",
                             });
                           }}
-                          className="text-xl"
+                          className="text-xl text-editOutlineText"
                         >
-                          🖋️
+                          <HiOutlinePencilAlt size={20} />
                         </button>
                         <button
                           title="Delete"
                           onClick={() => handleDelete(uni._id)}
                           className="text-red-500 hover:text-red-700"
                         >
-                          <MdOutlineDeleteForever size={20} />
+                          <HiOutlineTrash size={20} />
                         </button>
                       </div>
                     </td>
