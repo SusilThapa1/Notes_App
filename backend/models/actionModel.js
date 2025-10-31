@@ -8,23 +8,24 @@ const ActivityLogSchema = new mongoose.Schema(
         ref: "User",
         required: true,
       },
-      name: { type: String, required: true }, // store snapshot of username at action time
-      role: { type: String, required: true }, // e.g., "admin", "editor", "user"
+      name: { type: String, required: true },  
+      role: { type: String, required: true },  
+      email: { type: String, required: true },
     },
     action: {
       type: String,
-      required: true, // e.g., "created_post", "deleted_user", "updated_profile"
+      required: true,  
     },
     details: {
-      type: mongoose.Schema.Types.Mixed, // flexible (object, string, etc.)
+      type: mongoose.Schema.Types.Mixed, 
       default: {},
     },
-    status: { type: String, enum: ["Success", "Failed"], default: "SUCCESS" },
+    status: { type: String, enum: ["success", "failed"], default: "success" },
     ipAddress: {
-      type: String, // optional: track from req.ip
+      type: String,  
     },
     userAgent: {
-      type: String, // optional: track from headers
+      type: String,  
     },
     timestamp: {
       type: Date,
