@@ -8,5 +8,10 @@ export default defineConfig({
     host: "0.0.0.0", // Allows access all the network
     port: 5173, // Default Vite port (change if needed)
     // allowedHosts: ["f645-103-225-244-41.ngrok-free.app"],
+    // hmr: {
+    //   host: "192.168.1.22", // your PC’s IP
+    //   // host: "localhost", // your PC’s IP
+    //   protocol: "ws", // default
+    // },
   },
 });
