@@ -1,4 +1,4 @@
-import { Routes, Route, useNavigate } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import Login from "./components/Auth/Login";
 import Navbar from "./components/Common/Navbar";
 import Programme from "./components/Resources/Programme";
@@ -14,7 +14,7 @@ import ChangePass from "./components/Auth/ChangePass";
 import DeleteMyAccount from "./components/Auth/DeleteMyAccount.jsx";
 import OTPVerify from "./components/Auth/OTPVerify.jsx";
 import ForgotPassword from "./components/Auth/ForgotPassword.jsx";
-import Profile from "./components/User/Profile.jsx";
+import Profile from "./components/user/Profile.jsx";
 import PrivacyPolicy from "./components/Footer/PrivacyPolicy.jsx";
 import TermsConditions from "./components/Footer/TermsConditions.jsx";
 import Footer from "./components/Footer/Footer.jsx";
@@ -25,11 +25,11 @@ import ScrollToTop from "./components/Common/ScrollToTop.jsx";
 import NotAuthorized from "./components/Error/NotAuthorized.jsx";
 import PublicRoute from "./components/Common/PublicRoute.jsx";
 import ViewLogins from "./components/Auth/ViewLogins.jsx";
-import MyUploads from "./components/User/myuploads.jsx";
+import MyUploads from "./components/user/myuploads.jsx";
 import FileViewer from "./components/Common/FileViewer.jsx";
 import University from "./components/Resources/University.jsx";
 import SemYear from "./components/Resources/SemYear.jsx";
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
 import { AuthContext } from "./components/Context/AuthContext.jsx";
 
 function App() {
@@ -37,14 +37,7 @@ function App() {
   const role = userDetails?.role;
   const name = userDetails?.username;
   const id = userDetails?._id;
-  const navigate = useNavigate();
 
-  useEffect(() => {
-    // if user is logged in and not already at their homepage, redirect
-    if (id && window.location.pathname === "/") {
-      navigate(`/${id}`);
-    }
-  }, [name, navigate]);
   return (
     <div>
       <ScrollToTop />
@@ -54,7 +47,6 @@ function App() {
         <Routes>
           {/* ================= Home ================= */}
           <Route path="/" element={<Homepage />} />
-          {id && <Route path={`/${id}`} element={<Homepage />} />}
 
           {/* ================= Public Auth Routes ================= */}
           <Route element={<PublicRoute />}>
@@ -79,13 +71,16 @@ function App() {
           </Route>
 
           <Route element={<ProtectedRoute />}>
-            <Route path="/user/profile" element={<Profile />} />
-            <Route path="/user/myuploads" element={<MyUploads />} />
-            <Route path="/user/change-password" element={<ChangePass />} />
-            <Route path="/user/view-logins" element={<ViewLogins />} />
-            <Route path="/user/deletemyaccount" element={<DeleteMyAccount />} />
+            <Route path={`/${role}/profile`} element={<Profile />} />
+            <Route path={`/${role}/myuploads`} element={<MyUploads />} />
+            <Route path={`/${role}/change-password`} element={<ChangePass />} />
+            <Route path={`/${role}/view-logins`} element={<ViewLogins />} />
             <Route
-              path="/user/email-change-verify-OTP"
+              path={`/${role}/deletemyaccount`}
+              element={<DeleteMyAccount />}
+            />
+            <Route
+              path={`/${role}/email-change-verify-OTP`}
               element={<OTPVerify />}
             />
           </Route>
@@ -93,7 +88,7 @@ function App() {
           {/* ================= Other Public Routes ================= */}
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/admin/manageresources/:id" element={<FileViewer />} />
-          <Route path="/user/myuploads/:id" element={<FileViewer />} />
+          <Route path={`/${role}/myuploads/:id`} element={<FileViewer />} />
 
           {/* ================= Study Resources (Main Flow) =================
               Flow: resource → university → programme → course
