@@ -141,7 +141,7 @@ const AuthProvider = ({ children }) => {
       const res = await sendVerifyOtp(email);
       if (res.success) {
         toast.success(res.message);
-        navigate("/user/email-verify-OTP", {
+        navigate(`/${userDetails?.role}/email-verify-OTP`, {
           state: { userId: res.userId },
         });
       } else toast.error(res.message);
@@ -155,7 +155,7 @@ const AuthProvider = ({ children }) => {
     try {
       const res = await sendEmailChangeVerifyOtp(email);
       if (res.success) {
-        navigate("/user/email-change-verify-OTP");
+        navigate(`/${userDetails?.role}/email-change-verify-OTP`);
         toast.success(res.message);
       } else toast.error(res.message);
     } catch (err) {
