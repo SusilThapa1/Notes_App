@@ -42,27 +42,27 @@ const Navbar = () => {
 
   const dropDownLink = [
     {
-      to: "/user/profile",
+      to: `/${userDetails?.role}/profile`,
       icon: <FaRegUser />,
       text: "My Profile",
     },
     {
-      to: "/user/myuploads",
+      to: `/${userDetails?.role}/myuploads`,
       icon: <HiOutlineUpload />,
       text: "My Uploads",
     },
     {
-      to: "/user/change-password",
+      to: `/${userDetails?.role}/change-password`,
       icon: <MdLockOutline />,
       text: "Change Password",
     },
     {
-      to: "/user/view-logins",
+      to: `/${userDetails?.role}/view-logins`,
       icon: <MdOutlineDevices />,
       text: "View All Logins",
     },
     {
-      to: "/user/deletemyaccount",
+      to: `/${userDetails?.role}/deletemyaccount`,
       icon: <FiAlertTriangle />,
       text: "Delete Account",
       danger: true,
