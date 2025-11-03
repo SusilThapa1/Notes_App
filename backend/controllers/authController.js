@@ -1,15 +1,8 @@
+// controllers/authController.js
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const Users = require("../models/userModel");
-const path = require("path");
 const { emailRegex, passwordRegex } = require("../Utils/validators");
-const transporter = require("../config/nodeMailer");
-const {
-  verifyEmailHtml,
-  verifyEmailText,
-  verifyEmailChangeHtml,
-  pass_Reset_Temp,
-} = require("../config/emailTemplates");
 const { logAction } = require("../Utils/activityLog");
 const logger = require("../Utils/logger");
 const {
@@ -20,6 +13,7 @@ const {
   updateUserSession,
 } = require("../Utils/authHelper");
 const { setCookie, clearCookie } = require("../Utils/cookieHelper");
+const sendEmail = require("../Utils/sendMail"); // centralized sender
 
 // Register
 const register = async (req, res) => {
@@ -73,16 +67,9 @@ const register = async (req, res) => {
       req,
     });
 
-    // const tempToken = jwt.sign(
-    //   { id: newUser._id },
-    //   process.env.Jwt_Secret_Key,
-    //   { expiresIn: "10m" }
-    // );
-
     res.status(200).json({
       success: true,
       message: "Registered Successfully",
-      // tempToken,
       user: {
         id: newUser._id,
       },
@@ -142,7 +129,6 @@ const login = async (req, res) => {
     const { deviceName, browserName } = parseDeviceInfo(userAgent);
     const location = await getGeoLocation(ip);
     const deviceId = await getOrCreateDeviceId(req, user._id);
-    console.log("location:", location);
 
     //  Update or create session
     updateUserSession(user, deviceId, {
@@ -231,22 +217,8 @@ const sendVerifyOtp = async (req, res) => {
     user.otpExpireAt = Date.now() + 10 * 60 * 1000; // 10 minutes
     await user.save();
 
-    const mailOptions = {
-      from: process.env.SENDER_EMAIL,
-      to: user.email,
-      subject: `Email Verification OTP`,
-      text: verifyEmailText(otp),
-      html: verifyEmailHtml(otp).replace("{{image}}", "cid:logo@easy"),
-      attachments: [
-        {
-          filename: "desktop.png",
-          path: path.join(__dirname, "desktop.png"),
-          cid: "logo@easy",
-        },
-      ],
-    };
-
-    await transporter.sendMail(mailOptions);
+    // centralized send
+    await sendEmail({ to: user.email, type: "verifyEmail", otp });
 
     // IMPORTANT: send userId back so frontend can pass it to verify endpoint
     return res.json({
@@ -273,8 +245,6 @@ const verifyEmail = async (req, res) => {
         message: "Enter the OTP sent to your email",
       });
     }
-
-    console.log("verifyEmail body:", req.body); // debug, remove in prod
 
     // Find user
     let user = null;
@@ -323,7 +293,6 @@ const verifyEmail = async (req, res) => {
     const { deviceName, browserName } = parseDeviceInfo(userAgent);
     const location = await getGeoLocation(ip);
     const deviceId = await getOrCreateDeviceId(req, user._id);
-    console.log("location:", location);
 
     //  Update or create session (if stored inside user doc)
     updateUserSession(user, deviceId, {
@@ -361,7 +330,7 @@ const verifyEmail = async (req, res) => {
   }
 };
 
-//Send Email change verify otp to user
+// Send Email change verify otp to user
 const sendEmailChangeVerifyOtp = async (req, res) => {
   try {
     const userId = req.userid;
@@ -388,32 +357,20 @@ const sendEmailChangeVerifyOtp = async (req, res) => {
 
     const otp = String(Math.floor(100000 + Math.random() * 900000));
     user.otp = otp;
-    user.otpExpireAt = Date.now() + 10 * 60 * 1000; // shorter expiry, like 10 min
+    user.otpExpireAt = Date.now() + 10 * 60 * 1000; // 10 minutes
     user.newEmail = newEmail.toLowerCase(); // store temp
 
     await user.save();
 
-    const mailOptions = {
-      from: process.env.SENDER_EMAIL,
-      to: newEmail.toLowerCase(),
-      subject: `Email Change Verification OTP`,
-      text: verifyEmailText(otp),
-      html: verifyEmailChangeHtml(otp).replace("{{image}}", "cid:logo@easy"),
-      attachments: [
-        {
-          filename: "desktop.png",
-          path: path.join(__dirname, "desktop.png"),
-          cid: "logo@easy",
-        },
-      ],
-    };
+    // use centralized sender -> sends to new email
+    await sendEmail({ to: newEmail.toLowerCase(), type: "emailChange", otp });
 
-    await transporter.sendMail(mailOptions);
     res.json({
       success: true,
       message: `OTP sent to new email: ${newEmail.toLowerCase()}`,
     });
   } catch (error) {
+    console.error("sendEmailChangeVerifyOtp error:", error);
     res.json({ success: false, message: error.message });
   }
 };
@@ -555,22 +512,8 @@ const sendPassResetOtp = async (req, res) => {
 
     await user.save();
 
-    const mailOptions = {
-      from: process.env.SENDER_EMAIL,
-      to: email.toLowerCase(),
-      subject: `Email Verification OTP`,
-      text: verifyEmailText(otp),
-      html: pass_Reset_Temp(otp).replace("{{image}}", "cid:logo@easy"),
-      attachments: [
-        {
-          filename: "desktop.png",
-          path: path.join(__dirname, "desktop.png"),
-          cid: "logo@easy",
-        },
-      ],
-    };
-
-    await transporter.sendMail(mailOptions);
+    // centralized sender
+    await sendEmail({ to: user.email, type: "passwordReset", otp });
 
     res.json({ success: true, message: "Otp has been sent to your email" });
   } catch (err) {
@@ -588,7 +531,7 @@ const verifyPassResetOtp = async (req, res) => {
       "-password"
     );
     if (!user) {
-      res.json({ success: false, message: "User not found" });
+      return res.json({ success: false, message: "User not found" });
     }
 
     if (otp !== user.resetOtp) {
@@ -681,22 +624,9 @@ const resetOtpResend = async (req, res) => {
     user.otpRequestedAt = now;
     await user.save();
 
-    const mailOptions = {
-      from: process.env.SENDER_EMAIL,
-      to: email.toLowerCase(),
-      subject: `Resend Email Verification OTP`,
-      text: verifyEmailText(otp),
-      html: pass_Reset_Temp(otp).replace("{{image}}", "cid:logo@easy"),
-      attachments: [
-        {
-          filename: "desktop.png",
-          path: path.join(__dirname, "desktop.png"),
-          cid: "logo@easy",
-        },
-      ],
-    };
+    // centralized sender -> resend password reset
+    await sendEmail({ to: email.toLowerCase(), type: "passwordReset", otp });
 
-    await transporter.sendMail(mailOptions);
     return res
       .status(200)
       .json({ success: true, message: "OTP has been resent successfully" });
@@ -738,22 +668,9 @@ const otpResend = async (req, res) => {
     user.otpRequestedAt = now;
     await user.save();
 
-    const mailOptions = {
-      from: process.env.SENDER_EMAIL,
-      to: user.email,
-      subject: `Resend Email Verification OTP`,
-      text: verifyEmailText(otp),
-      html: pass_Reset_Temp(otp).replace("{{image}}", "cid:logo@easy"),
-      attachments: [
-        {
-          filename: "desktop.png",
-          path: path.join(__dirname, "desktop.png"),
-          cid: "logo@easy",
-        },
-      ],
-    };
+    // centralized sender -> resend verification OTP
+    await sendEmail({ to: user.email, type: "verifyEmail", otp });
 
-    await transporter.sendMail(mailOptions);
     return res
       .status(200)
       .json({ success: true, message: "OTP has been resent successfully" });
@@ -762,7 +679,6 @@ const otpResend = async (req, res) => {
   }
 };
 
-// PUT /api/auth/heartbeat
 const heartbeat = async (req, res) => {
   try {
     const user = await Users.findById(req.user.id);
@@ -798,7 +714,7 @@ const heartbeat = async (req, res) => {
 
 const removeSession = async (req, res) => {
   try {
-    const { deviceId } = req.params; // pass deviceId instead of _id
+    const { deviceId } = req.params;  
     const userId = req.userid;
 
     const user = await Users.findById(userId);
@@ -819,7 +735,6 @@ const removeSession = async (req, res) => {
     }
 
     // prevent removing your own current session
-    console.log("cookie deviceId:", req.cookies.deviceId);
     if (user.sessions[sessionIndex].deviceId === req.cookies.deviceId) {
       return res.status(400).json({
         success: false,
