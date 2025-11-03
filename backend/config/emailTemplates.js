@@ -1,151 +1,59 @@
+const path = require("path");
+
 const currentYear = new Date().getFullYear();
 
-const verifyEmailHtml = (otp) => `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8" />
-<title>Email Verification</title>
-<style>
-  body { font-family: Arial, sans-serif; background: #f6f9fc; margin: 0; padding: 0; }
-  .email-container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.05); }
-  .logo { display: block; margin: 0 auto 20px; width: 120px; border-radius: 20px; }
-  .title { text-align: center; color: #333; font-size: 24px; margin-bottom: 10px; }
-  .otp-box { background: #f1f1f1; padding: 12px 20px; font-size: 28px; font-weight: bold; letter-spacing: 8px; border-radius: 6px; text-align: center; margin: 20px auto; width: fit-content; color: #000; }
-  .message { text-align: center; font-size: 16px; color: #555; margin: 20px 0; }
-  .footer { text-align: center; font-size: 13px; color: #aaa; margin-top: 40px; }
-</style>
-</head>
-<body>
-  <div class="email-container">
-    <img class="logo" src="{{image}}" alt="EasyStudyZone Logo" />
-    <h2 class="title">Email Verification Code</h2>
-    <p class="message">Use this code to verify your email. It expires in 10 minutes.</p>
-    <div class="otp-box">${otp}</div>
-    <p class="message">If you didn’t request this, ignore this email.</p>
-    <div class="footer">© ${currentYear} EasyStudyZone. All rights reserved.</div>
-  </div>
-</body>
-</html>
-`;
+const emailTemplatesConfig = {
+  verifyEmail: {
+    title: "Email Verification Code",
+    message: "Use this code to verify your email. It expires in 10 minutes.",
+    text: (otp) => `Verify your email\n\nYour verification code is: ${otp}\nIt expires in 10 minutes.`,
+  },
+  passwordReset: {
+    title: "Password Reset Code",
+    message: "Use the code below to reset your password. This code is valid for 10 minutes.",
+    text: (otp) => `Reset your password\n\nYour reset code is: ${otp}\nIt expires in 10 minutes.`,
+  },
+  emailChange: {
+    title: "Confirm Your New Email",
+    message: "To complete your email change, enter this code. It expires in 10 minutes.",
+    text: (otp) => `Confirm your new email\n\nYour verification code is: ${otp}\nIt expires in 10 minutes.`,
+  },
+};
 
-const verifyEmailText = (otp) => `
-Verify your email
+const generateEmailTemplates = (type, otp) => {
+  const config = emailTemplatesConfig[type];
+  if (!config) throw new Error("Invalid email type");
 
-Use this code to verify your email: ${otp}
-`;
-
-const pass_Reset_Temp = (otp) => {
-  return `<!DOCTYPE html>
-<html lang="en">
+  const html = `
+  <!DOCTYPE html>
+  <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Verify Your Email</title>
+    <title>${config.title}</title>
     <style>
-      body {
-        font-family: Arial, sans-serif;
-        background-color: #f6f9fc;
-        margin: 0;
-        padding: 0;
-      }
-      .email-container {
-        max-width: 600px;
-        margin: auto;
-        background: #ffffff;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
-      }
-      .logo {
-        display: block;
-        margin: 0 auto 20px;
-        width: 120px;
-        border-radius: 20px;
-      }
-      .title {
-        text-align: center;
-        color: #333;
-        font-size: 24px;
-        margin-bottom: 10px;
-      }
-      .otp-box {
-        background-color: #f1f1f1;
-        color: #000;
-        padding: 12px 20px;
-        font-size: 28px;
-        font-weight: bold;
-        text-align: center;
-        letter-spacing: 8px;
-        border-radius: 6px;
-        margin: 20px auto;
-        width: fit-content;
-      }
-      .message {
-        text-align: center;
-        font-size: 16px;
-        color: #555;
-        margin: 20px 0;
-      }
-      .footer {
-        text-align: center;
-        font-size: 13px;
-        color: #aaa;
-        margin-top: 40px;
-      }
+      body { font-family: Arial, sans-serif; background: #f6f9fc; margin: 0; padding: 0; }
+      .email-container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.05); }
+      .logo { display: block; margin: 0 auto 20px; width: 120px; border-radius: 20px; }
+      .title { text-align: center; color: #333; font-size: 24px; margin-bottom: 10px; }
+      .otp-box { background: #f1f1f1; padding: 12px 20px; font-size: 28px; font-weight: bold; letter-spacing: 8px; border-radius: 6px; text-align: center; margin: 20px auto; width: fit-content; color: #000; }
+      .message { text-align: center; font-size: 16px; color: #555; margin: 20px 0; }
+      .footer { text-align: center; font-size: 13px; color: #aaa; margin-top: 40px; }
     </style>
   </head>
   <body>
     <div class="email-container">
-      <img class="logo" src="{{image}}" alt="Logo" />
-      <h2 class="title">Password Reset Code</h2>
-      <p class="message">
-        Use the code below to reset your password. This code is valid for
-        10 minutes.
-      </p>
+      <img class="logo" src="{{image}}" alt="EasyStudyZone Logo" />
+      <h2 class="title">${config.title}</h2>
+      <p class="message">${config.message}</p>
       <div class="otp-box">${otp}</div>
-      <p class="message">
-        If you didn't request this, you can safely ignore this email.
-      </p>
+      <p class="message">If you didn't request this, you can safely ignore this email.</p>
       <div class="footer">© ${currentYear} EasyStudyZone. All rights reserved.</div>
     </div>
   </body>
-</html>`;
+  </html>
+  `;
+
+  return { html, text: config.text(otp) };
 };
 
-const verifyEmailChangeHtml = (otp) => {
-  return `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>Email Change Verification</title>
-  <style>
-    body { font-family: Arial, sans-serif; background: #f6f9fc; margin: 0; padding: 0; }
-    .email-container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.05); }
-    .logo { display: block; margin: 0 auto 20px; width: 120px; border-radius: 20px; }
-    .title { text-align: center; color: #333; font-size: 24px; margin-bottom: 10px; }
-    .otp-box { background: #f1f1f1; padding: 12px 20px; font-size: 28px; font-weight: bold; letter-spacing: 8px; border-radius: 6px; text-align: center; margin: 20px auto; width: fit-content; color: #000; }
-    .message { text-align: center; font-size: 16px; color: #555; margin: 20px 0; }
-    .footer { text-align: center; font-size: 13px; color: #aaa; margin-top: 40px; }
-  </style>
-</head>
-<body>
-  <div class="email-container">
-    <img class="logo" src="{{image}}" alt="EasyStudyZone Logo" />
-    <h2 class="title">Confirm Your New Email</h2>
-    <p class="message">To complete your email change, enter this code. It expires in 10 minutes.</p>
-    <div class="otp-box">${otp}</div>
-    <p class="message">Didn't request this change? Just ignore this email — your email won't be updated.</p>
-    <div class="footer">© ${currentYear} EasyStudyZone. All rights reserved.</div>
-  </div>
-</body>
-</html>
-`;
-};
-
-module.exports = {
-  verifyEmailHtml,
-  verifyEmailText,
-  pass_Reset_Temp,
-  verifyEmailChangeHtml,
-};
+module.exports = { generateEmailTemplates };
