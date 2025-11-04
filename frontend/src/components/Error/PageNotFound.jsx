@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 const PageNotFound = () => {
   return (
     <div className="flex flex-col items-center justify-center h-screen text-center gap-5">
-        <FaExclamationTriangle className="text-[5w] md:text-6xl text-red-500 dark:text-red-400" />
+        <FaExclamationTriangle className="text-[8vw] md:text-6xl text-red-500 dark:text-red-400" />
       
       <div className="flex flex-col justify-center items-center gap-5">
         <h1 className=" font-bold text-red-500 dark:text-red-400">404 - Not Found</h1>
