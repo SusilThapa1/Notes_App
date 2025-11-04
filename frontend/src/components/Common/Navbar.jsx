@@ -84,7 +84,7 @@ const Navbar = () => {
     (path !== "/" && location.pathname.startsWith(path));
 
   return (
-    <nav className="fixed top-0 z-40 w-full bg-light dark:bg-dark shadow-sm border-b border-gray-700 transition-colors duration-300 ">
+    <nav className="fixed top-0 z-40 w-full bg-light dark:bg-dark shadow-sm border-b border-gray-300 dark:border-gray-700 transition-colors duration-300 ">
       <div className="relative backdrop-blur-lg flex items-center justify-between py-2 px-5 md:px-10 lg:px-20 h-16">
         {/* Logo & Mobile Button */}
         <div className="flex justify-center gap-5 items-center w-20  ">
