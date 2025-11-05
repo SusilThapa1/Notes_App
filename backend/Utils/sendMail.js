@@ -1,6 +1,6 @@
 const path = require("path");
 const { generateEmailTemplates } = require("../config/emailTemplates");
-const { transporter } = require("../config/nodeMailer");
+const transporter  = require("../config/nodeMailer");
 
 const sendEmail = async ({ to, type, otp }) => {
   const { html, text } = generateEmailTemplates(type, otp);
