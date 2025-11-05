@@ -5,7 +5,6 @@ import { ThemeContext } from "../src/components/Context/ThemeContext";
 // Small hook wrapper to use inside your components
 export const useAlerts = () => {
   const { theme } = useContext(ThemeContext);
-  console.log(theme)
 
   const getThemeColors = () => {
     return theme === "dark"
