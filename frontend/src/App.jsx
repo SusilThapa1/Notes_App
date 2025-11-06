@@ -90,11 +90,7 @@ function App() {
           <Route path="/admin/manageresources/:id" element={<FileViewer />} />
           <Route path={`/${role}/myuploads/:id`} element={<FileViewer />} />
 
-          {/* ================= Study Resources (Main Flow) =================
-              Flow: resource → university → programme → course
-              IMPORTANT: These dynamic routes must come AFTER all specific routes
-              to prevent them from catching URLs meant for other pages
-          */}
+         
           <Route path="/:resource" element={<University />} />
           <Route path="/:resource/:university" element={<Programme />} />
           <Route
