@@ -3,6 +3,7 @@ import { ProgrammesContext } from "../Context/ProgrammeContext";
 import UploadModal from "../Modal/UploadModal";
 import { TiEyeOutline } from "react-icons/ti";
 import { HiOutlineUpload } from "react-icons/hi";
+import { AiOutlineDislike, AiOutlineLike } from "react-icons/ai";
 import { FcSearch } from "react-icons/fc";
 import FileViewerModal from "../Modal/FileViewerModal";
 import { CardLoader } from "../Loader/CardLoader";
@@ -32,28 +33,36 @@ const FileCard = ({
 
   return (
     <div className="p-4 border-2 border-yellow-50 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 hover:border-gray-100 dark:hover:border-gray-600   dark:bg-gray-900 dark:text-textDark flex flex-col gap-3 justify-between">
-      <h1 className="flex items-center text-lg gap-1">
-        {programme.programmeshortname}
-        {" - "}
-        {university.universityfullname}({university.universityshortname})
-      </h1>
-     <div className="flex items-center text-base text-subTextLight dark:text-subTextDark gap-1">
-  {courseCode && courseName && (
-    <>
-      <h3>{courseCode}</h3>
-      <span>-</span>
-      <p>{courseName}</p>
-    </>
-  )}
-  {year && (
-    <>
-      <h3>Questions</h3>
-      <span>-</span>
-      <p>{year}</p>
-    </>
-  )}
-</div>
-
+      <div className="flex justify-between items-center gap-2">
+        <h2 className="flex items-center text-lg gap-1">
+          {programme.programmeshortname}
+          {" - "}
+          {university.universityfullname}({university.universityshortname})
+        </h2>
+        <div className="flex items-center gap-2 ">
+          <AiOutlineLike title="like" className="cursor-pointer text-xl" />
+          <AiOutlineDislike
+            title="dislike"
+            className="cursor-pointer text-xl"
+          />
+        </div>
+      </div>
+      <div className="flex items-center text-base text-subTextLight dark:text-subTextDark gap-1">
+        {courseCode && courseName && (
+          <>
+            <h3>{courseCode}</h3>
+            <span>-</span>
+            <p>{courseName}</p>
+          </>
+        )}
+        {year && (
+          <>
+            <h3>Questions</h3>
+            <span>-</span>
+            <p>{year}</p>
+          </>
+        )}
+      </div>
 
       <div className="flex gap-2 items-center">
         <span className="border border-gray-300 dark:border-gray-600 px-2 py-1 bg-lightGreen rounded-lg text-white">
