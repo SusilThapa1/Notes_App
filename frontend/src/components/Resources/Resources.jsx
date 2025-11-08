@@ -6,7 +6,6 @@ import Courses from "./Courses";
 
 const Resources = () => {
   const { resource, university, programme, structure } = useParams();
-  console.log(resource, university, programme, structure);
   const navigate = useNavigate();
   const { programmeLists, universityLists, uploads, loading } =
     useContext(ProgrammesContext);

@@ -11,7 +11,6 @@ import "@react-pdf-viewer/default-layout/lib/styles/index.css";
 const FileViewerModal = ({ isOpen, onClose, fileUrl, fileName, fileId }) => {
   const navigate = useNavigate();
   const location = useLocation()
-  console.log(location.pathname)
   if (!isOpen) return null;
 
   const workerUrl =

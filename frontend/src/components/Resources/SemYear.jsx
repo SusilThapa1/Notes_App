@@ -78,7 +78,6 @@ const SemYear = () => {
       p.programmeshortname.toLowerCase() ===
       programme.toLowerCase().replaceAll("-", " ")
   );
-  console.log(programme, selectedProgramme);
 
   if (!selectedProgramme) {
     return (

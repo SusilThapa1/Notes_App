@@ -157,7 +157,6 @@ const UploadModal = ({
         (p) => p._id === uploadData.programme
       );
 
-      console.log(selectedProgramme?.academicstructure);
       const payload = {
         university,
         resources,
