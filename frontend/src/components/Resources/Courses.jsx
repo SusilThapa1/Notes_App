@@ -3,10 +3,17 @@ import { ProgrammesContext } from "../Context/ProgrammeContext";
 import UploadModal from "../Modal/UploadModal";
 import { TiEyeOutline } from "react-icons/ti";
 import { HiOutlineUpload } from "react-icons/hi";
-import { AiOutlineDislike, AiOutlineLike } from "react-icons/ai";
+import {
+  AiFillDislike,
+  AiFillLike,
+  AiOutlineDislike,
+  AiOutlineLike,
+} from "react-icons/ai";
 import { FcSearch } from "react-icons/fc";
 import FileViewerModal from "../Modal/FileViewerModal";
 import { CardLoader } from "../Loader/CardLoader";
+import { AuthContext } from "../Context/AuthContext";
+import { disLike, like } from "../../../Services/uploadService";
 
 const FileCard = ({
   file,
@@ -21,7 +28,18 @@ const FileCard = ({
   uploadedBy,
   uploadDate,
 }) => {
+  const { userDetails } = useContext(AuthContext);
+  const userId = userDetails?._id;
   const [selectedFile, setSelectedFile] = useState(null);
+  const [likes, setLikes] = useState(file.likes?.length || 0);
+  const [dislikes, setDislikes] = useState(file.dislikes?.length || 0);
+  const [reaction, setReaction] = useState(
+    file.likes?.includes(userId)
+      ? "like"
+      : file.dislikes?.includes(userId)
+      ? "dislike"
+      : null
+  );
 
   const handleFileClick = (upload) => {
     setSelectedFile({
@@ -29,6 +47,31 @@ const FileCard = ({
       name: upload.filename,
       id: upload._id,
     });
+  };
+
+  const handleReaction = async (type) => {
+    let res;
+    try {
+      if (type === "like") {
+        res = await like(id);
+      }
+
+      if (type === "dislike") {
+        res = await disLike(id);
+      }
+      setLikes(res.likes);
+      setDislikes(res.dislikes);
+      setReaction(reaction === type ? null : type);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const formatCount = (num) => {
+    if (num >= 1000000000) return (num / 1000000000).toFixed(1) + "B";
+    if (num >= 1000000) return (num / 1000000).toFixed(1) + "M";
+    if (num >= 1000) return (num / 1000).toFixed(1) + "k";
+    return num;
   };
 
   return (
@@ -39,12 +82,30 @@ const FileCard = ({
           {" - "}
           {university.universityfullname}({university.universityshortname})
         </h2>
-        <div className="flex items-center gap-2 ">
-          <AiOutlineLike title="like" className="cursor-pointer text-xl" />
-          <AiOutlineDislike
-            title="dislike"
-            className="cursor-pointer text-xl"
-          />
+        <div className="flex gap-3 items-center text-xl">
+          <button
+            onClick={() => handleReaction("like")}
+            className="flex items-center gap-1"
+          >
+            {reaction === "like" ? (
+              <AiFillLike className="text-lightGreen" />
+            ) : (
+              <AiOutlineLike />
+            )}
+            <span>{formatCount(likes)}</span>
+          </button>
+
+          <button
+            onClick={() => handleReaction("dislike")}
+            className="flex items-center gap-1 "
+          >
+            {reaction === "dislike" ? (
+              <AiFillDislike className="text-red-500" />
+            ) : (
+              <AiOutlineDislike />
+            )}
+            <span>{formatCount(dislikes)}</span>
+          </button>
         </div>
       </div>
       <div className="flex items-center text-base text-subTextLight dark:text-subTextDark gap-1">
