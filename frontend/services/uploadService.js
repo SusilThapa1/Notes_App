@@ -16,7 +16,7 @@ const fetchAllUploads = async () => {
 const fetchMyUploads = async () => {
   try {
     const response = await axios.get(`${API_URL}/getMyUploads`, {
-      withCredentials: true, 
+      withCredentials: true,
     });
     return response.data;
   } catch (error) {
@@ -61,4 +61,42 @@ const deleteUpload = async (uploadId) => {
   }
 };
 
-export { addUpload, fetchAllUploads,fetchMyUploads, updateUpload, deleteUpload };
+const like = async (id) => {
+  try {
+    const response = await axios.put(
+      `${API_URL}/${id}/like`,
+      {},
+      {
+        withCredentials: true,
+      }
+    );
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const disLike = async (id) => {
+  try {
+    const response = await axios.put(
+      `${API_URL}/${id}/dislike`,
+      {},
+      {
+        withCredentials: true,
+      }
+    );
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export {
+  addUpload,
+  fetchAllUploads,
+  fetchMyUploads,
+  updateUpload,
+  deleteUpload,
+  like,
+  disLike,
+};

@@ -52,9 +52,9 @@ let uploadInsert = async (req, res) => {
       universityID: university,
       resources,
       programmeID: programme,
-      courseCode: courseCode || "",  
-      courseName: courseName || "",  
-      year: year || "",  
+      courseCode: courseCode || "",
+      courseName: courseName || "",
+      year: year || "",
       semyear,
       filename,
       filepath,
@@ -93,29 +93,6 @@ let uploadList = async (req, res) => {
       message: "Failed to fetch uploads",
       error: err.message,
     });
-  }
-};
-
-// Delete a specific upload
-let uploadDelete = async (req, res) => {
-  try {
-    const upload = await Uploads.findById(req.params.id);
-    if (!upload) {
-      return res.status(404).json({ success: 0, message: "Upload not found" });
-    }
-
-    if (upload.filepath) {
-      const relativePath = `uploads/${upload.resources}/${upload.filepath
-        .split("/")
-        .pop()}`;
-      deleteFile(relativePath);
-    }
-
-    await Uploads.deleteOne({ _id: req.params.id });
-
-    res.json({ success: 1, message: "Deleted successfully" });
-  } catch (err) {
-    res.status(500).json({ success: 0, message: err.message });
   }
 };
 
@@ -206,10 +183,83 @@ let uploadUpdate = async (req, res) => {
   }
 };
 
+// Delete a specific upload
+let uploadDelete = async (req, res) => {
+  try {
+    const upload = await Uploads.findById(req.params.id);
+    if (!upload) {
+      return res.status(404).json({ success: 0, message: "Upload not found" });
+    }
+
+    if (upload.filepath) {
+      const relativePath = `uploads/${upload.resources}/${upload.filepath
+        .split("/")
+        .pop()}`;
+      deleteFile(relativePath);
+    }
+
+    await Uploads.deleteOne({ _id: req.params.id });
+
+    res.status(200).json({ success: 1, message: "Deleted successfully" });
+  } catch (err) {
+    res.status(500).json({ success: 0, message: err.message });
+  }
+};
+
+const likes = async (req, res) => {
+  const { id } = req.params;
+  const userid = req.userid;
+  try {
+    const upload = await Uploads.findById(id);
+    if (!upload) {
+      return res.status(404).json({ success: 0, message: "File not found" });
+    }
+
+    if (upload.likes.includes(userid)) {
+      upload.likes.pull(userid);
+    } else {
+      upload.likes.push(userid);
+      upload.dislikes.pull(userid);
+    }
+
+    await upload.save();
+    res
+      .status(200)
+      .json({ likes: upload.likes.length, dislikes: upload.dislikes.length });
+  } catch (err) {
+    res.status(500).json({ success: 0, message: err.message });
+  }
+};
+const disLikes = async (req, res) => {
+  const { id } = req.params;
+  const userid = req.userid;
+  try {
+    const upload = await Uploads.findById(id);
+    if (!upload) {
+      return res.status(404).json({ success: 0, message: "File not found" });
+    }
+
+    if (upload.dislikes.includes(userid)) {
+      upload.dislikes.pull(userid);
+    } else {
+      upload.dislikes.push(userid);
+      upload.likes.pull(userid);
+    }
+    await upload.save();
+    res
+      .status(200)
+      .json({ likes: upload.likes.length, dislikes: upload.dislikes.length });
+  } catch (err) {
+    res.status(500).json({ success: 0, message: err.message });
+  }
+};
+
 module.exports = {
   uploadInsert,
   uploadList,
   getSingleUpload,
   uploadUpdate,
   uploadDelete,
+  likes,
+  disLikes,
 };
