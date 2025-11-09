@@ -110,7 +110,7 @@ const ManageUsers = () => {
         />
       </div>
 
-      <div className="w-full overflow-x-auto scroll-smooth border-2 rounded-t-xl">
+      <div className="w-full overflow-x-auto scroll-smooth  rounded-t-xl">
         <table className="w-full bg-light dark:bg-dark shadow-lg text-center rounded-t-2xl overflow-x-auto scrollbar-custom border-collapse">
           <thead className="bg-lightGreen dark:bg-darkGreen text-white">
             <tr>
@@ -177,7 +177,7 @@ const ManageUsers = () => {
                               user.role === "admin" ? "user" : "admin"
                             )
                           }
-                          className="text-cyan-500 hover-supported:hover:text-cyan-600"
+                          className="text-editNormal hover-supported:hover:text-editHover"
                           title="change access role"
                         >
                           <HiOutlineSwitchHorizontal size={18} />
@@ -186,7 +186,7 @@ const ManageUsers = () => {
                           onClick={() =>
                             handleDelete(user._id, user?.username, user?.role)
                           }
-                          className="text-red-500 hover-supported:hover:text-red-700"
+                          className="text-deleteNormal hover-supported:hover:text-deleteHover"
                           title="delete"
                         >
                           <HiOutlineTrash  size={18} />

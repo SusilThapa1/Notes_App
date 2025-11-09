@@ -252,7 +252,7 @@ const ProgrammeManager = () => {
         <div className="text-left">
           <button
             type="submit"
-            className="bg-lightGreen dark:bg-darkGreen hover-supported:hover:bg-darkGreen text-white font-bold py-2 px-4 rounded-lg transition-all duration-200"
+            className="bg-lightGreen   hover-supported:hover:bg-darkGreen text-white font-bold py-2 px-4 rounded-lg transition-all duration-200"
           >
             {programmeData._id ? "Update Programme" : "Add Programme"}
           </button>
@@ -335,14 +335,14 @@ const ProgrammeManager = () => {
                               behavior: "smooth",
                             });
                           }}
-                          className="text-xl text-editOutlineText"
+                          className="text-xl text-editNormal hover-supported:hover:text-editHover"
                         >
                           <HiOutlinePencilAlt size={20} />
                         </button>
                         <button
                           title="Delete"
                           onClick={() => handleDelete(programme._id)}
-                          className="text-red-500 hover:text-red-700"
+                          className="text-deleteNormal hover:text-deleteHover"
                         >
                           <HiOutlineTrash size={20} />
                         </button>

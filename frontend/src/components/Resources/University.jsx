@@ -59,11 +59,11 @@ const University = () => {
       )}
 
       {filteredUniversities.length > 0 ? (
-        <div className="grid sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6 justify-center py-6 w-full">
+        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6 justify-center py-6 w-full">
           {filteredUniversities.map((university) => (
             <div
               key={university._id}
-              className="group relative bg-light/80 dark:bg-gray-900 backdrop-blur-md border border-slate-200 dark:border-gray-700 rounded-2xl shadow-md overflow-hidden hover:shadow-xl hover:-translate-y-2 transition-all duration-300"
+              className="group relative bg-light/80 dark:bg-gray-900 backdrop-blur-md border border-slate-200 dark:border-gray-700 rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300"
             >
               <div
                 className="cursor-pointer w-full h-max flex justify-center items-center py-5"

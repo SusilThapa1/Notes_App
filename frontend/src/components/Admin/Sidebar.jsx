@@ -32,7 +32,7 @@ const Sidebar = () => {
   const { userDetails } = useContext(AuthContext);
 
   return (
-    <div className="relative w-max md:h-screen dark:bg-[#0d1117]">
+    <div className="relative w-max md:h-screen">
       {/* Desktop Admin menu */}
       <div className="hidden h-screen md:flex flex-col justify-center md:justify-start text-center gap-5 border-r-gray-300 border-b-gray-400 border-2 mt-5 py-5 px-2 w-max dark:border-gray-700  ">
         <div className="flex flex-col justify-center items-center gap-3">

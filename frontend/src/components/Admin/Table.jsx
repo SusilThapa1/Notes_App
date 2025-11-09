@@ -143,14 +143,14 @@ const Table = ({ resource }) => {
                     <div className="flex justify-center items-center gap-3 text-textLight dark:text-textDark">
                       <button
                         onClick={() => handleEdit(upload)}
-                        className="text-cyan-500 dark:text-cyan-400 text-lg hover:text-cyan-700 dark:hover:text-cyan-300 transition"
+                        className="text-editNormal hover-supported:hover:text-editHover text-lg  transition"
                         title="Edit"
                       >
                         <HiOutlinePencilAlt size={20} />
                       </button>
                       <button
                         onClick={() => handleDelete(upload._id)}
-                        className="text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-600 transition"
+                        className="text-deleteNormal  hover-supported:hover:text-deleteHover transition"
                         title="Delete"
                       >
                         <HiOutlineTrash size={18} />

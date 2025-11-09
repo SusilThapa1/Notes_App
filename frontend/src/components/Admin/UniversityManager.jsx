@@ -240,7 +240,7 @@ const UniversityManager = () => {
         <div className="text-left">
           <button
             type="submit"
-            className="bg-lightGreen dark:bg-darkGreen hover-supported:hover:bg-darkGreen text-white font-bold py-2 px-4 min-w-fit w-[7vw] rounded-lg transition-all duration-200"
+            className="bg-lightGreen hover-supported:hover:bg-darkGreen text-white font-bold py-2 px-4 min-w-fit w-[7vw] rounded-lg transition-all duration-200"
           >
             {universityData._id ? "Update University" : "Add University"}
           </button>
@@ -317,7 +317,7 @@ const UniversityManager = () => {
                               behavior: "smooth",
                             });
                           }}
-                          className="text-xl text-editOutlineText"
+                          className="text-xl text-editNormal hover-supported:hover:text-editHover"
                         >
                           <HiOutlinePencilAlt size={20} />
                         </button>
