@@ -4,7 +4,8 @@ import { toast } from "react-toastify";
 
 const ContactUs = () => {
   const location = useLocation();
-  const urlSeg = decodeURIComponent(location.pathname.split("/")[2] || "");
+  // path like "/contact-us" or "/feedback" => get first segment after '/'
+  const urlSeg = decodeURIComponent(location.pathname.split("/")[1] || "");
   const [errors, setErrors] = useState({});
 
   const validate = (formData) => {

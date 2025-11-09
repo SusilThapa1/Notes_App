@@ -9,7 +9,7 @@ import UniversityManager from "../components/Admin/UniversityManager";
 
 const AdminPage = () => {
   return (
-    <div className=" flex  mt-[45px] overflow-hidden h-screen bg-no-repeat bg-center bg-cover scroll-smooth  ">
+    <div className=" flex mt-[42px] overflow-hidden h-screen bg-no-repeat bg-center bg-cover scroll-smooth  ">
       <Sidebar />
       <Routes>
         {/*Redirect /admin to /admin/dashboard */}

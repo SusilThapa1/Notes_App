@@ -140,7 +140,7 @@ const SemYear = () => {
               .replace(" ", "-")}`}
             className="group w-full max-w-[220px] bg-light dark:bg-gray-900 backdrop-blur-lg border border-slate-100 dark:border-gray-700 rounded-2xl shadow-md hover:shadow-xl hover-supported:hover:scale-110 transition-all duration-300 p-6 flex flex-col justify-center items-center text-center"
           >
-            <div className="uppercase text-3xl font-bold text-lightGreen dark:text-darkGreen group-hover:text-darkGreen dark:group-hover:text-lightGreen transition-colors duration-300">
+            <div className="uppercase md:text-2xl font-bold text-lightGreen dark:text-darkGreen group-hover:text-darkGreen dark:group-hover:text-lightGreen transition-colors duration-300 min-w-max">
               {university} {programme}
             </div>
             <p className="text-subTextLight dark:text-subTextDark mt-2 font-medium">
