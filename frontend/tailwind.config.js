@@ -34,15 +34,6 @@ export default {
         deleteNormal: "#EF4444",
         deleteHover: "#DC2626",
 
-        // Outlined button text colors
-        addOutlineText: "#5CAC54",
-        editOutlineText: "#3B82F6",
-        deleteOutlineText: "#EF4444",
-
-        // Outlined button backgrounds
-        addOutlineHover: "#4A9549",
-        editOutlineHover: "#2563EB",
-        deleteOutlineHover: "#DC2626",
 
         // Subtext
         subTextLight: "#6B7280",
