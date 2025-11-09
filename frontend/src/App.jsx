@@ -53,12 +53,6 @@ function App() {
             <Route path="/signin" element={<Login />} />
             <Route path="/signup" element={<SignUp />} />
             <Route path="/email-verify-OTP" element={<OTPVerify />} />
-            {/* ================= Footer Pages ================= */}
-            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-            <Route path="/terms-and-conditions" element={<TermsConditions />} />
-            <Route path="/code-of-conduct" element={<CodeOfConduct />} />
-            <Route path="/contact-us" element={<ContactUs />} />
-            <Route path="/feedback" element={<ContactUs />} />
 
             {/* ================= Error Pages ================= */}
             <Route path="/not-found" element={<PageNotFound />} />
@@ -68,6 +62,7 @@ function App() {
           {/* ================= Protected Routes ================= */}
           <Route element={<ProtectedRoute roleRequired="admin" />}>
             <Route path="/admin/*" element={<AdminPage />} />
+            <Route path="/admin/manageresources/:id" element={<FileViewer />} />
           </Route>
 
           <Route element={<ProtectedRoute />}>
@@ -85,12 +80,10 @@ function App() {
             />
           </Route>
 
-          {/* ================= Other Public Routes ================= */}
           <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/admin/manageresources/:id" element={<FileViewer />} />
+
           <Route path={`/${role}/myuploads/:id`} element={<FileViewer />} />
 
-         
           <Route path="/:resource" element={<University />} />
           <Route path="/:resource/:university" element={<Programme />} />
           <Route
@@ -105,6 +98,14 @@ function App() {
             path="/:resource/:university/:programme/:structure/:id"
             element={<FileViewer />}
           />
+
+          {/* ================= Footer Pages ================= */}
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/terms-and-conditions" element={<TermsConditions />} />
+          <Route path="/code-of-conduct" element={<CodeOfConduct />} />
+          <Route path="/contact-us" element={<ContactUs />} />
+          <Route path="/feedback" element={<ContactUs />} />
+
           <Route path="*" element={<PageNotFound />} />
         </Routes>
       </main>
