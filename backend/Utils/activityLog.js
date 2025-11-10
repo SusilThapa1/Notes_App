@@ -1,6 +1,7 @@
 const Action = require("../models/actionModel");
 
 const logAction = async ({ user = {}, action, details = {}, status, req }) => {
+  if (!user || !user._id || !user.email) return;
   try {
     await Action.create({
       user: {
